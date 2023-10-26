@@ -1,0 +1,86 @@
+.wrapper{
+ z-index: 1;
+}
+
+
+.wrapper_watch_film{
+  display: flex;
+  position: relative;
+}
+
+.name{
+  font-size: 36px;
+  font-weight: bolder;
+}
+
+.part_encyclopedia{
+  display: flex;
+}
+
+.encyclopedia_title{
+  color: rgba(255, 255, 255, 0.514);
+}
+
+.encyclopedia_name{
+  font-size: 20px;
+}
+
+.margin_top_encyclopedia{
+  margin-top: -8px;
+}
+
+.img{
+  margin-right: 5px;
+}
+
+.wrapper.film{
+  position: absolute;
+}
+
+.film{
+  position: absolute !important;
+  width: 70% !important; 
+    height: 100% !important;
+    top: 10%;
+    left: 5px;
+}
+
+iframe{
+  position: absolute !important;
+  width: 100% !important;
+    height: 100% !important;
+}
+
+.title_description{
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.description{
+  margin-top: 15px;
+  font-size: 18px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 1150px){
+  .film{
+    width: 70% !important;
+    height: 400px !important;
+  }
+  .img{
+    margin-right: 0px;
+  }
+}
+
+@media (max-width: 920px){
+  .film{
+    width: 87% !important;
+  }
+}
+
+@media (max-width: 850px){
+  .film{
+    width: 70% !important;
+  }
+}
