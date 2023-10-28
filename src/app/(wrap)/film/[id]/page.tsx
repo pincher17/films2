@@ -1,8 +1,4 @@
-
-
-import Header from '@/components/Header/Header';
 import FilmPage from '@/components/FilmPage/FilmPage';
-
 import type { Metadata, ResolvingMetadata } from 'next'
 import { filmsApi } from '@/api/api';
 import translateCategory from '@/components/helpers/translateCategory';

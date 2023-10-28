@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { filmsApi } from '../api/api';
 import { ArrayFilmsType, FilmsType } from '../types/FilmsType';
 import { initialStateFiltersType } from './filtersSlice';
-import { setLoading } from './Loading';
+import { setLoading, setLoadingFilters } from './Loading';
 
 type initialStateType ={
     films: Array<FilmsType>
@@ -55,11 +55,11 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
 export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: any) =>{
     return (dispatch: any) => {
 
-        dispatch(setLoading(true))
+        dispatch(setLoadingFilters(true))
         filmsApi.getFilms(filters, page).then((response: any) =>{
             
             dispatch(addFilmsNewFilters(response.data.docs))
-            dispatch(setLoading(false))
+            dispatch(setLoadingFilters(false))
     })
     }
 }

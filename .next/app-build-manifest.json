@@ -1,5 +1,11 @@
 {
   "pages": {
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -24,11 +30,11 @@
       "static/css/app/(wrap)/films/page.css",
       "static/chunks/app/(wrap)/films/page.js"
     ],
-    "/page": [
+    "/(wrap)/search/[searchQuery]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/page.css",
-      "static/chunks/app/page.js"
+      "static/css/app/(wrap)/search/[searchQuery]/page.css",
+      "static/chunks/app/(wrap)/search/[searchQuery]/page.js"
     ],
     "/(wrap)/film/[id]/page": [
       "static/chunks/webpack.js",

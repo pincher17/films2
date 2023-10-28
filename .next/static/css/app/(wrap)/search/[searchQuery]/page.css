@@ -1,0 +1,59 @@
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[3]!./src/app/styles/SearchPage.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+.SearchPage_wrapper__SVNPC{
+  margin-top: 90px;
+}
+
+.SearchPage_wrapper_search_group__VmwMN{
+ /*  display: flex;
+  justify-content: space-between; */
+  margin-bottom: 25px;
+ /*  align-items: center; */
+}
+
+.SearchPage_search_group__5f7Oy{
+  display: flex;
+  align-items: center;
+}
+
+.SearchPage_search_text_query__9Gjna{
+  font-size: 25px;
+  font-weight: bold;
+  margin: 0;
+  margin-left: 5px;
+}
+
+.SearchPage_search_text__DvRkh{
+  font-size: 18px;
+  font-weight: 300;
+  
+  /* width: auto; */
+}
+
+.SearchPage_total_films__Ky4DQ{
+  font-size: 16px;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.747);
+  margin-top: -12px;
+}
+
+.SearchPage_btn__haIVs{
+  background-color: rgb(184, 22, 22);
+  color:rgb(235, 235, 235);
+  font-weight:500;
+  font-size: 18px;
+  padding: 8px 15px 8px 15px;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid rgb(184, 22, 22);
+  border-radius: 5px;
+}
+
+.SearchPage_wrapper_btn_show_more__7Zsul{
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+

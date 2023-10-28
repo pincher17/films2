@@ -9,11 +9,16 @@ import { useAppSelector } from '@/redux/hooks';
 const Cards: React.FC<CardsProps> = (props) =>{
     const loading = useAppSelector((state: { loading: { loading: any; }; }) => state.loading.loading);
     const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10];
+    const loadingFilters = useAppSelector(state => state.loading.loadingFilters);
 
 
     return (
     <Wrapper>
-        {props.cards.map((item: any)=>
+        {loadingFilters
+        ? arraySkeletonCards.map((index)=>
+        <SkeletonCard key={index} />
+       )
+        : props.cards.map((item: any)=>
          <Card key={item.id} card={item} />
         )}
         {loading && arraySkeletonCards.map((index)=>
