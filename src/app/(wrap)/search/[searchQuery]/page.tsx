@@ -1,6 +1,3 @@
-
-
-import Header from '@/components/Header/Header';
 import SearchPage from '@/components/searchPage/SearchPage';
  
 type Props = {
