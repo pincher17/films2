@@ -11,7 +11,7 @@ const TrailerMobileWatch: React.FC<MobileWatchFilmProps> = ({id, setWatchTrailer
 
   return (
     <Wrapper>
-    <CrossIconFilm sidebar={true} onClick={toggleWatchFilm}>
+    <CrossIconFilm sidebar={(+true)} onClick={toggleWatchFilm}>
           <Line1 />
           <Line2 />
         </CrossIconFilm>
