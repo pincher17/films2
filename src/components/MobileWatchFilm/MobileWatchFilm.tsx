@@ -31,7 +31,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
 
   return (
     <Wrapper>
-    <CrossIconFilm sidebar={true} onClick={toggleWatchFilm}>
+    <CrossIconFilm sidebar={(+true)} onClick={toggleWatchFilm}>
           <Line1 />
           <Line2 />
         </CrossIconFilm>
