@@ -21,7 +21,7 @@ const Trailer: React.FC<TrailerProps> = ({src}) => {
         <ButtonTrailer onClick={handleClickOpen}>Трейлер</ButtonTrailer>
       </WrapperButtonTrailer>
      {open ? <Overlay onClick={handleClose}>
-     <CloseIconTrailer sidebar={true} onClick={handleClose}>
+     <CloseIconTrailer sidebar={(+true)} onClick={handleClose}>
           <Line1 />
           <Line2 />
         </CloseIconTrailer>
