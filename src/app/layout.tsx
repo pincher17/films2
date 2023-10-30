@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
   applicationName: 'Filmhub',
   verification: {
-    yandex: '4c706ccfe316f54b',
+    yandex: '14eacbc578f7574d',
   },
 }
 
