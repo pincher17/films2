@@ -1,5 +1,6 @@
 .header{
-  background-color: #161616;
+  backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.658);
   height: 60px;
   position: fixed;
   width: 100%;

@@ -42,7 +42,7 @@ export const NavigationContainer = styled.div`
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   padding: 40px 0 calc( 35px + env(safe-area-inset-bottom) );
   padding-left: 0px;
-  z-index: 20;
+  z-index: 4;
   @media (max-width: 850px){
   display: flex;
   }

@@ -88,7 +88,6 @@ export default function Films(){
   
   return (
    <>
-    <Header />
     <MainTag>
     <Wrapper>
       <WrapperNameBlock>
