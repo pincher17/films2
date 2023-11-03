@@ -7,6 +7,37 @@ export const Wrapper = styled.div`
   padding-right: 20px;
     padding-left: 20px;
 `;
+
+export const Gradient = styled.div`
+  width: 100%;
+    margin-top: -80px;
+    position: absolute;
+    left: 0;
+    background: rgb(0,0,0);
+    background: linear-gradient(0deg, rgb(0 0 0 / 85%) 25%, rgb(0 0 0 / 0%) 100%);
+    height: 750px;
+    &::after{
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 100px;
+    height: 100%;
+    bottom: -1px;
+    right: 0;
+    background: linear-gradient(180deg,transparent 50%,transparent 52.63%,rgba(0,0,0,.03) 55.25%,rgba(0,0,0,.08) 57.88%,rgba(0,0,0,.14) 60.51%,rgba(0,0,0,.23) 63.13%,rgba(0,0,0,.33) 65.76%,rgba(0,0,0,.44) 68.39%,rgba(0,0,0,.55) 71.01%,rgba(0,0,0,.66) 73.64%,rgba(0,0,0,.77) 76.27%,rgba(0,0,0,.85) 78.89%,rgba(0,0,0,.92) 81.52%,rgba(0,0,0,.96) 84.15%,rgba(0,0,0,.99) 86.77%,#000 89.4%);
+  }
+`;
+
+export const BackgroundImage = styled.img`
+    width: 100%;
+    position: absolute;
+    filter: blur(40px);
+    z-index: -2;
+    height: 500px;
+`;
+
 export const WrapperInfo = styled.div`
     @media (max-width: 1150px){
     display: flex;
@@ -21,7 +52,7 @@ export const WrapperWatchFilm = styled.div`
   @media (max-width: 1150px){
     display: initial;
     position: initial;
-    margin-right: 30px;
+    /* margin-right: 30px; */
     & > div{
         margin-bottom: 40px;
         text-align: center;
@@ -31,7 +62,9 @@ export const WrapperWatchFilm = styled.div`
     & > div{
         margin-bottom: 20px;
         text-align: center;
-        padding-left: 25px;
+        /* padding-left: 25px; */
+        position: relative;
+        z-index: 3;
     }
   }
 `;
@@ -125,6 +158,8 @@ display: flex;
   height: 30px;
   margin: 0 auto;
   margin-bottom: 45px;
+  z-index: 3;
+  position: relative;
   &:active {
           background: rgb(147 14 14);
           border: 1px solid rgb(147 14 14);

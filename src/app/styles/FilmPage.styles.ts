@@ -32,6 +32,13 @@ export const Name = styled.h1`
   font-weight: bolder;
   margin: 0;
   margin-bottom: 20px;
+  @media (max-width: 850px){
+    /* background: linear-gradient(0deg, rgb(0 0 0 / 85%) 25%, rgb(0 0 0 / 0%) 100%); */
+    /* background-color: black; */
+    /* position: relative;
+    z-index: 5; */
+    /* width: 100vw; */
+  }
 `;
 export const Flex = styled.div`
   display: flex;

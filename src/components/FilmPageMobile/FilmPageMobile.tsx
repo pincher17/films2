@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import {
+  BackgroundImage,
   Bottom,
   ButtonWatch,
   Description,
+  Gradient,
   ImgMainMobile,
   ImgWrapFilmMobile,
   ImgWrapperFilmMobile,
@@ -50,6 +52,10 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
       {watchFilm && <MobileWatchFilm id={id} setWatchFilm={setWatchFilm} />}
       {watchTrailer && <TrailerMobileWatch id={id} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos.trailers[0].url}`} />}
       <LayoutFilm>
+        <Gradient>
+        <BackgroundImage src={preview} />
+        </Gradient>
+       
         <WrapperInfo>
           <WrapperWatchFilm>
             <div>
