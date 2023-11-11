@@ -8,6 +8,7 @@ import { Year } from "../Card";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmSearch, setMobileSearch } from "@/redux/searchSlice";
 import { useRouter } from "next/navigation";
+import textTransform from "../helpers/textTransform";
 
 
 const Search: React.FC = () => {
@@ -96,8 +97,8 @@ const Search: React.FC = () => {
     }
   };
 
-  const onMouseDownNavigate = (id: number) => {
-    router.push(`/film/${id}`)
+  const onMouseDownNavigate = (id: number, name: string, year: number) => {
+    router.push(`/film/${id}-${textTransform(name)}-${year}`)
     inputRef.current?.blur();
     closeSearch()
   };
@@ -126,7 +127,7 @@ const Search: React.FC = () => {
             <div key={i.id}>
               <div
                 onMouseDown={() =>
-                  onMouseDownNavigate(i.id)
+                  onMouseDownNavigate(i.id, i.name, i.year)
                 }
               >
                 <ImageWrapper>

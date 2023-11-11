@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: 'Filmhub - смотреть фильмы бесплатно онлайн в хорошем качестве',
   description: `Смотрите новинки кино и сериалов в онлайн кинотеатре Filmhub. 
   Большой выбор фильмов, высокое качество видео и звука`,
+  keywords: `filmhub, фильмхаб, фильм хаб, сериалы, kinogo, киного, фильмы онлайн, смотреть фильмы онлайн, смотреть фильмы бесплатно, кино онлайн`,
   viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
   applicationName: 'Filmhub',
   verification: {

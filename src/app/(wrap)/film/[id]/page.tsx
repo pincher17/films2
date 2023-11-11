@@ -3,6 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { filmsApi } from '@/api/api';
 import translateCategory from '@/components/helpers/translateCategory';
 import roundNumber from '@/components/helpers/rounding';
+import extractDigits from '@/components/helpers/extractId';
  
 type Props = {
   params: { id: string }
@@ -14,7 +15,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   // read route params
-  const id = params.id
+  const id = extractDigits(params.id)
  
   // fetch data
   const response = await filmsApi.getFilmById(id)
@@ -28,7 +29,7 @@ export async function generateMetadata(
     keywords: [`${filmInfoId.name}`, `${filmInfoId.year}`, `${filmInfoId.alternativeName || filmInfoId.enName}`, `${translateCategory(filmInfoId.type)}`, 'смотреть', 'онлайн', 'бесплатно', 'hd'],
     openGraph: {
       title: `${filmInfoId.name} ${filmInfoId.year} г. - смотреть онлайн на Filmhub`,
-      description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, рейтинг кинопоиска: ${roundNumber(filmInfoId.rating.kp, 1)}`,
+      description: `${filmInfoId.description}`,
       images: [
         {
           url: `${filmInfoId.poster.url}`,
@@ -43,9 +44,9 @@ export async function generateMetadata(
   }
 }
 
-export default function Film({ params }: { params: { id: number } }) {
+export default function Film({ params }: { params: { id: string } }) {
 
-  let id = params.id
+  let id = extractDigits(params.id)
 
   return (
    <>
