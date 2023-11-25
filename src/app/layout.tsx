@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   verification: {
     yandex: '14eacbc578f7574d',
   },
+  alternates: {
+    canonical: 'https://filmhub.lol',
+  }
 }
 
 export default function RootLayout({

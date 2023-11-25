@@ -4,6 +4,7 @@ import { filmsApi } from '@/api/api';
 import translateCategory from '@/components/helpers/translateCategory';
 import roundNumber from '@/components/helpers/rounding';
 import extractDigits from '@/components/helpers/extractId';
+import textTransform from '@/components/helpers/textTransform';
  
 type Props = {
   params: { id: string }
@@ -41,6 +42,9 @@ export async function generateMetadata(
       description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, рейтинг кинопоиска: ${roundNumber(filmInfoId.rating.kp, 1)}`,
       images: [`${filmInfoId.poster.url}`],
     },
+    alternates: {
+      canonical: `${filmInfoId.name ? `https://filmhub.lol/film/${id}-${textTransform(filmInfoId.name)}${filmInfoId.year ? '-'+filmInfoId.year : ''}` : `https://filmhub.lol/film/${id}`}`,
+    }
   }
 }
 
