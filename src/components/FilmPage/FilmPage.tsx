@@ -112,7 +112,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
               <Iframe
-                src={`https://v1687699810.bazon.site/kp/${id}?noads=1`}
+                src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
                 frameBorder="0"
                 scrolling="no"
                 allowFullScreen
