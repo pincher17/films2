@@ -39,8 +39,8 @@ const SwiperGenres: React.FC<SwiperGenresProps> = () => {
         navigation
         breakpoints={{
           577: { slidesPerGroup: 3, slidesPerView: 3.5, spaceBetween: 15 },
-          769: { slidesPerGroup: 3, slidesPerView: 4, spaceBetween: 30 },
-          1024: { slidesPerGroup: 3, slidesPerView: 6, spaceBetween: 30 },
+          769: { slidesPerGroup: 3, slidesPerView: 4.2, spaceBetween: 30 },
+          1163: { slidesPerGroup: 3, slidesPerView: 5, spaceBetween: 30 },
           1200: { slidesPerGroup: 3, slidesPerView: 6, spaceBetween: 30 },
         }}
       >
