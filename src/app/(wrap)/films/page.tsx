@@ -110,7 +110,7 @@ export default function Films(){
     <Wrapper>
       <WrapperNameBlock>
         <div>
-          <NameBlock>Все фильмы</NameBlock>
+          <NameBlock>{isGenreValid && searchGenre ? searchGenre.charAt(0).toUpperCase() + searchGenre.slice(1) : 'Все фильмы'}</NameBlock>
         </div>
         <FilterIcon onClick={toggleSidebar}>
           <FilterIcon7 />
