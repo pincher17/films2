@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import { MultipleSelectProps } from './MultipleSelect.types';
 import { useAppSelector } from '@/redux/hooks';
+import { useSearchParams } from 'next/navigation';
 
 
 
@@ -11,11 +12,19 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
   const genre = useAppSelector((state: { filters: { genre: any; }; }) => state.filters.genre);
   const [selectedOption, setSelectedOption] = useState<any | null>(genre);
 
+  const searchParams = useSearchParams()
+  const searchGenre = searchParams.get('genre')
+
+console.log(selectedOption)
   useEffect(() => {
     if(Array.isArray(selectedOption)){
       onChange(selectedOption)
     }
     }, [selectedOption])
+
+    useEffect(() => {
+      setSelectedOption(genre)
+      }, [genre])
 
   const colourStyles: StylesConfig = {
     control: (baseStyles: any, state: { isFocused: any; }) => ({
@@ -102,6 +111,7 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
       styles={colourStyles}
       value={selectedOption}
       isSearchable={false}
+      /* defaultValue={[{ value: 'фэнтези', label: 'фэнтези' }]} */
       placeholder={'Выбрать'}
       theme={(theme) => ({
       ...theme,

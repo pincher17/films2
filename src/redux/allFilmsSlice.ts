@@ -52,11 +52,11 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
     }
 }
 
-export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: any) =>{
+export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: any, genre: any = []) =>{
     return (dispatch: any) => {
 
         dispatch(setLoadingFilters(true))
-        filmsApi.getFilms(filters, page).then((response: any) =>{
+        filmsApi.getFilms(filters, page, genre).then((response: any) =>{
             
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))

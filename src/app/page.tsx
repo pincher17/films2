@@ -11,6 +11,8 @@ import { MainTag } from './styles/Main.styles';
 import MobileNavigation from '@/components/MobileNavigation/MobileNavigation';
 import AllBlur from '@/components/AllBlur/AllBlur';
 import { H1 } from './Main.styles';
+import GenreButton from '@/components/GenreButton/GenreButton';
+import SwiperGenres from '@/components/SwiperGenres/SwiperGenres';
 
 export default function Home() {
 
@@ -49,15 +51,14 @@ export default function Home() {
     <Header />
     <MainTag>
       <div className={s.wrapper}>
-        <div className={s.wrapper_name_block}>
-            {/* <div><p className={s.name_block}>Фильмы</p></div> */}
+{/*         <div className={s.wrapper_name_block}>
                 <div>
                     <Link href="/films" className={s.btn}>
                         Все фильмы
                     </Link>
                 </div>
-        </div>
-
+        </div> */}
+    <SwiperGenres />
     <SwiperMainPage />
     </div>
     <H1>Смотрите новинки кино и сериалов в онлайн кинотеатре Filmhub</H1>

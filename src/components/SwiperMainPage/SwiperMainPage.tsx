@@ -45,15 +45,13 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   }, []);
   
   useEffect(() => {
-
+    dispatch(getFilmsTop10())
     dispatch(getFilmsThunk())
     dispatch(getSeries())
-    
     dispatch(getThriller())
     dispatch(getComedy())
     dispatch(getDrama())
     dispatch(getBoevik())
-    dispatch(getFilmsTop10())
     }, [])
 
 /*     const responseDataFilmsTop10 = await filmsApi.getFilmsTop10()

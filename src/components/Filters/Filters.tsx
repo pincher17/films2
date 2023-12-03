@@ -9,6 +9,7 @@ import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsSlice';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 
 
@@ -21,7 +22,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [valueGenre, setValueGenre] = React.useState<string[]>(filters.genre);
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
-
+    const router = useRouter();
     
     const changeFilters = () => {
       debugger
@@ -32,8 +33,9 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             year: valueYear,
             typeOfMovies: typeOfMovies,
             selectedTypeOfMovies: selectedTypeOfMovies,
+            updateGenre: false
         }
-        
+        router.replace('/films');
         dispatch(setFilters(createfilters))
         dispatch(setPage(1))
         dispatch(getAllFilmsFiltersThunk(createfilters, 1));
