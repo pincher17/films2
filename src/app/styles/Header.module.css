@@ -50,6 +50,7 @@ align-items: center;
   text-decoration: none;
   position: relative;
   line-height: 1.5;
+  font-size: 18px;
 }
 
 .nav_item:after {
@@ -64,8 +65,12 @@ align-items: center;
 }
 
 .nav_item:hover:after,
-.nav_item:focus:after {
+.nav_item:focus:after{
 	width: 100%; /*устанавливаем значение 100% чтобы ссылка подчёркивалась полностью*/
+}
+
+.nav_item.active:after{
+  width: 100%;
 }
 
 @media (max-width: 1500px){

@@ -15,7 +15,7 @@ export const NameBlock = styled.p`
   font-weight: bold;
 `
 export const FilterIcon = styled.div`
-  background-image: url('Filtericon.svg');
+ /*  background-image: url('Filtericon.svg'); */
   height: 35px;
   width: 35px;
   background-size: 100%;

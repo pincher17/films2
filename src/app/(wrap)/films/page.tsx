@@ -11,6 +11,10 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import Filters from '@/components/Filters/Filters';
 import { MainTag } from '@/app/Main.styles';
 import SkeletonCard from '@/components/SkeletonCard/SkeletonCard';
+import { useSearchParams } from 'next/navigation';
+import { setFilterGenre, setUpdateGenre } from '@/redux/filtersSlice';
+import { allGenres } from '@/data/allGenres';
+import FilterIcon7 from '/public/Filtericon.svg'
 
 export default function Films(){
 
@@ -22,10 +26,23 @@ export default function Films(){
   /* const [didMountFiltres, setDidMountFiltres] = useState<boolean>(false) */
   const didMountPage = useRef(true);
 
+  const searchParams = useSearchParams()
+  const searchGenre = searchParams.get('genre')
  
   const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(false)
   const [resolution, setResolution] = useState<any>({ width: 0, height: 0 });
   const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10];
+
+  const isGenreValid: boolean = allGenres.some((genre) => genre.value === searchGenre);
+
+
+      useEffect(() => {
+        if(isGenreValid){
+          dispatch(setFilterGenre([{ value: searchGenre, label: searchGenre }]))
+        }else{
+          return
+        }
+  }, []);
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -63,12 +80,13 @@ export default function Films(){
       /* const dataFilms = await filmsApi.getFilms(filtres, page) */
 
 
-
       useEffect(() => {
-        if(films.length === 0){
+        if(films.length === 0 || filtres.updateGenre){
           dispatch(setPage(1))
           console.log('first');
-          dispatch(getAllFilmsFiltersThunk(filtres, 1));
+          let searchGenreArr = isGenreValid ? [{ value: searchGenre, label: searchGenre }] : []
+          dispatch(getAllFilmsFiltersThunk(filtres, 1, searchGenreArr));
+          dispatch(setUpdateGenre(false))
         }else{
           return
         }
@@ -94,9 +112,9 @@ export default function Films(){
         <div>
           <NameBlock>Все фильмы</NameBlock>
         </div>
-        <div>
-        <FilterIcon onClick={toggleSidebar} />
-        </div>
+        <FilterIcon onClick={toggleSidebar}>
+          <FilterIcon7 />
+        </FilterIcon>
       </WrapperNameBlock>
       {resolution.width > 1150 ? <Filters mobile={false} /> : ''}
       {/* <Filters /> */}
@@ -105,7 +123,7 @@ export default function Films(){
           <Line1 />
           <Line2 />
         </CrossIcon>
-      <Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
+      {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
       </Sidebar>
       <Cards cards={films} />
       <WrapperButtonShowMore>

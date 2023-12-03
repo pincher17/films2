@@ -4,8 +4,11 @@ import s from '../../app/styles/Header.module.css';
 import Logo from '../../../public/assets/img/logo1.svg'
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () =>{
+
+  const pathname = usePathname();
 
     return (
         <header className={s.header}>
@@ -16,7 +19,7 @@ const Header: React.FC = () =>{
         </Link>
         <Search />
         <nav className={s.nav}>
-        <Link href={'/films'} className={s.nav_item}>Все фильмы</Link>
+        <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Все фильмы</Link>
         </nav>
         </div>
       </header>
