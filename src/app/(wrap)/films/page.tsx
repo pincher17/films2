@@ -2,7 +2,6 @@
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useEffect, useRef, useState } from 'react';
-import Header from '@/components/Header/Header';
 import { setIsVisible } from '@/redux/FilmsMainPageSlice';
 import { getAllFilmsFiltersThunk, getAllFilmsThunk, nextPage, setPage } from '@/redux/allFilmsSlice';
 import { Button, CrossIcon, FilterIcon, Line1, Line2, NameBlock, Wrapper, WrapperButtonShowMore, WrapperNameBlock } from '../../styles/AllFilmsPage.styles';
@@ -10,7 +9,6 @@ import Cards from '@/components/Cards/Cards';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Filters from '@/components/Filters/Filters';
 import { MainTag } from '@/app/Main.styles';
-import SkeletonCard from '@/components/SkeletonCard/SkeletonCard';
 import { useSearchParams } from 'next/navigation';
 import { setFilterGenre, setUpdateGenre } from '@/redux/filtersSlice';
 import { allGenres } from '@/data/allGenres';
@@ -22,16 +20,16 @@ export default function Films(){
   const filtres = useAppSelector(state => state.filters)
   const page = useAppSelector(state => state.allFilms.page);
   const dispatch = useAppDispatch()
-  const didMountFiltres = useRef(true);
+  /* const didMountFiltres = useRef(true); */
   /* const [didMountFiltres, setDidMountFiltres] = useState<boolean>(false) */
-  const didMountPage = useRef(true);
+  /* const didMountPage = useRef(true); */
 
   const searchParams = useSearchParams()
   const searchGenre = searchParams.get('genre')
  
   const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(false)
   const [resolution, setResolution] = useState<any>({ width: 0, height: 0 });
-  const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10];
+  /* const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10]; */
 
   const isGenreValid: boolean = allGenres.some((genre) => genre.value === searchGenre);
 

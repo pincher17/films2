@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { SwiperMainPageProps } from "./SwiperMainPage.types";
 import { SwiperWrapper } from "../../app/styles/SwiperMainPage.styles";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
-import { Skeleton } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getBoevik, getComedy, getDrama, getFilmsThunk, getFilmsTop10, getSeries, getThriller, setIsVisible } from "@/redux/FilmsMainPageSlice";
-import { filmsApi } from "@/api/api";
+
 
 
 const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {

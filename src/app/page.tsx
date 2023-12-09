@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link'
 import s from './page.module.css';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useEffect } from 'react';
@@ -11,12 +10,11 @@ import { MainTag } from './styles/Main.styles';
 import MobileNavigation from '@/components/MobileNavigation/MobileNavigation';
 import AllBlur from '@/components/AllBlur/AllBlur';
 import { H1 } from './Main.styles';
-import GenreButton from '@/components/GenreButton/GenreButton';
 import SwiperGenres from '@/components/SwiperGenres/SwiperGenres';
 
 export default function Home() {
 
-  const loading = useAppSelector((state) => state.loading.loading);
+  /* const loading = useAppSelector((state) => state.loading.loading); */
   /* const films = useAppSelector(state => state.newFilms.films); */
   const limit = useAppSelector(state => state.newFilms.limit);
   const dispatch = useAppDispatch()

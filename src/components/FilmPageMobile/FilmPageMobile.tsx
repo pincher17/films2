@@ -53,7 +53,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
       {watchTrailer && <TrailerMobileWatch id={id} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos.trailers[0].url}`} />}
       <LayoutFilm>
         <Gradient>
-        <BackgroundImage src={preview} />
+        <BackgroundImage src={filmInfoId?.poster.previewUrl} />
         </Gradient>
        
         <WrapperInfo>
@@ -62,7 +62,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
               {loading ? <SkeletonImage /> 
               : <ImgWrapperFilmMobile>
                   <ImgWrapFilmMobile>
-                    <ImgMainMobile src={preview} alt={filmInfoId?.name} />
+                    <ImgMainMobile src={filmInfoId?.poster.previewUrl} alt={filmInfoId?.name} />
                   </ImgWrapFilmMobile>
                 </ImgWrapperFilmMobile>
           }

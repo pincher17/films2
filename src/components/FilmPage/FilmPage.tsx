@@ -102,7 +102,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 ? <SkeletonImage />  
                 : <ImgWrapperFilm>
                     <ImgWrapFilm>
-                      <ImgMain src={preview} alt={filmInfoId?.name} itemProp="contentUrl" />
+                      <ImgMain src={filmInfoId?.poster.previewUrl} alt={filmInfoId?.name} itemProp="contentUrl" />
                     </ImgWrapFilm>
                   </ImgWrapperFilm>
               }

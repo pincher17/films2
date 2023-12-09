@@ -27,7 +27,14 @@ const {
             <Link href={name ? `/film/${id}-${textTransform(name)}${year ? '-'+year : ''}` : `/film/${id}`}>
             <ImgWrapper>
             <ImgWrap>
-            {poster?.url && <Img src={poster.url} alt={name} />}
+            {poster?.url 
+            && <Img
+             src={poster.previewUrl} 
+             alt={name} /* 
+             sizes="100%"
+            fill
+            quality={80} */
+             />}
             </ImgWrap>
             {ratingKp &&
             <Rating>
