@@ -6,6 +6,13 @@ export type MovieType = {
     typeNumber: string;
   };
 
+  export type CountryType = {
+    value: string;
+    label: string;
+    id: number;
+  };
+
+
 export type initialStateFiltersType ={
      year: number[]
      rating: number[]
@@ -14,6 +21,7 @@ export type initialStateFiltersType ={
      typeOfMovies: MovieType[]
      selectedTypeOfMovies: string[]
      updateGenre: boolean
+     country: CountryType[]
     }
 
 
@@ -28,7 +36,8 @@ const initialState: initialStateFiltersType ={
             {name: 'Мультфильмы', included: true, typeNumber: '3'},
         ],
         selectedTypeOfMovies: ['1','2','3'],
-        updateGenre: false,   
+        updateGenre: false,
+        country: [  { value: '', label: 'Все', id: 1 }],   
 }
 
 const filters = createSlice({
@@ -54,6 +63,7 @@ const filters = createSlice({
             state.genre = action.payload.genre
             state.typeOfMovies = action.payload.typeOfMovies
             state.selectedTypeOfMovies = action.payload.selectedTypeOfMovies
+            state.country = action.payload.country
         },
         setUpdateGenre(state, action:PayloadAction<boolean>) {
             state.updateGenre = action.payload

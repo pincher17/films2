@@ -1,26 +1,23 @@
 export type ArrayFilmsType = Array<FilmsType>;
 
 type namesType = {
-  _id: string;
   name: string;
+  language?: string | null
+  type?: null
 };
 
 export type FilmsType = {
   externalId: {
-    _id: string;
     imdb: string;
   };
   logo: {
-    _id: string;
     url: null | string;
   };
   poster: {
-    _id: string;
     url: string;
     previewUrl: string;
   };
   rating: {
-    _id: string;
     kp: number;
     imdb: number;
     filmCritics: number;
@@ -28,7 +25,6 @@ export type FilmsType = {
     await: number;
   };
   votes: {
-    _id: string;
     kp: number;
     imdb: number;
     filmCritics: number;
@@ -44,5 +40,5 @@ export type FilmsType = {
   alternativeName: string;
   enName: null | string;
   names: Array<namesType>;
-  shortDescription: null;
+  shortDescription: null | string;
 };

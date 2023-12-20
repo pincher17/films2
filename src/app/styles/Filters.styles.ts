@@ -13,11 +13,11 @@ export const WrapperInput = styled.div`
 `
 
 export const WrapperAllInputs = styled.div`
-  width: 100%;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    width: 100%;
+    margin-bottom: -70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   @media (max-width: 1150px){
     flex-direction: column;
     align-items: flex-start;
@@ -35,6 +35,7 @@ export const WrapperCheckbox = styled.div`
 export const ButtonWrapper = styled.div`
  width: 220px;
  @media (max-width: 850px){
+  margin-top: 70px;
     margin-bottom: 250px;
   }
 `

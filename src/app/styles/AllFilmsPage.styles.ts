@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
 export const WrapperNameBlock = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   align-items: center;
 `
 export const NameBlock = styled.p`

@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
 import Select, { StylesConfig } from 'react-select';
-import { MultipleSelectProps } from './MultipleSelect.types';
+import { MultipleSelectProps } from './SelectCountry.types';
 import { useAppSelector } from '@/redux/hooks';
-import { useSearchParams } from 'next/navigation';
+
+const allCountry = [  { value: '', label: 'Все', id: 1 },
+{ value: '&countries.name=Беларусь&countries.name=Казахстан&countries.name=Украина&countries.name=СССР&countries.name=Россия', label: 'Русские', id: 2 },
+{ value: `&countries.name=!Беларусь&countries.name=!Казахстан&countries.name=!Украина&countries.name=!СССР&countries.name=!Россия`, label: 'Зарубежные', id: 3 },]
 
 
+const SelectCountry: React.FC<MultipleSelectProps> = ({onChange}) => {
+  const country = useAppSelector((state: { filters: { country: any; }; }) => state.filters.country);
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(country);
 
-
-const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
-  const genre = useAppSelector((state: { filters: { genre: any; }; }) => state.filters.genre);
-  const [selectedOption, setSelectedOption] = useState<any | null>(genre);
-
-  const searchParams = useSearchParams()
-  const searchGenre = searchParams.get('genre')
 
   useEffect(() => {
-    if(Array.isArray(selectedOption)){
-      onChange(selectedOption)
-    }
-    }, [selectedOption])
-
-    useEffect(() => {
-      setSelectedOption(genre)
-      }, [genre])
+      onChange(selectedCountry)
+    }, [selectedCountry])
 
   const colourStyles: StylesConfig = {
     control: (baseStyles: any, state: { isFocused: any; }) => ({
@@ -47,17 +40,9 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
       ...base,
       background: '#0e0e0e'
     }),
-    multiValue: (styles: any) => {
+    singleValue: (styles: any) => {
       return {
         ...styles,
-        backgroundColor: '#494949',
-        color: 'white'
-      };
-    },
-    multiValueLabel: (styles: any) => {
-      return {
-        ...styles,
-        backgroundColor: '#494949',
         color: 'white'
       };
     },
@@ -65,16 +50,6 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
       return {
         ...styles,
         color: '#ffffff',
-      };
-    },
-    multiValueRemove: (styles: any) => {
-      return {
-        ...styles,
-        ':hover': {
-          backgroundColor: '#d32a29',
-          color: 'white',
-          cursor: 'pointer'
-        },
       };
     },
     option: (styles: any, { data, isDisabled, isFocused, isSelected }: any) => {
@@ -103,13 +78,12 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
   } 
   return (
     <Select
-      closeMenuOnSelect={false}
-      isMulti
-      options={options}
+      closeMenuOnSelect={true}
+      options={allCountry}
       name="colors"
-      onChange={setSelectedOption}
+      onChange={setSelectedCountry}
       styles={colourStyles}
-      value={selectedOption}
+      value={selectedCountry}
       isSearchable={false}
       /* defaultValue={[{ value: 'фэнтези', label: 'фэнтези' }]} */
       placeholder={'Выбрать'}
@@ -126,4 +100,4 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
   );
 }
 
-export default MultipleSelect
+export default SelectCountry

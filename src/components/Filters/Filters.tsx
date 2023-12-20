@@ -7,9 +7,10 @@ import SliderValue from '../SliderValue';
 import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
+import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsSlice';
 import { useRouter, useSearchParams } from 'next/navigation';
+import SelectCountry from '../SelectCountry/SelectCountry';
 
 
 
@@ -20,12 +21,11 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [valueRating, setValueRating] = React.useState<number[]>(filters.rating);
     const [valueYear, setValueYear] = React.useState<number[]>(filters.year);
     const [valueGenre, setValueGenre] = React.useState<string[]>(filters.genre);
+    const [valueCountry, setValueCountry] = React.useState<CountryType[]>(filters.country);
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
-    
     const changeFilters = () => {
-      debugger
         const createfilters: initialStateFiltersType ={
             genre: valueGenre,
             rating: valueRating,
@@ -33,7 +33,8 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             year: valueYear,
             typeOfMovies: typeOfMovies,
             selectedTypeOfMovies: selectedTypeOfMovies,
-            updateGenre: false
+            updateGenre: false,
+            country: valueCountry,
         }
         router.replace('/films');
         dispatch(setFilters(createfilters))
@@ -54,7 +55,6 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     }
 
     const changeIncludedTypeOfMovies = (typeNumber: string) => {
-        console.log('typeNumber: '+ typeNumber)
         let newTypeOfMovies = typeOfMovies.map((item: { typeNumber: string; included: any; }) => {
               if (item.typeNumber === typeNumber) {
                 return {
@@ -107,6 +107,8 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             <WrapperInput>
                 <p style={{paddingBottom: "14px"}}>Жанры</p>
                 <MultipleSelect options={allGenres} onChange={setValueGenre}/>
+                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
+                <SelectCountry onChange={setValueCountry}/>
             </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>
