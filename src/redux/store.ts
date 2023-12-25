@@ -8,6 +8,8 @@ import widthDeviceSlice from './widthDeviceSlice';
 import Loading from './Loading';
 import filmsMainPageSlice from './FilmsMainPageSlice';
 import Footer from './Footer';
+import AllCollections from "./AllCollections";
+import Collection from "./Collection";
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +21,9 @@ export const store = configureStore({
   widthDevice: widthDeviceSlice,
   loading: Loading,
   footer: Footer,
-  filmsMainPage: filmsMainPageSlice
+  filmsMainPage: filmsMainPageSlice,
+  collections: AllCollections,
+  collection: Collection,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

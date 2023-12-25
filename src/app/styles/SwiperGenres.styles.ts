@@ -4,6 +4,7 @@ import { Swiper } from 'swiper/react'
 
 export const StyledSliderGenres = styled(Swiper)`
   /* padding: 0px 18px 0px 18px; */
+  overflow: visible !important;
   margin-top: 25px;
   @media screen and (max-width: 1024px) {
       padding: 0;
@@ -17,8 +18,8 @@ export const StyledSliderGenres = styled(Swiper)`
     height: 34px;
     background-color: #747474;
     border-radius: 50%;
-    right: 0;
     top: 54px;
+    right: -45px;
     -webkit-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
     box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
@@ -52,7 +53,7 @@ export const StyledSliderGenres = styled(Swiper)`
     height: 34px;
     background-color: #747474;
     border-radius: 50%;
-    left: 0;
+    left: -45px;
     top: 54px;
     -webkit-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);

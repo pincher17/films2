@@ -51,7 +51,7 @@ export async function generateMetadata(
 export default function Film({ params }: { params: { id: string } }) {
 
   let id = extractDigits(params.id)
-
+  
   return (
    <>
       <FilmPage params={{
