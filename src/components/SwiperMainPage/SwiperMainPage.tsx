@@ -79,12 +79,12 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
     
   return (
     <>
+      <SwiperWrapper>
+  <SwiperFilms collections={collections} title="Коллекции"/>
+  </SwiperWrapper>
+  
   <SwiperWrapper>
   <SwiperFilms cards={top10} title="Топ 10"/>
-  </SwiperWrapper>
-
-  <SwiperWrapper>
-  <SwiperFilms collections={collections} title="Коллекции"/>
   </SwiperWrapper>
 
   <SwiperWrapper>
