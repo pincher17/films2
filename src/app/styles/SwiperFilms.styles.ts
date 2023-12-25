@@ -21,6 +21,7 @@ export const Wrapper = styled('div')`
 `
 export const StyledSlider = styled(Swiper)`
   /* padding: 0px 18px 0px 18px; */
+  overflow: visible !important;
   @media screen and (max-width: 1024px) {
       padding: 0;
     }
@@ -31,6 +32,8 @@ export const StyledSlider = styled(Swiper)`
     background-position: center;
     width: 44px;
     height: 44px;
+    top: 42%;
+    right: -50px;
     background-color: #747474;
     border-radius: 50%;
     -webkit-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
@@ -39,7 +42,7 @@ export const StyledSlider = styled(Swiper)`
     @media screen and (max-width: 850px) {
       display: none; 
     }
-    margin-top: calc(0px - (var(--swiper-navigation-size)/ .6));
+   /*  margin-top: calc(0px - (var(--swiper-navigation-size)/ .6)); */
   }
 
   & > div.swiper-button-next:hover {
@@ -67,6 +70,8 @@ export const StyledSlider = styled(Swiper)`
     background-position: center;
     width: 44px;
     height: 44px;
+    top: 42%;
+    left: -50px;
     background-color: #747474;
     border-radius: 50%;
     -webkit-box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.2);
@@ -75,7 +80,7 @@ export const StyledSlider = styled(Swiper)`
     @media screen and (max-width: 850px) {
       display: none; 
     }
-    margin-top: calc(0px - (var(--swiper-navigation-size)/ .6));
+    /* margin-top: calc(0px - (var(--swiper-navigation-size)/ .6)); */
   }
 
   & > div.swiper-button-prev:hover {

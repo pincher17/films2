@@ -4,6 +4,7 @@ import { SwiperWrapper } from "../../app/styles/SwiperMainPage.styles";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getBoevik, getComedy, getDrama, getFilmsThunk, getFilmsTop10, getSeries, getThriller, setIsVisible } from "@/redux/FilmsMainPageSlice";
+import { CollectionType } from "@/types/CollectionType";
 
 
 
@@ -19,6 +20,7 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   const comedy = useAppSelector(state => state.filmsMainPage.comedy)
   const drama = useAppSelector(state => state.filmsMainPage.drama)
   const boevik = useAppSelector(state => state.filmsMainPage.boevik)
+  const collections = useAppSelector(state => state.collections.collections)
 
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +81,10 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
     <>
   <SwiperWrapper>
   <SwiperFilms cards={top10} title="Топ 10"/>
+  </SwiperWrapper>
+
+  <SwiperWrapper>
+  <SwiperFilms collections={collections} title="Коллекции"/>
   </SwiperWrapper>
 
   <SwiperWrapper>

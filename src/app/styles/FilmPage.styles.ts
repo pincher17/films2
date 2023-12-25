@@ -117,7 +117,7 @@ export const Description = styled.p`
 `;
 export const SwiperWrapperSimilar = styled.div`
    @media (max-width: 1150px){
-    margin-top: 565px;
+    /* margin-top: 565px; */
   }
 `;
 

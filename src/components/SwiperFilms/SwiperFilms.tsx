@@ -22,8 +22,9 @@ import SkeletonCard from "../SkeletonCard/SkeletonCard";
 import { useAppSelector } from "@/redux/hooks";
 import { Mousewheel, Navigation } from "swiper/modules";
 import { Spinner } from "../spinner/Spinner";
+import CardCollection from "../CardCollection/CardCollection";
 
-const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title }) => {
+const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title, collections }) => {
   const arraySkeletonCards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   /* const onSwiper = (swiper: SwiperClass) => {
@@ -41,7 +42,7 @@ const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title }) => {
 
   return (
     <>
-      {cards.length ? <Title>{title}</Title> : ""}
+      {collections ? <Title>{title}</Title> : cards?.length ? <Title>{title}</Title> : ""}
       <StyledSlider
         cssMode={true}
         mousewheel={true}
@@ -60,8 +61,18 @@ const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title }) => {
         }}
       >
 
+{ collections ? <Wrapper>
+        {collections.map((item) => (
+          <SwiperSlide key={item.id}>
+            <WrapperSlide>
+                <CardCollection CardCollection={item} key={item.id}/>
+            </WrapperSlide>
+          </SwiperSlide>
+        ))}
+      </Wrapper>
+:
 <Wrapper>
-        {cards.length ?
+        {cards?.length ?
         cards.map((item) => (
           <SwiperSlide key={item.id}>
             <WrapperSlide>
@@ -75,7 +86,7 @@ const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title }) => {
             <Spinner strokeWidth={2} />
             </Loader>
         }
-      </Wrapper>
+      </Wrapper>}
     </StyledSlider>
     </>
   )
