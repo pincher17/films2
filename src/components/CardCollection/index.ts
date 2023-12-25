@@ -1,2 +1,2 @@
-export { default } from './Card'
-export * from '../../app/styles/Card.styles'
+export { default } from './CardCollection'
+export * from '../../app/styles/CardCollection.styles'
