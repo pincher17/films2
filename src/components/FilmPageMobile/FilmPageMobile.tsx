@@ -82,7 +82,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         <Description>{filmInfoId?.description}</Description>
 
         <SwiperWrapperSimilar>
-          {filmInfoId?.similarMovies ? (
+          {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
             <>
               <TitleDescription>Похожие</TitleDescription>
               <SwiperFilms cards={filmInfoId?.similarMovies} />
