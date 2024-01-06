@@ -137,7 +137,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         )}
 
         <SwiperWrapperSimilar>
-          {filmInfoId?.similarMovies.length ? (
+          {filmInfoId?.similarMovies ? (
             <>
               <TitleDescription>Похожие</TitleDescription>
               <SwiperFilms cards={filmInfoId?.similarMovies} />
