@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: 'https://filmhub.lol',
+  },
+  other: {
+    hdvb: '0e6fce67751495f8106975f552f21f9a:63c97b2ee9cedb6b8628e6008bebd0f0'
   }
 }
 
