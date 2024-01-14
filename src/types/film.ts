@@ -44,7 +44,7 @@ type ProductionCompaniesType ={
     
 }
 
-type SequelsAndPrequelsType ={
+export type SequelsAndPrequelsType ={
     _id: string
     id: number,
     name: string
@@ -52,6 +52,16 @@ type SequelsAndPrequelsType ={
     alternativeName: string
     type: string
     poster: posterType
+    year: number
+    rating: {
+        _id: string
+        kp: number
+        imdb: number
+        filmCritics: number
+        russianFilmCritics: number
+        await: number
+        }
+    
     }
     
 

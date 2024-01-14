@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useEffect, useRef } from "react";
@@ -10,6 +10,7 @@ import {
   ImgMain,
   ImgWrapFilm,
   ImgWrapperFilm,
+  Strong,
   SwiperWrapperSimilar,
   TitleDescription,
   Wrapper,
@@ -24,12 +25,16 @@ import { getFilmById } from "@/redux/filmInfoSlice";
 import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import translateCategory from "../helpers/translateCategory";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
-  let id = params.id
+  let id = params.id;
   const dispatch = useAppDispatch();
   const filmInfoId = useAppSelector((state) => state.filmInfo.info);
-  const loading = useAppSelector(state => state.loading.loading);
+  const loading = useAppSelector((state) => state.loading.loading);
   const { preview, countries, genres, ratingKinopoisk } = useAppSelector(
     (state) => state.filmInfo
   );
@@ -39,6 +44,11 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     height: 0,
   });
 
+  const [value, setValue] = React.useState("one");
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     const updateScreenResolution = () => {
@@ -76,12 +86,14 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     }, [id]); */
 
   if (resolution.width < 850) {
-    return <FilmPageMobile params={{
-      id
-    }} />;
+    return (
+      <FilmPageMobile
+        params={{
+          id,
+        }}
+      />
+    );
   }
-
-  
 
   return (
     <Wrapper>
@@ -97,22 +109,43 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           <WrapperWatchFilm>
             <div>
               {/* <img itemProp= "image" className={s.img} src={preview} alt={filmInfoId?.name} /> */}
-              {
-                loading 
-                ? <SkeletonImage />  
-                : <ImgWrapperFilm>
-                    <ImgWrapFilm>
-                      <ImgMain src={filmInfoId?.poster.previewUrl} alt={filmInfoId?.name} itemProp="contentUrl" />
-                    </ImgWrapFilm>
-                  </ImgWrapperFilm>
-              }
-              
+              {loading ? (
+                <SkeletonImage />
+              ) : (
+                <ImgWrapperFilm>
+                  <ImgWrapFilm>
+                    <ImgMain
+                      src={filmInfoId?.poster.previewUrl}
+                      alt={filmInfoId?.name}
+                      itemProp="contentUrl"
+                    />
+                  </ImgWrapFilm>
+                </ImgWrapperFilm>
+              )}
             </div>
             <WrapperIframe key={id.toString()}>
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
-              <Iframe
-                src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
+              {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.lol */}
+              {/* https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol */}
+              <Box sx={{ width: "100%" }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  textColor="inherit"
+                  aria-label="secondary tabs example"
+                  TabIndicatorProps={{
+                    style: {
+                      backgroundColor: "#d41515"
+                    }
+                  }}
+                >
+                  <Tab value="one" label="Плеер 1" />
+                  <Tab value="two" label="Плеер 2" />
+                </Tabs>
+              </Box>
+              {value === "one" ? <Iframe
+                src={`https://vb17123filippaaniketos.pw/play/${id}/iframe?d=filmhub.lol`}
                 frameBorder="0"
                 scrolling="no"
                 allowFullScreen
@@ -120,12 +153,25 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 width="500"
                 height="352"
               ></Iframe>
+              : <Iframe
+              src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
+              frameBorder="0"
+              scrolling="no"
+              allowFullScreen
+              referrerPolicy="origin"
+              width="500"
+              height="352"
+            ></Iframe>
+            }
+            <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
             </WrapperIframe>
           </WrapperWatchFilm>
-          {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <Trailer src={`${filmInfoId?.videos.trailers[0].url}`}/>  : ''}
+          {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? (
+            <Trailer src={`${filmInfoId?.videos.trailers[0].url}`} />
+          ) : (
+            ""
+          )}
         </WrapperInfo>
-
-        
 
         {resolution.width > 1150 || resolution.width < 850 ? (
           <>
@@ -135,6 +181,17 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         ) : (
           ""
         )}
+
+    <SwiperWrapperSimilar>
+          {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
+            <>
+              <TitleDescription>Сиквелы и приквелы</TitleDescription>
+              <SwiperFilms cards={filmInfoId?.sequelsAndPrequels} />
+            </>
+          ) : (
+            ""
+          )}
+        </SwiperWrapperSimilar>
 
         <SwiperWrapperSimilar>
           {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
@@ -150,5 +207,4 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       </LayoutFilm>
     </Wrapper>
   );
-};
-
+}

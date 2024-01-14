@@ -94,6 +94,7 @@ export const Film = styled.div`
 export const WrapperIframe = styled.div`
   width: 100%;
   height: 533px;
+  margin-top: -15px;
 `;
 export const iframe = styled.div`
   position: absolute !important;
@@ -103,7 +104,7 @@ export const iframe = styled.div`
 export const TitleDescription = styled.div`
   font-size: 28px;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 80px;
 `;
 export const Description = styled.p`
   margin-top: 15px;
@@ -121,6 +122,16 @@ export const SwiperWrapperSimilar = styled.div`
   }
 `;
 
+export const Strong = styled.strong`
+  margin-left: 10px;
+  @media (max-width: 850px){
+    position: relative;
+    margin-left: 0px;
+    padding-bottom: 10px;
+    z-index: 3;
+    color: #666666;
+  }
+`;
 
 export const Iframe = styled.iframe<IframeProps>`
  width: 100% !important;

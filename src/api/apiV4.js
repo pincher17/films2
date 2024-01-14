@@ -20,4 +20,11 @@ export const filmsApiV4 = {
             return response;
         })
     },
+    getFilmSearchV4(query, page = 1){
+        /* return instance.get(`movie?search=${query}&field=name&limit=10&isStrict=false&sortField=votes.imdb&sortType=-1&token=${TOKEN}`) */
+        return instance.get(`movie/search?page=${page}&limit=10&query=${query}`)
+        .then(response =>{
+            return response;
+        })
+    },
 }

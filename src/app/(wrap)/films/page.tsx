@@ -101,6 +101,10 @@ export default function Films(){
       setIsOpenSidebar(!isOpenSidebar);
     };
 
+    const searchGenreOne = () => {
+      return filtres.genre[0].label
+    };
+
   
   return (
    <>
@@ -108,7 +112,7 @@ export default function Films(){
     <Wrapper>
       <WrapperNameBlock>
         <div>
-          <NameBlock>{isGenreValid && searchGenre ? searchGenre.charAt(0).toUpperCase() + searchGenre.slice(1) : 'Все фильмы'}</NameBlock>
+          <NameBlock>{filtres.genre.length == 1  ? searchGenreOne().charAt(0).toUpperCase() + searchGenreOne().slice(1) : 'Все фильмы'}</NameBlock>
         </div>
         <FilterIcon onClick={toggleSidebar}>
           <FilterIcon7 />

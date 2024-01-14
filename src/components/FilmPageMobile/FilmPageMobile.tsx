@@ -23,6 +23,8 @@ import TrailerMobileWatch from "../TrailerMobileWatch/TrailerMobileWatch";
 import SkeletonImage from "../SkeletonImage/SkeletonImage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
+import { Strong } from "@/app/styles/FilmPage.styles";
+import translateCategory from "../helpers/translateCategory";
 
 export default function FilmPageMobile({ params }: { params: { id: number } }) {
   let id = params.id
@@ -78,8 +80,20 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         </WrapperInfo>
         <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
+        <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
         <TitleDescription>Описание:</TitleDescription>
         <Description>{filmInfoId?.description}</Description>
+
+        <SwiperWrapperSimilar>
+          {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
+            <>
+              <TitleDescription>Сиквелы и приквелы</TitleDescription>
+              <SwiperFilms cards={filmInfoId?.sequelsAndPrequels} />
+            </>
+          ) : (
+            ""
+          )}
+        </SwiperWrapperSimilar>
 
         <SwiperWrapperSimilar>
           {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (

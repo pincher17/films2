@@ -17,7 +17,7 @@ export type initialStateFiltersType ={
      year: number[]
      rating: number[]
      sortByRelease: string
-     genre: string[]
+     genre: any[]
      typeOfMovies: MovieType[]
      selectedTypeOfMovies: string[]
      updateGenre: boolean
