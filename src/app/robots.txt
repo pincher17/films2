@@ -1,4 +1,2 @@
 User-Agent: *
-Allow: /
-Disallow: /private/
-Sitemap: https://www.filmhub.lol/sitemap.xml
+Disallow: /
