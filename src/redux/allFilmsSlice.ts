@@ -3,6 +3,7 @@ import { filmsApi } from '../api/api';
 import { ArrayFilmsType, FilmsType } from '../types/FilmsType';
 import { initialStateFiltersType } from './filtersSlice';
 import { setLoading, setLoadingFilters } from './Loading';
+import { filmsApiV4 } from '../api/apiV4';
 
 type initialStateType ={
     films: Array<FilmsType>
@@ -44,11 +45,16 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
     return (dispatch: any) => {
 
         dispatch(setLoading(true))
-        filmsApi.getFilms(filters, page).then((response: any) =>{
+        filmsApiV4.getFilms(filters, page).then((response: any) =>{
             
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
+            console.log(response)
     })
+    .catch((error: any) => {
+       console.log(error)
+        
+    });
     }
 }
 
@@ -56,11 +62,16 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
     return (dispatch: any) => {
 
         dispatch(setLoadingFilters(true))
-        filmsApi.getFilms(filters, page, genre).then((response: any) =>{
+        filmsApiV4.getFilms(filters, page, genre).then((response: any) =>{
             
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
+            console.log(response)
     })
+    .catch((error: any) => {
+        console.log(error)
+         
+     });
     }
 }
 

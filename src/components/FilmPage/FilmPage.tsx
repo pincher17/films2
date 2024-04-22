@@ -144,7 +144,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   <Tab value="two" label="Плеер 2" />
                 </Tabs>
               </Box>
-              {value === "one" ? <Iframe
+              {value === "two" ? <Iframe
                 src={`https://vb17123filippaaniketos.pw/play/${id}/iframe?d=filmhub.lol`}
                 frameBorder="0"
                 scrolling="no"

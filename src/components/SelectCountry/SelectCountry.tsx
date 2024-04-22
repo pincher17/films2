@@ -6,7 +6,7 @@ import { useAppSelector } from '@/redux/hooks';
 
 const allCountry = [  { value: '', label: 'Все', id: 1 },
 { value: '&countries.name=Беларусь&countries.name=Казахстан&countries.name=Украина&countries.name=СССР&countries.name=Россия', label: 'Русские', id: 2 },
-{ value: `&countries.name=!Беларусь&countries.name=!Казахстан&countries.name=!Украина&countries.name=!СССР&countries.name=!Россия`, label: 'Зарубежные', id: 3 },]
+{ value: `&countries.name=!Беларусь&countries.name=!Казахстан&countries.name=!Украина&countries.name=!СССР&countries.name=!Россия&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`, label: 'Зарубежные', id: 3 },]
 
 
 const SelectCountry: React.FC<MultipleSelectProps> = ({onChange}) => {

@@ -98,7 +98,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
                 title='Год'
                 integer={true}
                 min={1960}
-                max={2023}
+                max={2024}
                 step={1}
                 defaulFirstValue={filters.year[0]}
                 defaulSecondValue={filters.year[1]}
