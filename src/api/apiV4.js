@@ -5,7 +5,7 @@ export const instance = axios.create({
     baseURL: 'https://api.kinopoisk.dev/v1.4/',
     headers: {
         'accept': 'application/json',
-        'X-API-KEY': '',
+        'X-API-KEY': 'XR49Z74-EYEMXHC-K3763BK-VPTYA9M',
       }
 })
 
