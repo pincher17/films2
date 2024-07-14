@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable jsx-a11y/iframe-has-title */
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import {
@@ -29,6 +29,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import translateCategory from "../helpers/translateCategory";
+import Turnstile from "../Turnstile/Turnstile";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -75,6 +76,50 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     refDataFilm.current?.setAttribute("data-kinopoisk", `${id}`);
   }, [id, resolution.width]);
 
+  ///////////////////////////////////////
+  //////////////////////////////////////
+  const [token, setToken] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
+
+ /*  useEffect(() => {
+    setIsVerified(false); // Reset verification status when component mounts
+    setToken(null); // Reset token when component mounts
+  }, [id]); */
+
+  useEffect(() => {
+    // Check if the user is already verified in session storage
+    const verifiedStatus = sessionStorage.getItem('isVerified');
+    if (verifiedStatus === 'true') {
+      setIsVerified(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      const handleVerification = async () => {
+        const response = await fetch('/api/verify-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          setIsVerified(true);
+          sessionStorage.setItem('isVerified', 'true'); // Store verification status in session storage
+        } else {
+          alert('Verification failed. Please try again.');
+        }
+      };
+
+      handleVerification();
+    }
+  }, [token]);
+///////////////////////////////////////
+  //////////////////////////////////////
+
   /*   useEffect(() => {
     const script = document.createElement("script");
     //script.src = "//yohoho.cc/yo.js";
@@ -87,15 +132,25 @@ export default function FilmPage({ params }: { params: { id: number } }) {
 
   if (resolution.width < 850) {
     return (
+      <>
+    {!isVerified ? (
+      <Turnstile onToken={setToken} />
+    ) : (
       <FilmPageMobile
         params={{
           id,
         }}
       />
+    )}
+      </>
     );
   }
 
   return (
+    <>
+    {!isVerified ? (
+      <Turnstile onToken={setToken} />
+    ) : (
     <Wrapper>
       <LayoutFilm>
         <WrapperInfo>
@@ -206,5 +261,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         <Bottom />
       </LayoutFilm>
     </Wrapper>
+    )}
+    </>
   );
 }

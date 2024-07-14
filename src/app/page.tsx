@@ -1,7 +1,7 @@
 'use client'
 import s from './page.module.css';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getnewFilmsThunk } from '@/redux/newFilmsSlice';
 import SwiperMainPage from '@/components/SwiperMainPage/SwiperMainPage';
 import Header from '@/components/Header/Header';
@@ -11,8 +11,11 @@ import MobileNavigation from '@/components/MobileNavigation/MobileNavigation';
 import AllBlur from '@/components/AllBlur/AllBlur';
 import { H1 } from './Main.styles';
 import SwiperGenres from '@/components/SwiperGenres/SwiperGenres';
+import Turnstile from '@/components/Turnstile/Turnstile';
 
 export default function Home() {
+
+  
 
   /* const loading = useAppSelector((state) => state.loading.loading); */
   /* const films = useAppSelector(state => state.newFilms.films); */
@@ -44,27 +47,37 @@ export default function Home() {
     }, []);
 
   return (
-   <>
-   <AllBlur />
-    <Header />
-    <MainTag>
-      <div className={s.wrapper}>
-{/*         <div className={s.wrapper_name_block}>
+    <>
+   {/*  {!isVerified ? (
+        <Turnstile onToken={setToken} />
+      ) : ( */}
+        <>
+      <AllBlur />
+      <Header />
+      <MainTag>
+        <div className={s.wrapper}>
+          {/*         <div className={s.wrapper_name_block}>
                 <div>
                     <Link href="/films" className={s.btn}>
                         Все фильмы
                     </Link>
                 </div>
         </div> */}
-    <SwiperGenres />
-    <SwiperMainPage />
-    </div>
-    <H1>Смотрите новинки кино и сериалов в онлайн кинотеатре Filmhub</H1>
-        <p>Добро пожаловать на Filmhub – ваш персональный онлайн кинотеатр новинок кино и сериалов! 
-            Мы предлагаем широкий выбор фильмов в высоком качестве, чтобы вы могли насладиться увлекательными 
-            историями и захватывающими приключениями. Filmhub - ваш путь к захватывающему миру кино развлечений.</p>
-    </MainTag>
-    <MobileNavigation />
+          <SwiperGenres />
+          <SwiperMainPage />
+        </div>
+        <H1>Смотрите новинки кино и сериалов в онлайн кинотеатре Filmhub</H1>
+        <p>
+          Добро пожаловать на Filmhub – ваш персональный онлайн кинотеатр
+          новинок кино и сериалов! Мы предлагаем широкий выбор фильмов в высоком
+          качестве, чтобы вы могли насладиться увлекательными историями и
+          захватывающими приключениями. Filmhub - ваш путь к захватывающему миру
+          кино развлечений.
+        </p>
+      </MainTag>
+      <MobileNavigation />
+      </>
+    {/* )} */}
     </>
-  )
+  );
 }

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 
 module.exports = {
+  env: {
+    apiKey: process.env.API_KEY,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
