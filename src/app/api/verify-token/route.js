@@ -10,7 +10,7 @@ export async function POST(request) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      secret: '1x0000000000000000000000000000000AA',
+      secret: '0x4AAAAAAAfAe0VZQfNQh2Yoynnl8EBmYSg',
       response: token,
     }),
   });

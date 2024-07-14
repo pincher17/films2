@@ -6,7 +6,7 @@ const Turnstile = ({ onToken }) => {
   useEffect(() => {
     window.onloadTurnstileCallback = function () {
       turnstile.render('#turnstile-container', {
-        sitekey: '1x00000000000000000000AA',
+        sitekey: '0x4AAAAAAAfAe96j8ui0t8hW',
         callback: function (token) {
           console.log(`Challenge Success ${token}`);
           onToken(token);
