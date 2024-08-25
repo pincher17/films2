@@ -34,7 +34,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   const { preview, countries, genres, ratingKinopoisk } = useAppSelector(
     (state) => state.filmInfo
   );
-  /* const refDataFilm = useRef<HTMLInputElement | null>(null); */
+ 
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
