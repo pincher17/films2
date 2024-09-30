@@ -5,6 +5,8 @@ import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getBoevik, getComedy, getDrama, getFilmsThunk, getFilmsTop10, getSeries, getThriller, setIsVisible } from "@/redux/FilmsMainPageSlice";
 import { CollectionType } from "@/types/CollectionType";
+import { allStudios } from "@/data/AllStudios";
+import SwiperStudios from "../SwiperStudios/SwiperStudios";
 
 
 
@@ -79,7 +81,11 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
     
   return (
     <>
-      <SwiperWrapper>
+  <SwiperWrapper>
+    <SwiperStudios collections={allStudios} title="Студии"/>
+  </SwiperWrapper>
+
+  <SwiperWrapper>
   <SwiperFilms collections={collections} title="Коллекции"/>
   </SwiperWrapper>
   

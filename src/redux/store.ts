@@ -10,6 +10,8 @@ import filmsMainPageSlice from './FilmsMainPageSlice';
 import Footer from './Footer';
 import AllCollections from "./AllCollections";
 import Collection from "./Collection";
+import filtersStudios from "./filtersStudios";
+import allFilmsStudio from "./allFilmsStudio";
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +19,9 @@ export const store = configureStore({
   filmInfo: filmInfo,
   search: searchSlice,
   filters: filtersSlice,
+  filtersStudios: filtersStudios,
   allFilms: allFilmsSlice,
+  allFilmsStudio: allFilmsStudio,
   widthDevice: widthDeviceSlice,
   loading: Loading,
   footer: Footer,

@@ -37,4 +37,11 @@ export const filmsApiV4 = {
             return response;
         })
     },
+    getFilmsStudio(filters, page, nameStudio){
+        const genreToUse = filters.genres;
+        return instance.get(`movie?page=${page}&limit=40&networks.items.name=${nameStudio}&sortField=year&sortType=-1&type=${filters.selectedTypeOfMovies.map((item) => `&typeNumber=${item}&`).join('')}${genreToUse.length ? genreToUse.map((item) => `&genres.name=${item.value}&`).join('') : '&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых'}&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&field=poster&search=!null${filters.country.value ? filters.country.value : `&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`}`)
+        .then(response =>{
+            return response;
+        })
+    },
 }
