@@ -49,10 +49,10 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
             
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
-            console.log(response)
+            /* console.log(response) */
     })
     .catch((error: any) => {
-       console.log(error)
+       /* console.log(error) */
         
     });
     }
@@ -66,10 +66,10 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
             
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
-            console.log(response)
+            /* console.log(response) */
     })
     .catch((error: any) => {
-        console.log(error)
+        /* console.log(error) */
          
      });
     }
