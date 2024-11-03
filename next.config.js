@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 
-module.exports = {
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+});
+
+module.exports = withPWA({
   env: {
     apiKey: process.env.API_KEY,
   },
@@ -17,14 +23,13 @@ module.exports = {
   },
   reactStrictMode: false,
   compiler: {
-    // Enables the styled-components SWC transform
-    styledComponents: true
+    styledComponents: true,
   },
-    webpack(config) {
-      config.module.rules.push({
-        test: /\.svg$/,
-        use: ["@svgr/webpack"],
-      })
-      return config;
-    }
-  };
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
+    return config;
+  },
+});
