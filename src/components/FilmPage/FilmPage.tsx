@@ -30,6 +30,7 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import translateCategory from "../helpers/translateCategory";
 import Turnstile from "../Turnstile/Turnstile";
+import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -199,17 +200,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   <Tab value="two" label="Плеер 2" />
                 </Tabs>
               </Box>
-              {value === "two" ? <Iframe
-                src={`https://vb17123filippaaniketos.pw/play/${id}/iframe?d=filmhub.lol`}
-                frameBorder="0"
-                scrolling="no"
-                allowFullScreen
-                referrerPolicy="origin"
-                width="500"
-                height="352"
-              ></Iframe>
+              {value === "two" ? <KinoboxPlayer kpId={id} />
               : <Iframe
-              src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
+              src={`https://ugly-turkey.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
               frameBorder="0"
               scrolling="no"
               allowFullScreen
@@ -261,7 +254,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         <Bottom />
       </LayoutFilm>
     </Wrapper>
-    )}
+     )} 
     </>
   );
 }

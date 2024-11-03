@@ -7,6 +7,7 @@ import { Line1, Line2 } from "@/app/styles/AllFilmsPage.styles";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
   const dispatch = useAppDispatch()
@@ -46,7 +47,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
         </CrossIconFilm>
       <WrapperIframeMobile key={id.toString()}>
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
-             {value === "two" ? <Iframe src={`https://vb17123filippaaniketos.pw/play/${id}/iframe?d=filmhub.lol`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
+             {value === "two" ? <KinoboxPlayer kpId={id} />
              : <Iframe src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
              }
               <Box sx={{ width: "100%" }}>

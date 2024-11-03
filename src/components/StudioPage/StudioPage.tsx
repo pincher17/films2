@@ -147,6 +147,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
       dispatch(setFilters(initialFilters))
       dispatch(setPage(1));
       dispatch(getAllFilmsFiltersThunk(initialFilters, 1, nameStudio));
+
     } else {
       return;
     }
@@ -190,7 +191,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
               <Line1 />
               <Line2 />
             </CrossIcon>
-            {<FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
+            <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
           </Sidebar>
           <Cards cards={films} />
           <WrapperButtonShowMore>
