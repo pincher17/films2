@@ -35,7 +35,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
               <head>
-              <link rel="manifest" href="/manifest.json" />
+              <link
+          rel="manifest"
+          crossOrigin="use-credentials"
+          href="%PUBLIC_URL%/manifest.json"
+        />
           <script
             dangerouslySetInnerHTML={{
               __html: `
