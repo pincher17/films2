@@ -175,14 +175,17 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     }
   }, [films]);
 
-  // смена фильтров — начинаем с первой страницы
+  // redux-страница сбрасывается при смене фильтров — тогда начинаем счёт заново
   useEffect(() => {
-    loadedPageRef.current = 1;
-  }, [filtres]);
+    if (page === 1) loadedPageRef.current = 1;
+  }, [page]);
 
   const showMore = () => {
-    const pageToLoad = loadedPageRef.current + 1;
+    // максимум из ref и redux: защищает и от повторного запроса в одном тике,
+    // и от обнуления счётчика
+    const pageToLoad = Math.max(loadedPageRef.current, page) + 1;
     loadedPageRef.current = pageToLoad;
+    console.log("[fh] запрашиваю страницу", pageToLoad, "| в списке карточек:", films.length);
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad, filtres.nameStudio));
   };
@@ -225,7 +228,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
           <InfiniteScroll
             count={films.length}
             onLoad={showMore}
-            disabled={allLoaded || loadingFilters}
+            disabled={allLoaded || loadingFilters || films.length === 0}
           />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
