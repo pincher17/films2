@@ -151,6 +151,15 @@ const Poster = styled.div`
   }
 `;
 
+/** Плеер: в реальной вёрстке это блок 16:9 сразу после героя (id="fh-player") */
+const PlayerBlock = styled.div`
+  ${block};
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: 12px;
+  margin-top: 8px;
+`;
+
 const Section = styled.div`
   margin-top: 84px;
 `;
@@ -205,6 +214,7 @@ const FilmSkeleton: React.FC = () => (
       </HeroText>
       <Poster />
     </Hero>
+    <PlayerBlock />
     <Section>
       <SectionTitle />
       <Cards>
