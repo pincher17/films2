@@ -70,8 +70,7 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
 
         filmsApiV4.getFilmsStudio(filters, page, nameStudio).then((response: any) =>{
             
-            // применяем только самый свежий запрос той же выборки
-            if (requestId !== latestRequest) return;
+            // дозагрузка применяется только к своей выборке
             if (signature !== currentSignature) return;
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
@@ -90,12 +89,17 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersStudioType, 
 
         dispatch(setLoadingFilters(true))
         const requestId = ++latestRequest;
-        currentSignature = makeSignature(filters);
+        const signature = makeSignature(filters);
+        currentSignature = signature;
 
         filmsApiV4.getFilmsStudio(filters, page, nameStudio).then((response: any) =>{
             
             // применяем только самый свежий запрос
             if (requestId !== latestRequest) return;
+            // применяем, только если эта выборка всё ещё актуальна:
+            // иначе устаревший ответ затрёт список текущих фильтров
+            if (currentSignature !== signature) return;
+
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
             console.log(response)
