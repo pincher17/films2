@@ -14,7 +14,7 @@ export const Hero = styled.div`
   padding-top: 40px;
   margin-bottom: 36px;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
   gap: 48px;
 
@@ -24,6 +24,9 @@ export const Hero = styled.div`
 `;
 
 export const HeroText = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   max-width: 760px;
   min-width: 0;
 `;
@@ -31,6 +34,7 @@ export const HeroText = styled.div`
 /* главная обложка фильма в херо */
 export const HeroPoster = styled.div`
   flex: 0 0 300px;
+  align-self: flex-start;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -88,7 +92,9 @@ export const HeroFacts = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px 14px;
-  margin-top: 18px;
+  margin-top: auto;
+  padding-top: 22px;
+  margin-bottom: 6px;
   font-size: 14px;
   max-width: 660px;
   color: rgba(255, 255, 255, 0.5);
