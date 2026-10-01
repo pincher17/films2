@@ -91,13 +91,31 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
         const requestId = ++latestRequest;
         const signature = makeSignature(filters);
         currentSignature = signature;
+        console.log("[fh] применяю фильтры", {
+          page,
+          types: (filters as any)?.selectedTypeOfMovies,
+          country: (filters as any)?.country?.value ?? (filters as any)?.country,
+          sort: (filters as any)?.sortBy,
+          genres: ((filters as any)?.genre || []).map((g: any) => g?.value),
+        });
 
         filmsApiV4.getFilms(filters, page, genre).then((response: any) =>{
             
             // применяем, только если эта выборка всё ещё актуальна:
             // иначе устаревший ответ затрёт список текущих фильтров
-            if (currentSignature !== signature) return;
+            if (currentSignature !== signature) {
+              console.log("[fh] ответ отброшен: фильтры уже другие");
+              return;
+            }
 
+            console.log("[fh] список заменён", {
+              пришло: response.data.docs.length,
+              первый: response.data.docs[0]?.name,
+              год: response.data.docs[0]?.year,
+              типов: Array.from(
+                new Set(response.data.docs.map((d: any) => d.type))
+              ),
+            });
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
             /* console.log(response) */
