@@ -9,6 +9,14 @@ import {
   BackdropImage,
   BackdropShade,
   Description,
+  Hero,
+  HeroButton,
+  HeroButtons,
+  HeroDot,
+  HeroMeta,
+  HeroScore,
+  HeroTitle,
+  PosterBlock,
   Iframe,
   ImgMain,
   ImgWrapFilm,
@@ -32,6 +40,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import translateCategory from "../helpers/translateCategory";
+import roundNumber from "../helpers/rounding";
 import Turnstile from "../Turnstile/Turnstile";
 import { isTurnstileDisabled } from "../Turnstile/turnstileConfig";
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
@@ -172,6 +181,53 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         </Backdrop>
       ) : null}
       <LayoutFilm>
+        {filmInfoId?.name ? (
+          <Hero>
+            <HeroTitle itemProp="name">{filmInfoId.name}</HeroTitle>
+            <HeroMeta>
+              {filmInfoId.year ? <span>{filmInfoId.year}</span> : null}
+              {ratingKinopoisk ? (
+                <>
+                  <HeroDot />
+                  <HeroScore>{roundNumber(ratingKinopoisk, 1)}</HeroScore>
+                </>
+              ) : null}
+              {filmInfoId.movieLength ? (
+                <>
+                  <HeroDot />
+                  <span>{filmInfoId.movieLength} мин</span>
+                </>
+              ) : null}
+              {genres.length ? (
+                <>
+                  <HeroDot />
+                  <span>{genres.slice(0, 3).map((genre: any) => genre.name).join(", ")}</span>
+                </>
+              ) : null}
+            </HeroMeta>
+            <HeroButtons>
+              <HeroButton
+                $primary
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("fh-player")
+                    ?.scrollIntoView({ behavior: "smooth", block: "center" })
+                }
+              >
+                ▶ Смотреть
+              </HeroButton>
+              {filmInfoId?.videos?.trailers?.[0] ? (
+                <HeroButton
+                  type="button"
+                  onClick={() => window.open(filmInfoId.videos.trailers[0].url, "_blank")}
+                >
+                  Трейлер
+                </HeroButton>
+              ) : null}
+            </HeroButtons>
+          </Hero>
+        ) : null}
         <WrapperInfo>
           <FilmInfoText
             countries={countries}
@@ -181,23 +237,25 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             resolution={resolution}
           />
           <WrapperWatchFilm>
-            <div>
-              {/* <img itemProp= "image" className={s.img} src={preview} alt={filmInfoId?.name} /> */}
-              {loading ? (
-                <SkeletonImage />
-              ) : (
-                <ImgWrapperFilm>
-                  <ImgWrapFilm>
-                    <ImgMain
-                      src={filmInfoId?.poster.previewUrl}
-                      alt={filmInfoId?.name}
-                      itemProp="contentUrl"
-                    />
-                  </ImgWrapFilm>
-                </ImgWrapperFilm>
-              )}
-            </div>
-            <WrapperIframe key={id.toString()}>
+            <PosterBlock>
+              <div>
+                {/* <img itemProp= "image" className={s.img} src={preview} alt={filmInfoId?.name} /> */}
+                {loading ? (
+                  <SkeletonImage />
+                ) : (
+                  <ImgWrapperFilm>
+                    <ImgWrapFilm>
+                      <ImgMain
+                        src={filmInfoId?.poster.previewUrl}
+                        alt={filmInfoId?.name}
+                        itemProp="contentUrl"
+                      />
+                    </ImgWrapFilm>
+                  </ImgWrapperFilm>
+                )}
+              </div>
+            </PosterBlock>
+            <WrapperIframe key={id.toString()} id="fh-player">
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
               {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.lol */}

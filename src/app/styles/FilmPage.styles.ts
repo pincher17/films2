@@ -8,13 +8,87 @@ export const Wrapper = styled.div`
 `;
 
 /* Большой фон страницы фильма: бэкдроп из TMDB, если его нет — постер в блюре */
+/* ───────── Netflix-херо ───────── */
+export const Hero = styled.div`
+  position: relative;
+  padding-top: 40px;
+  margin-bottom: 28px;
+  max-width: 780px;
+
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;
+
+export const HeroTitle = styled.h1`
+  font-size: 56px;
+  line-height: 1.05;
+  font-weight: 800;
+  margin: 0 0 14px;
+  color: #fff;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.75);
+`;
+
+export const HeroMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 20px;
+`;
+
+export const HeroScore = styled.span`
+  color: #46d369;
+  font-weight: 700;
+`;
+
+export const HeroDot = styled.span`
+  &::before {
+    content: "•";
+  }
+`;
+
+export const HeroButtons = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+export const HeroButton = styled.button<{ $primary?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+  background: ${(props) => (props.$primary ? "#ffffff" : "rgba(109, 109, 110, 0.7)")};
+  color: ${(props) => (props.$primary ? "#000" : "#fff")};
+
+  &:hover {
+    background: ${(props) => (props.$primary ? "#e6e6e6" : "rgba(109, 109, 110, 0.45)")};
+    transform: translateY(-1px);
+  }
+`;
+
+/* постер-карточка на десктопе больше не нужен — данные ушли в херо */
+export const PosterBlock = styled.div`
+  @media (min-width: 851px) {
+    display: none;
+  }
+`;
+
 export const Backdrop = styled.div`
   position: absolute;
   top: -120px;
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 660px;
+  height: 780px;
   overflow: hidden;
   pointer-events: none;
   z-index: -1;
@@ -68,6 +142,7 @@ export const WrapperInfo = styled.div`
 export const WrapperWatchFilm = styled.div`
   display: flex;
   position: relative;
+  flex-direction: column;
   @media (max-width: 1150px){
     display: initial;
     position: initial;
