@@ -94,8 +94,6 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
 
         filmsApiV4.getFilms(filters, page, genre).then((response: any) =>{
             
-            // применяем только самый свежий запрос
-            if (requestId !== latestRequest) return;
             // применяем, только если эта выборка всё ещё актуальна:
             // иначе устаревший ответ затрёт список текущих фильтров
             if (currentSignature !== signature) return;
