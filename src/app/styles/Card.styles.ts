@@ -5,8 +5,47 @@ export const Wrapper = styled.div`
   overflow: hidden;
 `
 
+/**
+ * Наведение на карточку: постер плавно приближается и чуть светлеет,
+ * по краю проявляется тонкая рамка, название становится белым.
+ *
+ * Важно: трансформируется только картинка ВНУТРИ обрезанного контейнера,
+ * поэтому в слайдерах (Swiper) размеры слайда не меняются и ничего не «прыгает».
+ */
 export const ImgWrapper = styled.div`
   position: relative;
+
+  img {
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.3, 1), filter 0.45s ease,
+      box-shadow 0.3s ease;
+    will-change: transform;
+  }
+
+  p {
+    transition: color 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.06);
+    filter: brightness(1.08);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+  }
+
+  &:hover p {
+    color: #fff;
+  }
+
+  /* на тач-устройствах «залипание» ховера не нужно */
+  @media (hover: none) {
+    &:hover img {
+      transform: none;
+      filter: none;
+      box-shadow: none;
+    }
+    &:hover p {
+      color: inherit;
+    }
+  }
 `
 
 export const Img = styled.img`
@@ -61,6 +100,8 @@ export const Year = styled.div`
 `
 export const ImgWrap = styled.div`
   position: relative;
+  overflow: hidden;
+  border-radius: 15px;
   &::after {
     display: block;
     content: '';
