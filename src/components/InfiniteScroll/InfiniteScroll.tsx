@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Автоподгрузка следующей страницы, когда пользователь долистал до низа.
+ * Автоподгрузка следующей страницы при долистывании до низа.
  *
- * Ставится рядом с кнопкой «Показать ещё»: кнопка остаётся (доступность,
- * поисковики, ручное управление), а лента подгружается сама за 400px до конца.
- *
- * Защита от повторов: пока не изменилось количество карточек, повторный запрос
- * не уходит — иначе при пустой выдаче был бы бесконечный цикл.
+ * Важный момент: IntersectionObserver срабатывает только на ПЕРЕХОДЕ в зону
+ * видимости. Если после подгрузки маячок остался на экране (или пользователь
+ * быстро долистал), перехода нет, и загрузка больше не запускается. Поэтому
+ * здесь два механизма: observer для мгновенной реакции и проверка позиции
+ * при скролле и после каждой загрузки.
  */
 
 import React, { useEffect, useRef } from "react";
@@ -17,43 +17,62 @@ type Props = {
   count: number;
   /** Загрузить следующую страницу */
   onLoad: () => void;
-  /** Выключить автоподгрузку (например, всё загружено) */
+  /** Выключить автоподгрузку (всё загружено или идёт смена фильтров) */
   disabled?: boolean;
 };
+
+const MARGIN = 400;
 
 const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
   const sentinel = useRef<HTMLDivElement | null>(null);
   const lastCount = useRef(count);
   const waiting = useRef(false);
-  // функция загрузки меняется на каждом рендере — держим её в ref,
-  // иначе observer пересоздавался и мог пропустить срабатывание
+
+  // колбэки меняются на каждом рендере — держим их в ref
   const loadRef = useRef(onLoad);
   loadRef.current = onLoad;
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
 
-  // как только пришли новые карточки — снимаем блокировку
+  const tryLoad = () => {
+    const node = sentinel.current;
+    if (!node || disabledRef.current || waiting.current) return;
+
+    const rect = node.getBoundingClientRect();
+    if (rect.top > window.innerHeight + MARGIN) return;
+
+    waiting.current = true;
+    loadRef.current();
+  };
+
+  // после каждой загрузки: если маячок всё ещё виден — грузим следующую порцию
   useEffect(() => {
     if (count !== lastCount.current) {
       lastCount.current = count;
       waiting.current = false;
     }
-  }, [count]);
+    if (!disabled) tryLoad();
+  }, [count, disabled]);
 
   useEffect(() => {
     const node = sentinel.current;
-    if (!node || disabled) return;
+    if (!node) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0]?.isIntersecting || waiting.current) return;
-        waiting.current = true;
-        loadRef.current();
-      },
-      { rootMargin: "400px 0px" }
-    );
-
+    const observer = new IntersectionObserver(() => tryLoad(), {
+      rootMargin: `${MARGIN}px 0px`,
+    });
     observer.observe(node);
-    return () => observer.disconnect();
-  }, [disabled]);
+
+    const onScroll = () => tryLoad();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   if (disabled) return null;
 
