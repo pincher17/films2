@@ -157,7 +157,9 @@ const PlayerBlock = styled.div`
   width: 100%;
   height: 533px;
   border-radius: 12px;
-  margin-top: -15px;
+  // в реальной вёрстке отступ отрицательный, но там герой ниже обложки;
+  // в скелетоне опускаем блок под серую границу фона
+  margin-top: 28px;
 
   @media (max-width: 1150px) {
     height: 420px;
