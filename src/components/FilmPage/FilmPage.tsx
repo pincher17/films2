@@ -273,7 +273,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     {!isVerified ? (
       <Turnstile onToken={setToken} />
     ) : (
-    <Wrapper>
+    <Wrapper key={id}>
       {heroImage ? (
         <Backdrop>
           <BackdropImage src={heroImage} alt="" $blurred={heroBlurred} />

@@ -9,7 +9,7 @@ const fadeIn = keyframes`
 `;
 
 export const Wrapper = styled.div`
-  animation: ${fadeIn} 0.22s ease;
+  animation: ${fadeIn} 0.3s ease;
   position: relative;
   z-index: 1;
 `;
