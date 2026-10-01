@@ -290,14 +290,14 @@ export default function FilmPage({ params }: { params: { id: number } }) {
 
   return (
     <>
-    {!isVerified ? (
-      <Turnstile onToken={setToken} />
-    ) : (
     {coverVisible && (
       <SkeletonCover $fading={coverFading}>
         <FilmSkeleton />
       </SkeletonCover>
     )}
+    {!isVerified ? (
+      <Turnstile onToken={setToken} />
+    ) : (
     <Wrapper key={id}>
       {heroImage ? (
         <Backdrop>
