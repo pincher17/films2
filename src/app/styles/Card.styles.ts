@@ -19,17 +19,34 @@ export const Img = styled.img`
   background-color: #424242;
 `
 
-export const Rating = styled.div`
+/**
+ * Цвет бейджа зависит от рейтинга: 4 ступени + нейтральный.
+ * Смысл — понять уровень оценки, не читая цифру.
+ */
+export const Rating = styled.div<{ $tier?: string }>`
   width: 44px;
   height: 29px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(59,179,59);
   border-radius: 15px;
   position: absolute;
   top: 5px;
   left: 5px;
+  background-color: ${(props) => {
+    switch (props.$tier) {
+      case "top":
+        return "#219653"; // 8.0 и выше — зелёный
+      case "good":
+        return "#6f9c1b"; // 7.0–7.9 — салатовый
+      case "mid":
+        return "#d98324"; // 6.0–6.9 — оранжевый
+      case "low":
+        return "#c0392b"; // ниже 6.0 — красный
+      default:
+        return "rgba(30, 30, 30, 0.85)"; // рейтинга нет — нейтральный
+    }
+  }};
 `
 export const RatingNum = styled.span`
   color: white;

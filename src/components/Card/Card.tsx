@@ -22,6 +22,17 @@ const {
     ratingKp = roundNumber(rating.kp, 1)
   }
 
+  // ступень рейтинга для цвета бейджа
+  const ratingTier = !ratingKp
+    ? "none"
+    : ratingKp >= 8
+    ? "top"
+    : ratingKp >= 7
+    ? "good"
+    : ratingKp >= 6
+    ? "mid"
+    : "low";
+
     return (
     <Wrapper key={id}>
             <Link href={name ? `/film/${id}-${textTransform(name)}${year ? '-'+year : ''}` : `/film/${id}`}>
@@ -37,7 +48,7 @@ const {
              />}
             </ImgWrap>
             {ratingKp &&
-            <Rating>
+            <Rating $tier={ratingTier}>
                 <RatingNum>{ratingKp}</RatingNum>
             </Rating>}
             <NameFilm title={name}>{name}</NameFilm>
