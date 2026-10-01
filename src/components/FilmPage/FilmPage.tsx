@@ -280,7 +280,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               </HeroFacts>
             ) : null}
 
-            {((filmInfoId as any)?.keywords || []).length ? (
+            {((filmInfoId as any)?.keywords || []).length >= 3 ? (
               <HeroTags>
                 {((filmInfoId as any).keywords as string[])
                   .slice(0, 8)
