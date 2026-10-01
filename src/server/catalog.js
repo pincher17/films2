@@ -274,8 +274,10 @@ export async function buildList(options) {
     const list = byMedia.get(kind) || new Map();
     (response.results || []).forEach((item) => list.set(item.id, item));
     byMedia.set(kind, list);
-    totalResults = Math.max(totalResults, response.totalResults || 0);
-    totalPages = Math.max(totalPages, response.totalPages || 0);
+    // фильмы и сериалы запрашиваются отдельно — счётчики складываем,
+    // иначе «всего» показывало только одну половину
+    totalResults += response.totalResults || 0;
+    totalPages += response.totalPages || 0;
   });
 
   const preFilter = buildPreFilter(options);

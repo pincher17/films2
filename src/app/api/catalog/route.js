@@ -209,7 +209,11 @@ export async function GET(request) {
       countryMode,
       excludeAsianByDefault: countryMode === "all",
       requirePoster: true,
-      voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 300,
+      voteCountMin:
+        numberOrUndefined(searchParams.get("voteCountMin")) ??
+        // у релизов текущего и прошлого года оценок ещё мало — 300 голосов
+        // отсекало почти весь год, поэтому порог ниже
+        ((yearFrom ?? 1960) >= new Date().getFullYear() - 1 ? 20 : 300),
     });
 
     return NextResponse.json(result);
