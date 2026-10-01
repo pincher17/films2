@@ -75,7 +75,7 @@ import {
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
-import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
+import FilmSkeleton, { SkeletonCover } from "../FilmSkeleton/FilmSkeleton";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -247,6 +247,26 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     };
     }, [id]); */
 
+  // Кроссфейд: скелетон остаётся поверх ещё 300 мс и растворяется, пока под
+  // ним проявляется страница. Без этого между экранами мелькал пустой кадр.
+  const hasData = !loading && !!filmInfoId?.name;
+  const [coverVisible, setCoverVisible] = React.useState(true);
+  const [coverFading, setCoverFading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!hasData) {
+      setCoverVisible(true);
+      setCoverFading(false);
+      return;
+    }
+    setCoverFading(true);
+    const timer = setTimeout(() => {
+      setCoverVisible(false);
+      setCoverFading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [hasData]);
+
   // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
   // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
   // версия (старая раскладка с рейтингом 0) даже на компьютере.
@@ -273,6 +293,11 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     {!isVerified ? (
       <Turnstile onToken={setToken} />
     ) : (
+    {coverVisible && (
+      <SkeletonCover $fading={coverFading}>
+        <FilmSkeleton />
+      </SkeletonCover>
+    )}
     <Wrapper key={id}>
       {heroImage ? (
         <Backdrop>
