@@ -1,7 +1,8 @@
 import axios from "axios";
 import { apigetInstance, apigetApi } from "./apiget.js";
 import { emptyDocsResponse, toSearchResponse } from "./apigetAdapter.js";
-import { fetchCatalog, fetchStudio } from "./catalogQuery.js";
+import { fetchCatalog, fetchCollection, fetchStudio } from "./catalogQuery.js";
+import { collectionName } from "@/data/collectionRecipes";
 
 /**
  * Поиск и каталог.
@@ -28,15 +29,14 @@ const SEARCH_LIMIT = 10;
 const CATALOG_LIMIT = 40;
 
 export const filmsApiV4 = {
-    getFilmsSlug(slug, page){
-        return instance.get(`movie?page=${page}&limit=40&selectFields=id&selectFields=name&selectFields=year&selectFields=rating&selectFields=poster&notNullFields=id&notNullFields=name&notNullFields=rating.kp&notNullFields=poster.url&lists=${slug}`).then(response =>{
-            return response;
-        })
+    /** Подборка: рецепт на TMDB вместо старого списка Кинопоиска */
+    async getFilmsSlug(slug, page){
+        return fetchCollection(slug, page, CATALOG_LIMIT);
     },
-    getInfoSlug(slug){
-        return instance.get(`list/${slug}`).then(response =>{
-            return response;
-        })
+    /** Название подборки берём из своих рецептов — отдельный запрос не нужен */
+    async getInfoSlug(slug){
+        // обложку подборки подставим на шаге автогенерации обложек
+        return { data: { name: collectionName(slug), cover: { url: null } } };
     },
 
     /**

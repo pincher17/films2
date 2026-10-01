@@ -122,8 +122,14 @@ async function buildServerParams(media, options) {
   if (!isTv) params["with_runtime.gte"] = 40; // вместо исключения «короткометражка»
   else params["without_genres"] = [10764, 10767, 10763, 10766].join(",");
 
-  if (options.sort === "1") params.sort_by = isTv ? "first_air_date.asc" : "primary_release_date.asc";
-  else params.sort_by = isTv ? "first_air_date.desc" : "primary_release_date.desc";
+  // подборки сортируются по рейтингу/популярности, каталог — по дате выхода
+  if (options.sortBy) {
+    params.sort_by = options.sortBy;
+  } else if (options.sort === "1") {
+    params.sort_by = isTv ? "first_air_date.asc" : "primary_release_date.asc";
+  } else {
+    params.sort_by = isTv ? "first_air_date.desc" : "primary_release_date.desc";
+  }
 
   if (options.countryMode === "ru") params.with_original_language = "ru";
 
@@ -135,6 +141,11 @@ async function buildServerParams(media, options) {
   if (options.cartoonsOnly) {
     const animation = await resolveGenre("мультфильм", media);
     if (animation) params.with_genres = String(animation.id);
+  }
+
+  for (const word of options.keywords || []) {
+    const keywordId = await resolveKeywordId(word);
+    if (keywordId) params.with_keywords = [params.with_keywords, keywordId].filter(Boolean).join(",");
   }
 
   const genreIds = [];
@@ -279,7 +290,14 @@ export async function buildList(options) {
     });
   }
 
-  const filtered = sortRecords(records.filter((record) => passesLocalFilters(record, options)), options.sort);
+  const passed = records.filter((record) => passesLocalFilters(record, options));
+  const filtered = options.ratingSort
+    ? passed.sort(
+        (a, b) =>
+          (b.kpRating ?? b.tmdbRating ?? 0) - (a.kpRating ?? a.tmdbRating ?? 0) ||
+          (b.kpVotes ?? b.tmdbVotes ?? 0) - (a.kpVotes ?? a.tmdbVotes ?? 0)
+      )
+    : sortRecords(passed, options.sort);
   const docs = filtered.slice(0, options.limit).map(toCard).filter((card) => card.id);
 
   const sitePages = totalPages ? Math.max(1, Math.ceil(totalPages / pagesPerSite)) : page;

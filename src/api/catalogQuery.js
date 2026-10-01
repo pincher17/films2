@@ -84,6 +84,11 @@ export function fetchStudio(filters, page, company, limit = 40) {
   });
 }
 
+/** Страница подборки (коллекции) */
+export function fetchCollection(slug, page = 1, limit = 40) {
+  return requestList({ task: "collection", slug, page, limit });
+}
+
 export function fetchSlider(slider, limit = 25) {
   return requestList({ task: "slider", slider, limit });
 }

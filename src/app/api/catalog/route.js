@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { SLIDER_IDS, buildList, buildSlider, buildTop } from "@/server/catalog";
 import { platformIds, resolveCompanyId } from "@/server/tmdb";
+import { COLLECTION_RECIPES } from "@/data/collectionRecipes";
 import { cacheStats } from "@/server/kpMap";
 
 /**
@@ -143,6 +144,41 @@ export async function GET(request) {
       });
 
       return NextResponse.json({ ...result, company });
+    }
+
+    if (task === "collection") {
+      const slug = searchParams.get("slug") || "";
+      const recipe = COLLECTION_RECIPES[slug];
+
+      if (!recipe) {
+        return NextResponse.json(empty(page, limit, `Подборка не найдена: ${slug}`));
+      }
+
+      const years = [recipe.yearFrom ?? 1900, recipe.yearTo ?? new Date().getFullYear() + 1];
+      const result = await buildList({
+        page,
+        limit,
+        types: recipe.types,
+        genres: recipe.genres || [],
+        keywords: recipe.keywords || [],
+        companyId: recipe.companyId,
+        networkId: recipe.networkId,
+        sortBy: recipe.sortBy || "popularity.desc",
+        ratingSort: !recipe.sortBy || recipe.sortBy.includes("vote_average"),
+        yearRange: years,
+        yearFrom: years[0],
+        yearTo: years[1],
+        ratingRange: [1, 10],
+        ratingFrom: 1,
+        ratingTo: 10,
+        sort: "-1",
+        countryMode: "all",
+        excludeAsianByDefault: false,
+        requirePoster: true,
+        voteCountMin: recipe.voteCountMin ?? 50,
+      });
+
+      return NextResponse.json({ ...result, slug, name: recipe.name });
     }
 
     if (task === "top") {
