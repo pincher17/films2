@@ -123,16 +123,35 @@ export const HeroTag = styled.span`
   }
 `;
 
-export const HeroDescription = styled.p`
+export const HeroDescription = styled.p<{ $expanded?: boolean }>`
   margin: 20px 0 0;
   max-width: 620px;
   font-size: 16px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.86);
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: ${(props) => (props.$expanded ? "unset" : 4)};
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow: ${(props) => (props.$expanded ? "visible" : "hidden")};
+`;
+
+/* кнопка «Читать полностью / Свернуть» — только если текст обрезан */
+export const HeroMore = styled.button`
+  margin-top: 10px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: #fff;
+    border-color: #fff;
+  }
 `;
 
 export const HeroButton = styled.button<{ $primary?: boolean }>`

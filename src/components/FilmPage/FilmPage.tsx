@@ -20,6 +20,7 @@ import {
   HeroDot,
   HeroFacts,
   HeroMeta,
+  HeroMore,
   HeroPoster,
   HeroScore,
   HeroTag,
@@ -112,6 +113,10 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   const [value, setValue] = React.useState("one");
   // трейлер открывается модальным окном поверх страницы, а не новой вкладкой
   const [trailerOpen, setTrailerOpen] = React.useState(false);
+  // описание: показываем кнопку «Читать полностью» только если текст обрезан
+  const [descriptionOpen, setDescriptionOpen] = React.useState(false);
+  const [descriptionClamped, setDescriptionClamped] = React.useState(false);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -141,6 +146,21 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   useEffect(() => {
     refDataFilm.current?.setAttribute("data-kinopoisk", `${id}`);
   }, [id, resolution.width]);
+
+  useEffect(() => {
+    const element = descriptionRef.current;
+    if (!element) return;
+
+    const check = () => {
+      // если описание уже развёрнуто, кнопку прятать не нужно
+      if (descriptionOpen) return;
+      setDescriptionClamped(element.scrollHeight - element.clientHeight > 4);
+    };
+
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [filmInfoId?.description, descriptionOpen]);
 
   ///////////////////////////////////////
   //////////////////////////////////////
@@ -276,7 +296,23 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               ) : null}
             </HeroButtons>
             {filmInfoId?.description ? (
-              <HeroDescription>{filmInfoId.description}</HeroDescription>
+              <>
+                <HeroDescription
+                  ref={descriptionRef}
+                  $expanded={descriptionOpen}
+                  itemProp="description"
+                >
+                  {filmInfoId.description}
+                </HeroDescription>
+                {descriptionClamped || descriptionOpen ? (
+                  <HeroMore
+                    type="button"
+                    onClick={() => setDescriptionOpen((open) => !open)}
+                  >
+                    {descriptionOpen ? "Свернуть" : "Читать полностью"}
+                  </HeroMore>
+                ) : null}
+              </>
             ) : null}
 
             {heroDirector || heroCast.length || heroBudget ? (
