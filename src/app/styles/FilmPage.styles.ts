@@ -516,6 +516,19 @@ export const StillCard = styled.div`
   }
 `;
 
+/* отдельный оверлей галереи: центрирует кадр (у оверлея трейлера своя вёрстка) */
+export const StillOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  cursor: zoom-out;
+`;
+
 export const BigStill = styled.img`
   max-width: 88vw;
   max-height: 84vh;

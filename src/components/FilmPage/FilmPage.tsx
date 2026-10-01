@@ -17,6 +17,7 @@ import {
   DetailsSection,
   DetailsValue,
   StillCard,
+  StillOverlay,
   BackdropImage,
   BackdropShade,
   Description,
@@ -541,7 +542,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       </LayoutFilm>
 
       {stillIndex !== null && stills[stillIndex] ? (
-        <Overlay onClick={() => setStillIndex(null)}>
+        <StillOverlay onClick={() => setStillIndex(null)}>
           <CloseIconTrailer sidebar={+true} onClick={() => setStillIndex(null)}>
             <Line1 />
             <Line2 />
@@ -550,8 +551,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             src={stills[stillIndex]}
             alt=""
             onClick={(event) => event.stopPropagation()}
+            style={{ cursor: "default" }}
           />
-        </Overlay>
+        </StillOverlay>
       ) : null}
 
       {trailerOpen && filmInfoId?.videos?.trailers?.[0] ? (
