@@ -16,14 +16,15 @@ export type CollectionRecipe = {
   yearTo?: number;
 };
 
-const RATED = { sortBy: "vote_average.desc", voteCountMin: 20000 };
+// порог подобран так, чтобы в списке реально было ~250 позиций
+const RATED = { sortBy: "vote_average.desc", voteCountMin: 10000 };
 
 export const COLLECTION_RECIPES: Record<string, CollectionRecipe> = {
   top250: { ...RATED, name: "250 лучших фильмов", types: "1" },
   "popular-films": { name: "Популярные фильмы", types: "1", sortBy: "popularity.desc", voteCountMin: 50 },
   "popular-series": { name: "Популярные сериалы", types: "2", sortBy: "popularity.desc", voteCountMin: 50 },
   "100_greatest_TVseries": { name: "100 великих сериалов XXI века", types: "2", sortBy: "vote_average.desc", voteCountMin: 2000, yearFrom: 2000 },
-  "series-top250": { name: "250 лучших сериалов", types: "2", sortBy: "vote_average.desc", voteCountMin: 2000 },
+  "series-top250": { name: "250 лучших сериалов", types: "2", sortBy: "vote_average.desc", voteCountMin: 1500 },
   hbo_best: { name: "Шедевры HBO", types: "1,2", networkId: 49, companyId: 3268, voteCountMin: 50 },
   marvel_universe: { name: "Киновселенная MARVEL", types: "1,2", companyId: 420, voteCountMin: 100 },
   "hd-must-see": { name: "Фильмы, которые стоит посмотреть", types: "1", sortBy: "vote_average.desc", voteCountMin: 10000 },
