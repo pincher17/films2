@@ -30,10 +30,15 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import translateCategory from "../helpers/translateCategory";
 import Turnstile from "../Turnstile/Turnstile";
+import { isTurnstileDisabled } from "../Turnstile/turnstileConfig";
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
+import StreamPlayer from "../StreamPlayer/StreamPlayer";
+import { getFilmStreams } from "@/data/streams";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
+  // если для фильма заданы свои ссылки — играем их в своём плеере
+  const streams = getFilmStreams(id);
   const dispatch = useAppDispatch();
   const filmInfoId = useAppSelector((state) => state.filmInfo.info);
   const loading = useAppSelector((state) => state.loading.loading);
@@ -80,7 +85,8 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   ///////////////////////////////////////
   //////////////////////////////////////
   const [token, setToken] = useState(null);
-  const [isVerified, setIsVerified] = useState(false);
+  // При локальной разработке Cloudflare Turnstile не нужен
+  const [isVerified, setIsVerified] = useState(isTurnstileDisabled());
 
  /*  useEffect(() => {
     setIsVerified(false); // Reset verification status when component mounts
@@ -184,33 +190,43 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
               {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.lol */}
               {/* https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol */}
-              <Box sx={{ width: "100%" }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  textColor="inherit"
-                  aria-label="secondary tabs example"
-                  TabIndicatorProps={{
-                    style: {
-                      backgroundColor: "#d41515"
-                    }
-                  }}
-                >
-                  <Tab value="one" label="Плеер 1" />
-                  <Tab value="two" label="Плеер 2" />
-                </Tabs>
-              </Box>
-              {value === "two" ? <KinoboxPlayer kpId={id} />
-              : <Iframe
-              src={`https://ugly-turkey.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`}
-              frameBorder="0"
-              scrolling="no"
-              allowFullScreen
-              referrerPolicy="origin"
-              width="500"
-              height="352"
-            ></Iframe>
-            }
+              {streams ? (
+                <StreamPlayer
+                  filmId={id}
+                  streams={streams}
+                  poster={filmInfoId?.poster?.previewUrl}
+                />
+              ) : (
+                <>
+                  <Box sx={{ width: "100%" }}>
+                    <Tabs
+                      value={value}
+                      onChange={handleChange}
+                      textColor="inherit"
+                      aria-label="secondary tabs example"
+                      TabIndicatorProps={{
+                        style: {
+                          backgroundColor: "#d41515"
+                        }
+                      }}
+                    >
+                      <Tab value="one" label="Плеер 1" />
+                      <Tab value="two" label="Плеер 2" />
+                    </Tabs>
+                  </Box>
+                  {value === "two" ? <KinoboxPlayer kpId={id} />
+                  : <Iframe
+                  src={`https://api.ortified.ws/embed/kp/${id}`}
+                  frameBorder="0"
+                  scrolling="no"
+                  allowFullScreen
+                  referrerPolicy="origin"
+                  width="500"
+                  height="352"
+                ></Iframe>
+                }
+                </>
+              )}
             <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
             </WrapperIframe>
           </WrapperWatchFilm>

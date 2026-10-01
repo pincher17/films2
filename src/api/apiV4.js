@@ -1,6 +1,19 @@
 import axios from "axios";
+import { apigetInstance, apigetApi } from "./apiget.js";
+import { emptyDocsResponse, toSearchResponse } from "./apigetAdapter.js";
+import { fetchCatalog } from "./catalogQuery.js";
 
-
+/**
+ * Поиск и каталог.
+ *
+ *  - Поиск идёт напрямую в apiget: он сразу отдаёт кинопоисковские id и постеры,
+ *    это 1 запрос на страницу выдачи.
+ *  - Каталог собирает серверный роут /api/catalog (TMDB + Wikidata + кэш apiget):
+ *    диапазон лет, рейтинг, сортировка и пагинация считаются на стороне TMDB.
+ *
+ * Коллекции (lists / list) и студии (networks) остались на прежнем API: в TMDB
+ * подборки и сети устроены иначе, их перенос — отдельный шаг.
+ */
 export const instance = axios.create({
     baseURL: 'https://api.kinopoisk.dev/v1.4/',
     headers: {
@@ -8,6 +21,11 @@ export const instance = axios.create({
         'X-API-KEY': process.env.apiKey,
       }
 })
+
+export const apiget = apigetInstance;
+
+const SEARCH_LIMIT = 10;
+const CATALOG_LIMIT = 40;
 
 export const filmsApiV4 = {
     getFilmsSlug(slug, page){
@@ -20,26 +38,24 @@ export const filmsApiV4 = {
             return response;
         })
     },
-    getFilmSearchV4(query, page = 1){
-        /* return instance.get(`movie?search=${query}&field=name&limit=10&isStrict=false&sortField=votes.imdb&sortType=-1&token=${TOKEN}`) */
-        return instance.get(`movie/search?page=${page}&limit=10&query=${query}`)
-        .then(response =>{
-            return response;
-        })
+
+    /** Поиск по названию. apiget не отдаёт общее число найденного — только has_next */
+    async getFilmSearchV4(query, page = 1){
+        const response = await apigetApi.search({ query, page, limit: SEARCH_LIMIT });
+
+        if (!response.results?.length) return emptyDocsResponse(page, SEARCH_LIMIT);
+
+        return toSearchResponse(response, { page, limit: SEARCH_LIMIT });
     },
-    getFilms(filters, page, genre = []){
-        const genreToUse = genre.length ? genre : filters.genre;
-        return instance.get(`movie?page=${page}&limit=40&sortField=year&sortType=-1&type=${filters.selectedTypeOfMovies.map((item) => `&typeNumber=${item}&`).join('')}${genreToUse.length ? genreToUse.map((item) => `&genres.name=${item.value}&`).join('') : '&genres.name=!документальный&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых'}&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&field=poster&search=!null${filters.country.value ? filters.country.value : `&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`}`)
-        /* return instance.get(`movie?${filters.selectedTypeOfMovies.map((item)=>`&typeNumber=${item}&`).join('')}${filters.genre.length ? filters.genre.map((item)=>`&genres.name=${item.value}&`).join(''):''}${genre ? `&genres.name=${genre}`: ''}&genres.name=!документальный&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&sortField[]=year&sortType[]=${filters.sortByRelease}&limit=40&page=${page}&field=poster&search=!null&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`) */
-        /* return instance.get(`movie?field[]=genres.name&search[]=драма&field[]=year&search[]=${filters.year}&field=rating.kp&search[]=${filters.rating}&field[]=typeNumber&search[]=1&field[]=votes.kp&search[]=!null&sortField[]=year&sortType[]=${filters.sortByRelease}&limit=30&page=${page}&field=poster&search=!null&token=${TOKEN}`) */
-        /* return instance.get(`movie?${filters.genre}&search[]=${filters.year}&field[]=year&search[]=${filters.rating}&field=rating.kp&search=!null&field=name&search=1&field=typeNumber&search=!null&field=votes.kp&sortField=year&sortType=${filters.sortByRelease}&limit=30&page=${page}&token=${TOKEN}`) */
-        .then(response =>{
-            return response;
-        })
+
+    /** Каталог: год, рейтинг, жанры, страны, тип, сортировка, пагинация */
+    async getFilms(filters, page, genre = []){
+        return fetchCatalog(filters, page, genre, CATALOG_LIMIT);
     },
+
     getFilmsStudio(filters, page, nameStudio){
         const genreToUse = filters.genres;
-        return instance.get(`movie?page=${page}&limit=40&networks.items.name=${nameStudio}&sortField=year&sortType=-1&type=${filters.selectedTypeOfMovies.map((item) => `&typeNumber=${item}&`).join('')}${genreToUse.length ? genreToUse.map((item) => `&genres.name=${item.value}&`).join('') : '&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых'}&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&field=poster&search=!null${filters.country.value ? filters.country.value : `&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`}`)
+        return instance.get(`movie?page=${page}&limit=40&networks.items.name=${nameStudio}&sortField=year&sortType=-1&type=${filters.selectedTypeOfMovies.map((item) => `&typeNumber=${item}&`).join('')}${genreToUse.length ? genreToUse.map((item) => `&genres.name=${item.value}`).join('') : '&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых'}&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&field=poster&search=!null${filters.country.value ? filters.country.value : `&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`}`)
         .then(response =>{
             return response;
         })

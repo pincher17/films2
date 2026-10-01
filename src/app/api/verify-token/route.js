@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
+  // При локальной разработке Cloudflare Turnstile не нужен
+  if (process.env.NODE_ENV !== 'production') {
+    return NextResponse.json({ success: true, skipped: 'development' });
+  }
+
   const { token } = await request.json();
 
   // Verify the Turnstile token with Cloudflare

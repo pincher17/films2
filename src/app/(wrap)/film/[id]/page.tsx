@@ -1,6 +1,7 @@
 import FilmPage from '@/components/FilmPage/FilmPage';
 import type { Metadata, ResolvingMetadata } from 'next'
 import { filmsApi } from '@/api/api';
+import { getFilmPageData } from '@/server/filmPage';
 import translateCategory from '@/components/helpers/translateCategory';
 import roundNumber from '@/components/helpers/rounding';
 import extractDigits from '@/components/helpers/extractId';
@@ -18,10 +19,9 @@ export async function generateMetadata(
   // read route params
   const id = extractDigits(params.id)
  
-  // fetch data
-  const response = await filmsApi.getFilmById(id)
-
-  const filmInfoId = response.data;
+  // данные берём из TMDB напрямую на сервере; если фильма там нет — apiget
+  const filmInfoId =
+    (await getFilmPageData(id)) ?? (await filmsApi.getFilmById(id)).data;
  
  
   return {

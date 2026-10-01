@@ -9,6 +9,7 @@ const withPWA = require('next-pwa')({
 module.exports = withPWA({
   env: {
     apiKey: process.env.API_KEY,
+    apigetKey: process.env.APIGET_KEY,
   },
   images: {
     formats: ['image/avif', 'image/webp'],

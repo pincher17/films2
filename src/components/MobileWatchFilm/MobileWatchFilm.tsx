@@ -8,9 +8,12 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
+import StreamPlayer from "../StreamPlayer/StreamPlayer";
+import { getFilmStreams } from "@/data/streams";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
   const dispatch = useAppDispatch()
+  const streams = getFilmStreams(id);
   const refDataFilm = useRef<HTMLInputElement | null>(null);
 
   const toggleWatchFilm = () => setWatchFilm(false)
@@ -47,25 +50,31 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
         </CrossIconFilm>
       <WrapperIframeMobile key={id.toString()}>
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
-             {value === "two" ? <KinoboxPlayer kpId={id} />
-             : <Iframe src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
-             }
-              <Box sx={{ width: "100%" }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  textColor="inherit"
-                  aria-label="secondary tabs example"
-                  TabIndicatorProps={{
-                    style: {
-                      backgroundColor: "#d41515"
-                    }
-                  }}
-                >
-                  <Tab value="one" label="Плеер 1" />
-                  <Tab value="two" label="Плеер 2" />
-                </Tabs>
-              </Box>
+             {streams ? (
+               <StreamPlayer filmId={id} streams={streams} />
+             ) : (
+               <>
+                 {value === "two" ? <KinoboxPlayer kpId={id} />
+                 : <Iframe src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
+                 }
+                 <Box sx={{ width: "100%" }}>
+                   <Tabs
+                     value={value}
+                     onChange={handleChange}
+                     textColor="inherit"
+                     aria-label="secondary tabs example"
+                     TabIndicatorProps={{
+                       style: {
+                         backgroundColor: "#d41515"
+                       }
+                     }}
+                   >
+                     <Tab value="one" label="Плеер 1" />
+                     <Tab value="two" label="Плеер 2" />
+                   </Tabs>
+                 </Box>
+               </>
+             )}
             </WrapperIframeMobile>
     </Wrapper>
   )
