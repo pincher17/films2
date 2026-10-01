@@ -8,13 +8,201 @@ export const Wrapper = styled.div`
 `;
 
 /* Большой фон страницы фильма: бэкдроп из TMDB, если его нет — постер в блюре */
+/* ───────── Netflix-херо ───────── */
+export const Hero = styled.div`
+  position: relative;
+  padding-top: 40px;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 48px;
+
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;
+
+export const HeroText = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 760px;
+  min-width: 0;
+`;
+
+/* главная обложка фильма в херо */
+export const HeroPoster = styled.div`
+  flex: 0 0 300px;
+  align-self: flex-start;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.7);
+  background: #101010;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 1150px) {
+    flex: 0 0 220px;
+  }
+`;
+
+export const HeroTitle = styled.h1`
+  font-size: 56px;
+  line-height: 1.05;
+  font-weight: 800;
+  margin: 0 0 14px;
+  color: #fff;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.75);
+`;
+
+export const HeroSlogan = styled.p`
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 620px;
+`;
+
+export const HeroMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 20px;
+`;
+
+export const HeroScore = styled.span`
+  color: #46d369;
+  font-weight: 700;
+`;
+
+export const HeroDot = styled.span`
+  &::before {
+    content: "•";
+  }
+`;
+
+export const HeroButtons = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+/* строка деталей под описанием: режиссёр, в ролях, бюджет */
+export const HeroFacts = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: auto;
+  padding-top: 22px;
+  /* подъём строки деталей от низа херо: больше значение — выше строка */
+  margin-bottom: 54px;
+  font-size: 14px;
+  max-width: 660px;
+  color: rgba(255, 255, 255, 0.5);
+
+  b {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+`;
+
+/* теги фильма */
+export const HeroTags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  max-width: 660px;
+`;
+
+export const HeroTag = styled.span`
+  padding: 5px 12px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+`;
+
+export const HeroDescription = styled.p<{ $expanded?: boolean }>`
+  margin: 20px 0 0;
+  max-width: 620px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
+  display: -webkit-box;
+  -webkit-line-clamp: ${(props) => (props.$expanded ? "unset" : 4)};
+  -webkit-box-orient: vertical;
+  overflow: ${(props) => (props.$expanded ? "visible" : "hidden")};
+`;
+
+/* кнопка «Читать полностью / Свернуть» — только если текст обрезан */
+export const HeroMore = styled.button`
+  margin-top: 10px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: #fff;
+    border-color: #fff;
+  }
+`;
+
+export const HeroButton = styled.button<{ $primary?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+  background: ${(props) => (props.$primary ? "#ffffff" : "rgba(109, 109, 110, 0.7)")};
+  color: ${(props) => (props.$primary ? "#000" : "#fff")};
+
+  &:hover {
+    background: ${(props) => (props.$primary ? "#e6e6e6" : "rgba(109, 109, 110, 0.45)")};
+    transform: translateY(-1px);
+  }
+`;
+
+/* постер-карточка на десктопе больше не нужен — данные ушли в херо */
+export const PosterBlock = styled.div`
+  @media (min-width: 851px) {
+    display: none;
+  }
+`;
+
 export const Backdrop = styled.div`
   position: absolute;
   top: -120px;
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 660px;
+  height: 780px;
   overflow: hidden;
   pointer-events: none;
   z-index: -1;
@@ -68,6 +256,7 @@ export const WrapperInfo = styled.div`
 export const WrapperWatchFilm = styled.div`
   display: flex;
   position: relative;
+  flex-direction: column;
   @media (max-width: 1150px){
     display: initial;
     position: initial;
@@ -214,4 +403,170 @@ export const TrailerWrapper = styled.div`
     height: 100%;
     position: absolute;
   }
+`;
+
+/* ───────── Ряд актёров ───────── */
+export const ActorsSection = styled.section`
+  margin-top: 14px;
+  margin-bottom: 10px;
+`;
+
+export const ActorsHead = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+`;
+
+export const ActorsTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+`;
+
+export const ActorsArrows = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+export const ActorsArrow = styled.button`
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+`;
+
+export const ActorsRow = styled.div`
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+export const ActorCard = styled.div`
+  flex: 0 0 132px;
+  width: 132px;
+  text-align: center;
+`;
+
+export const ActorPhoto = styled.div`
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #141414;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+`;
+
+export const ActorName = styled.div`
+  font-size: 13.5px;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 4px;
+`;
+
+export const ActorRole = styled.div`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.3;
+`;
+
+
+/* ───────── Галерея кадров ───────── */
+export const StillCard = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  background: #141414;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  &:hover {
+    transform: scale(1.03);
+  }
+`;
+
+/* отдельный оверлей галереи: центрирует кадр (у оверлея трейлера своя вёрстка) */
+export const StillOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  cursor: zoom-out;
+`;
+
+export const BigStill = styled.img`
+  max-width: 88vw;
+  max-height: 84vh;
+  border-radius: 10px;
+  display: block;
+`;
+
+
+/* ───────── Раздел «Детали» ───────── */
+export const DetailsSection = styled.section`
+  margin-top: 44px;
+`;
+
+export const DetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 48px;
+  margin-top: 18px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const DetailsRow = styled.div`
+  display: flex;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.45;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+`;
+
+export const DetailsLabel = styled.span`
+  flex: 0 0 130px;
+  color: rgba(255, 255, 255, 0.45);
+`;
+
+export const DetailsValue = styled.span`
+  color: rgba(255, 255, 255, 0.92);
 `;

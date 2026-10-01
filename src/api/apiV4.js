@@ -1,7 +1,7 @@
 import axios from "axios";
 import { apigetInstance, apigetApi } from "./apiget.js";
 import { emptyDocsResponse, toSearchResponse } from "./apigetAdapter.js";
-import { fetchCatalog } from "./catalogQuery.js";
+import { fetchCatalog, fetchStudio } from "./catalogQuery.js";
 
 /**
  * Поиск и каталог.
@@ -39,8 +39,33 @@ export const filmsApiV4 = {
         })
     },
 
-    /** Поиск по названию. apiget не отдаёт общее число найденного — только has_next */
+    /**
+     * Поиск по названию.
+     * Основной источник — TMDB (бесплатно, точное число найденного),
+     * запасной — apiget, если TMDB ничего не отдал.
+     */
     async getFilmSearchV4(query, page = 1){
+        try {
+            const response = await axios.get("/api/search", {
+                params: { query, page, limit: SEARCH_LIMIT },
+            });
+            const data = response.data || {};
+
+            if (data.docs?.length) {
+                return {
+                    data: {
+                        docs: data.docs,
+                        total: data.total || 0,
+                        page: data.page || page,
+                        pages: data.pages || page,
+                        limit: data.limit || SEARCH_LIMIT,
+                    },
+                };
+            }
+        } catch (error) {
+            console.warn("[search] /api/search недоступен:", error?.message);
+        }
+
         const response = await apigetApi.search({ query, page, limit: SEARCH_LIMIT });
 
         if (!response.results?.length) return emptyDocsResponse(page, SEARCH_LIMIT);
@@ -53,11 +78,19 @@ export const filmsApiV4 = {
         return fetchCatalog(filters, page, genre, CATALOG_LIMIT);
     },
 
-    getFilmsStudio(filters, page, nameStudio){
-        const genreToUse = filters.genres;
-        return instance.get(`movie?page=${page}&limit=40&networks.items.name=${nameStudio}&sortField=year&sortType=-1&type=${filters.selectedTypeOfMovies.map((item) => `&typeNumber=${item}&`).join('')}${genreToUse.length ? genreToUse.map((item) => `&genres.name=${item.value}`).join('') : '&genres.name=!ток-шоу&genres.name=!реальное ТВ&genres.name=!короткометражка&genres.name=!церемония&genres.name=!игра&genres.name=!концерт&genres.name=!для взрослых'}&year=${filters.year[0]}-${filters.year[1]}&rating.kp=${filters.rating[0]}-${filters.rating[1]}&field=poster&search=!null${filters.country.value ? filters.country.value : `&countries.name=!Корея Южная&countries.name=!Китай&countries.name=!Таиланд&countries.name=!Индия&countries.name=!Япония&countries.name=!Тайвань&countries.name=!Турция`}`)
-        .then(response =>{
-            return response;
-        })
+    /** Страница студии: фильмы продюсерской компании через TMDB */
+    async getFilmsStudio(filters, page, nameStudio){
+        return fetchStudio(
+            {
+                ...filters,
+                genre: filters.genres,
+                selectedTypeOfMovies: filters.selectedTypeOfMovies,
+                year: filters.year,
+                rating: filters.rating,
+            },
+            page,
+            nameStudio,
+            CATALOG_LIMIT
+        );
     },
 }

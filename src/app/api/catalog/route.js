@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { SLIDER_IDS, buildList, buildSlider, buildTop } from "@/server/catalog";
+import { platformIds, resolveCompanyId } from "@/server/tmdb";
 import { cacheStats } from "@/server/kpMap";
 
 /**
@@ -91,6 +92,57 @@ export async function GET(request) {
         voteCountMin: 300,
       });
       return NextResponse.json({ sliders: results, catalog: catalog.docs.length, cache: cacheStats() });
+    }
+
+    if (task === "studio") {
+      // название студии приходит из настроек сайта, иногда в URL-кодировке
+      const raw = searchParams.get("company") || "";
+      let company = raw;
+      try {
+        company = decodeURIComponent(raw);
+      } catch {
+        company = raw;
+      }
+
+      const studioYears = [
+        numberOrUndefined(searchParams.get("yearFrom")) ?? 1960,
+        numberOrUndefined(searchParams.get("yearTo")) ?? new Date().getFullYear() + 1,
+      ];
+      const studioRatings = [
+        numberOrUndefined(searchParams.get("ratingFrom")) ?? 1,
+        numberOrUndefined(searchParams.get("ratingTo")) ?? 10,
+      ];
+      const studioGenres = listOf(searchParams.get("genres"));
+      const known = platformIds(company);
+      const companyId = known ? known.company : await resolveCompanyId(company);
+      const networkId = known ? known.network : null;
+
+      if (!companyId && !networkId) {
+        return NextResponse.json(empty(page, limit, `Платформа не найдена в TMDB: ${company}`));
+      }
+
+      const result = await buildList({
+        page,
+        limit,
+        types: searchParams.get("types") || "1,2,3",
+        companyId,
+        networkId,
+        genres: studioGenres,
+        excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre)),
+        yearRange: studioYears,
+        yearFrom: studioYears[0],
+        yearTo: studioYears[1],
+        ratingRange: studioRatings,
+        ratingFrom: studioRatings[0],
+        ratingTo: studioRatings[1],
+        sort: searchParams.get("sort") === "1" ? "1" : "-1",
+        countryMode: "all",
+        excludeAsianByDefault: false,
+        requirePoster: true,
+        voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 50,
+      });
+
+      return NextResponse.json({ ...result, company });
     }
 
     if (task === "top") {
