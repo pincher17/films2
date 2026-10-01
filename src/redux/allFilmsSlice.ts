@@ -15,6 +15,20 @@ type initialStateType ={
 // сортировку или фильтр), применяем только последний: иначе старые карточки
 // дописываются к новым и список перемешивается.
 let latestRequest = 0;
+// подпись текущей выборки: если фильтры сменились, дописывать чужие страницы нельзя
+let currentSignature = "";
+
+const makeSignature = (filters: any) =>
+  JSON.stringify([
+    filters?.sortBy,
+    filters?.sortByRelease,
+    filters?.country,
+    filters?.year,
+    filters?.rating,
+    filters?.selectedTypeOfMovies,
+    filters?.genres,
+    filters?.genre,
+  ]);
 
 const initialState: initialStateType ={
     films: [],
@@ -52,12 +66,14 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
 
         dispatch(setLoading(true))
         const requestId = ++latestRequest;
+        const signature = makeSignature(filters);
 
         filmsApiV4.getFilms(filters, page).then((response: any) =>{
             
-            // применяем только самый свежий запрос
+            // применяем только самый свежий запрос той же выборки
             if (requestId !== latestRequest) return;
-            
+            if (signature !== currentSignature) return;
+
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
             /* console.log(response) */
@@ -74,6 +90,7 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
 
         dispatch(setLoadingFilters(true))
         const requestId = ++latestRequest;
+        currentSignature = makeSignature(filters);
 
         filmsApiV4.getFilms(filters, page, genre).then((response: any) =>{
             
