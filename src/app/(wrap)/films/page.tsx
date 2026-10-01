@@ -28,6 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { setFilterGenre, setUpdateGenre } from "@/redux/filtersSlice";
 import { allGenres } from "@/data/allGenres";
 import FilterIcon7 from "/public/Filtericon.svg";
+import InfiniteScroll from '@/components/InfiniteScroll';
 
 export default function Films() {
   const films = useAppSelector((state) => state.allFilms.films);
@@ -42,6 +43,9 @@ export default function Films() {
   const searchGenre = searchParams.get("genre");
 
   const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(false);
+  // автоподгрузка: останавливаемся, когда новых карточек не пришло
+  const [allLoaded, setAllLoaded] = useState<boolean>(false);
+  const prevCount = useRef(0);
   const [resolution, setResolution] = useState<any>({ width: 0, height: 0 });
   /* const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10]; */
 
@@ -104,6 +108,15 @@ export default function Films() {
     }
   }, []);
 
+  useEffect(() => {
+    if (films.length > prevCount.current) {
+      prevCount.current = films.length;
+      setAllLoaded(false);
+    } else if (films.length > 0 && films.length === prevCount.current) {
+      setAllLoaded(true);
+    }
+  }, [films]);
+
   const showMore = () => {
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, page + 1));
@@ -144,6 +157,7 @@ export default function Films() {
             {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
           </Sidebar>
           <Cards cards={films} />
+          <InfiniteScroll count={films.length} onLoad={showMore} disabled={allLoaded} />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
           </WrapperButtonShowMore>
