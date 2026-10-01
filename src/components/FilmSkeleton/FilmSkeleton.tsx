@@ -24,11 +24,11 @@ const shimmer = keyframes`
 // css`` обязателен: без него styled-components v5+ не принимает keyframes
 // внутри обычной строки и падает с ошибкой "interpolating a keyframe declaration"
 const block = css`
-  background-color: #1c1c1c;
+  background-color: #262626;
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.1) 45%,
     rgba(255, 255, 255, 0) 90%
   );
   background-size: 500px 100%;
@@ -55,7 +55,7 @@ const Backdrop = styled.div`
   height: 780px;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, #242424 0%, #161616 55%, #0d0d0d 100%);
+  background: linear-gradient(180deg, #2e2e2e 0%, #1d1d1d 55%, #0d0d0d 100%);
 
   @media (max-width: 850px) {
     display: none;
@@ -68,8 +68,12 @@ const Hero = styled.div`
   align-items: stretch;
   justify-content: space-between;
   gap: 48px;
-  padding-top: 40px;
+  padding-top: 104px;
   margin-bottom: 36px;
+
+  @media (max-width: 1150px) {
+    padding-top: 72px;
+  }
 `;
 
 const HeroText = styled.div`
@@ -148,7 +152,7 @@ const Poster = styled.div`
 `;
 
 const Section = styled.div`
-  margin-top: 56px;
+  margin-top: 84px;
 `;
 
 const SectionTitle = styled.div`
