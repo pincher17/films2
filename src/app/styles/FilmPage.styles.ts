@@ -83,6 +83,22 @@ export const HeroButtons = styled.div`
   gap: 12px;
 `;
 
+/* строка деталей под описанием: режиссёр, в ролях, бюджет */
+export const HeroFacts = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 18px;
+  font-size: 14px;
+  max-width: 660px;
+  color: rgba(255, 255, 255, 0.5);
+
+  b {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+`;
+
 export const HeroDescription = styled.p`
   margin: 20px 0 0;
   max-width: 620px;

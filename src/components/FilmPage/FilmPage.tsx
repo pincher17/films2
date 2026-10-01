@@ -14,6 +14,7 @@ import {
   HeroButtons,
   HeroDescription,
   HeroDot,
+  HeroFacts,
   HeroMeta,
   HeroPoster,
   HeroScore,
@@ -65,6 +66,23 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   // большой фон: бэкдроп TMDB, при его отсутствии — постер в размытии
   const heroImage = filmInfoId?.backdrop?.url || filmInfoId?.poster?.url;
   const heroBlurred = !filmInfoId?.backdrop?.url;
+
+  // детали под описанием — всё это уже приходит из TMDB
+  const heroPersons: any[] = (filmInfoId as any)?.persons || [];
+  const heroDirector = heroPersons
+    .filter((person: any) =>
+      ["director", "Director", "Режиссер"].includes(person?.enProfession || person?.profession)
+    )
+    .map((person: any) => person.name)
+    .slice(0, 2)
+    .join(", ");
+  const heroCast = heroPersons
+    .filter((person: any) => person?.enProfession === "actor")
+    .map((person: any) => person.name)
+    .slice(0, 4);
+  const heroBudget = (filmInfoId as any)?.budget?.value
+    ? `$${Math.round((filmInfoId as any).budget.value / 1000000)} млн`
+    : null;
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
@@ -238,6 +256,26 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             </HeroButtons>
             {filmInfoId?.description ? (
               <HeroDescription>{filmInfoId.description}</HeroDescription>
+            ) : null}
+
+            {heroDirector || heroCast.length || heroBudget ? (
+              <HeroFacts>
+                {heroDirector ? (
+                  <span>
+                    Режиссёр: <b>{heroDirector}</b>
+                  </span>
+                ) : null}
+                {heroCast.length ? (
+                  <span>
+                    В ролях: <b>{heroCast.join(", ")}</b>
+                  </span>
+                ) : null}
+                {heroBudget ? (
+                  <span>
+                    Бюджет: <b>{heroBudget}</b>
+                  </span>
+                ) : null}
+              </HeroFacts>
             ) : null}
             </HeroText>
 
