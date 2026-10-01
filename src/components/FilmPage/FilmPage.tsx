@@ -30,6 +30,8 @@ import {
   WrapperWatchFilm,
 } from "../../app/styles/FilmPage.styles";
 import Trailer from "../Trailer/Trailer";
+import { CloseIconTrailer, IframeTrailer, Overlay } from "../../app/styles/Trailer.styles";
+import { Line1, Line2 } from "../../app/styles/AllFilmsPage.styles";
 import SkeletonImage from "../SkeletonImage/SkeletonImage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
@@ -67,6 +69,8 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   });
 
   const [value, setValue] = React.useState("one");
+  // трейлер открывается модальным окном поверх страницы, а не новой вкладкой
+  const [trailerOpen, setTrailerOpen] = React.useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -218,10 +222,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 ▶ Смотреть
               </HeroButton>
               {filmInfoId?.videos?.trailers?.[0] ? (
-                <HeroButton
-                  type="button"
-                  onClick={() => window.open(filmInfoId.videos.trailers[0].url, "_blank")}
-                >
+                <HeroButton type="button" onClick={() => setTrailerOpen(true)}>
                   Трейлер
                 </HeroButton>
               ) : null}
@@ -339,6 +340,26 @@ export default function FilmPage({ params }: { params: { id: number } }) {
         </SwiperWrapperSimilar>
         <Bottom />
       </LayoutFilm>
+
+      {trailerOpen && filmInfoId?.videos?.trailers?.[0] ? (
+        <Overlay onClick={() => setTrailerOpen(false)}>
+          <CloseIconTrailer
+            sidebar={+true}
+            onClick={() => setTrailerOpen(false)}
+          >
+            <Line1 />
+            <Line2 />
+          </CloseIconTrailer>
+          <IframeTrailer
+            src={filmInfoId.videos.trailers[0].url}
+            frameBorder="0"
+            scrolling="no"
+            allowFullScreen
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            referrerPolicy="origin"
+          />
+        </Overlay>
+      ) : null}
     </Wrapper>
      )} 
     </>
