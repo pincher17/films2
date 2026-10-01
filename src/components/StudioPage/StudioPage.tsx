@@ -96,6 +96,9 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   const page = useAppSelector((state) => state.allFilmsStudio.page);
   const dispatch = useAppDispatch();
   // автоподгрузка: стоп, когда новых карточек не пришло
+  const loadingFilters = useAppSelector(
+    (state: { loading: { loadingFilters: boolean } }) => state.loading.loadingFilters
+  );
   const [allLoaded, setAllLoaded] = useState<boolean>(false);
   const prevCount = useRef(0);
 
@@ -207,7 +210,11 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
             <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
           </Sidebar>
           <Cards cards={films} />
-          <InfiniteScroll count={films.length} onLoad={showMore} disabled={allLoaded} />
+          <InfiniteScroll
+            count={films.length}
+            onLoad={showMore}
+            disabled={allLoaded || loadingFilters}
+          />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
           </WrapperButtonShowMore>

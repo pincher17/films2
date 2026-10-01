@@ -10,6 +10,12 @@ type initialStateType ={
     page: number
 }
 
+// защита от гонки запросов
+// Если пришло два ответа подряд (например, пользователь быстро сменил
+// сортировку или фильтр), применяем только последний: иначе старые карточки
+// дописываются к новым и список перемешивается.
+let latestRequest = 0;
+
 const initialState: initialStateType ={
     films: [],
     page: 1,
@@ -45,7 +51,12 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
     return (dispatch: any) => {
 
         dispatch(setLoading(true))
+        const requestId = ++latestRequest;
+
         filmsApiV4.getFilms(filters, page).then((response: any) =>{
+            
+            // применяем только самый свежий запрос
+            if (requestId !== latestRequest) return;
             
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
@@ -62,7 +73,12 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
     return (dispatch: any) => {
 
         dispatch(setLoadingFilters(true))
+        const requestId = ++latestRequest;
+
         filmsApiV4.getFilms(filters, page, genre).then((response: any) =>{
+            
+            // применяем только самый свежий запрос
+            if (requestId !== latestRequest) return;
             
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))

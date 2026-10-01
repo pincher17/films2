@@ -157,7 +157,11 @@ export default function Films() {
             {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
           </Sidebar>
           <Cards cards={films} />
-          <InfiniteScroll count={films.length} onLoad={showMore} disabled={allLoaded} />
+          <InfiniteScroll
+            count={films.length}
+            onLoad={showMore}
+            disabled={allLoaded || loadingFilters}
+          />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
           </WrapperButtonShowMore>
