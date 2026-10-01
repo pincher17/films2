@@ -9,12 +9,6 @@ import {
   ActorName,
   ActorPhoto,
   ActorRole,
-  ActorsArrow,
-  ActorsArrows,
-  ActorsHead,
-  ActorsRow,
-  ActorsSection,
-  ActorsTitle,
   Backdrop,
   BackdropImage,
   BackdropShade,
@@ -60,6 +54,16 @@ import translateCategory from "../helpers/translateCategory";
 import roundNumber from "../helpers/rounding";
 import Turnstile from "../Turnstile/Turnstile";
 import { isTurnstileDisabled } from "../Turnstile/turnstileConfig";
+import { SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Mousewheel, Navigation } from "swiper/modules";
+import {
+  StyledSlider as ActorsSlider,
+  Title as ActorsTitle,
+  Wrapper as ActorsWrapper,
+  WrapperSlide as ActorsSlide,
+} from "../../app/styles/SwiperFilms.styles";
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
@@ -383,45 +387,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           </WrapperWatchFilm>
         </WrapperInfo>
 
-        {actors.length ? (
-          <ActorsSection>
-            <ActorsHead>
-              <ActorsTitle>Актёры</ActorsTitle>
-              <ActorsArrows>
-                <ActorsArrow
-                  type="button"
-                  aria-label="Назад"
-                  onClick={() =>
-                    actorsRef.current?.scrollBy({ left: -460, behavior: "smooth" })
-                  }
-                >
-                  ‹
-                </ActorsArrow>
-                <ActorsArrow
-                  type="button"
-                  aria-label="Вперёд"
-                  onClick={() =>
-                    actorsRef.current?.scrollBy({ left: 460, behavior: "smooth" })
-                  }
-                >
-                  ›
-                </ActorsArrow>
-              </ActorsArrows>
-            </ActorsHead>
-            <ActorsRow ref={actorsRef}>
-              {actors.map((person: any) => (
-                <ActorCard key={`${person.id}-${person.name}`}>
-                  <ActorPhoto>
-                    <img src={person.photo} alt={person.name} loading="lazy" />
-                  </ActorPhoto>
-                  <ActorName>{person.name}</ActorName>
-                  {person.description ? <ActorRole>{person.description}</ActorRole> : null}
-                </ActorCard>
-              ))}
-            </ActorsRow>
-          </ActorsSection>
-        ) : null}
-
 
     <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
@@ -444,6 +409,47 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             ""
           )}
         </SwiperWrapperSimilar>
+        {actors.length ? (
+          <>
+            <ActorsTitle>Актёры</ActorsTitle>
+            <ActorsSlider
+              cssMode={true}
+              mousewheel={true}
+              slidesPerView={4}
+              slidesPerGroup={2}
+              spaceBetween={10}
+              modules={[Navigation, Mousewheel]}
+              className="mySwiper"
+              speed={500}
+              navigation
+              breakpoints={{
+                577: { slidesPerGroup: 3, slidesPerView: 5, spaceBetween: 15 },
+                769: { slidesPerGroup: 3, slidesPerView: 6, spaceBetween: 20 },
+                1024: { slidesPerGroup: 4, slidesPerView: 7, spaceBetween: 24 },
+                1200: { slidesPerGroup: 4, slidesPerView: 8, spaceBetween: 28 },
+              }}
+            >
+              <ActorsWrapper>
+                {actors.map((person: any) => (
+                  <SwiperSlide key={`${person.id}-${person.name}`}>
+                    <ActorsSlide>
+                      <ActorCard>
+                        <ActorPhoto>
+                          <img src={person.photo} alt={person.name} loading="lazy" />
+                        </ActorPhoto>
+                        <ActorName>{person.name}</ActorName>
+                        {person.description ? (
+                          <ActorRole>{person.description}</ActorRole>
+                        ) : null}
+                      </ActorCard>
+                    </ActorsSlide>
+                  </SwiperSlide>
+                ))}
+              </ActorsWrapper>
+            </ActorsSlider>
+          </>
+        ) : null}
+
         <Bottom />
       </LayoutFilm>
 
