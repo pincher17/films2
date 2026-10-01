@@ -41,7 +41,11 @@ const allFilmsStudio = createSlice({
     reducers: {
         
         addFilms(state, action:PayloadAction<ArrayFilmsType>) {
-            state.films = state.films.concat(action.payload);
+            // страховка: одна и та же карточка не должна попасть в список дважды
+            const seen = new Set(state.films.map((film: any) => film.id));
+            state.films = state.films.concat(
+                action.payload.filter((film: any) => !seen.has(film.id))
+            );
         },
         addFilmsNewFilters(state, action:PayloadAction<ArrayFilmsType>) {
             state.films = action.payload;
