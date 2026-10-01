@@ -17,7 +17,7 @@ import { resolveRecords } from "./kpMap.js";
  * Больше страниц = шире пул кандидатов: часть фильмов отсеивается локальными
  * фильтрами (исключения стран), поэтому 4 страницы дают полноценную выдачу.
  */
-const TMDB_PAGES_PER_SITE_PAGE = 4;
+const TMDB_PAGES_PER_SITE_PAGE = 2;
 
 /** Прогрев кэша: какие слайдеры главной страницы собрать заранее */
 export const SLIDER_IDS = ["films", "series", "thriller", "comedy", "drama", "boevik", "detective", "fantasy", "new"];

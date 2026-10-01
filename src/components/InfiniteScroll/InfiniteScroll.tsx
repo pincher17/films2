@@ -43,6 +43,12 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
 
     waiting.current = true;
     loadRef.current();
+
+    // страховка: если ответ не изменил количество карточек (ошибка, отброшенный
+    // запрос), не замираем навсегда — через 12 секунд пробуем снова
+    window.setTimeout(() => {
+      waiting.current = false;
+    }, 12000);
   };
 
   // после каждой загрузки: если маячок всё ещё виден — грузим следующую порцию
@@ -51,7 +57,10 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
       lastCount.current = count;
       waiting.current = false;
     }
-    if (!disabled) tryLoad();
+    if (!disabled) {
+      waiting.current = false;
+      tryLoad();
+    }
   }, [count, disabled]);
 
   useEffect(() => {

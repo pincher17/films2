@@ -101,6 +101,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   );
   const [allLoaded, setAllLoaded] = useState<boolean>(false);
   const prevCount = useRef(0);
+  const stuckCount = useRef(0);
 
   const searchParams = useSearchParams();
 
@@ -163,9 +164,12 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     if (films.length > prevCount.current) {
       prevCount.current = films.length;
+      stuckCount.current = 0;
       setAllLoaded(false);
-    } else if (films.length > 0 && films.length === prevCount.current) {
-      setAllLoaded(true);
+    } else if (films.length > 0) {
+      // считаем «всё загружено» только после двух подряд попыток без новых карточек
+      stuckCount.current += 1;
+      if (stuckCount.current >= 2) setAllLoaded(true);
     }
   }, [films]);
 

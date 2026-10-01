@@ -282,7 +282,7 @@ export async function resolveRecords(media, tmdbItems, { preFilter } = {}) {
   if (!missing.length) return resolved;
 
   // 1. детали + wikidata_id
-  const detailed = await pool(missing, 8, async (item) => ({
+  const detailed = await pool(missing, 12, async (item) => ({
     item,
     data: await details(media, item.id),
   }));
