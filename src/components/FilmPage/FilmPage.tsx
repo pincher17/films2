@@ -12,6 +12,7 @@ import {
   Hero,
   HeroButton,
   HeroButtons,
+  HeroDescription,
   HeroDot,
   HeroMeta,
   HeroPoster,
@@ -210,6 +211,12 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   <span>{genres.slice(0, 3).map((genre: any) => genre.name).join(", ")}</span>
                 </>
               ) : null}
+              {countries.length ? (
+                <>
+                  <HeroDot />
+                  <span>{countries.slice(0, 2).map((country: any) => country.name).join(", ")}</span>
+                </>
+              ) : null}
             </HeroMeta>
             <HeroButtons>
               <HeroButton
@@ -229,6 +236,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 </HeroButton>
               ) : null}
             </HeroButtons>
+            {filmInfoId?.description ? (
+              <HeroDescription>{filmInfoId.description}</HeroDescription>
+            ) : null}
             </HeroText>
 
             {filmInfoId?.poster?.previewUrl ? (
@@ -243,13 +253,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           </Hero>
         ) : null}
         <WrapperInfo>
-          <FilmInfoText
-            countries={countries}
-            filmInfoId={filmInfoId}
-            genres={genres}
-            ratingKinopoisk={ratingKinopoisk}
-            resolution={resolution}
-          />
           <WrapperWatchFilm>
             <PosterBlock>
               <div>
@@ -315,14 +318,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           </WrapperWatchFilm>
         </WrapperInfo>
 
-        {resolution.width > 1150 || resolution.width < 850 ? (
-          <>
-            <TitleDescription>Описание:</TitleDescription>
-            <Description>{filmInfoId?.description}</Description>
-          </>
-        ) : (
-          ""
-        )}
 
     <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (

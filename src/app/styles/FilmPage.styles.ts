@@ -83,6 +83,18 @@ export const HeroButtons = styled.div`
   gap: 12px;
 `;
 
+export const HeroDescription = styled.p`
+  margin: 20px 0 0;
+  max-width: 620px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
 export const HeroButton = styled.button<{ $primary?: boolean }>`
   display: inline-flex;
   align-items: center;
