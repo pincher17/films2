@@ -94,7 +94,8 @@ export const HeroFacts = styled.div`
   gap: 6px 14px;
   margin-top: auto;
   padding-top: 22px;
-  margin-bottom: 6px;
+  /* подъём строки деталей от низа херо: больше значение — выше строка */
+  margin-bottom: 54px;
   font-size: 14px;
   max-width: 660px;
   color: rgba(255, 255, 255, 0.5);
