@@ -31,6 +31,9 @@ import FilterIcon7 from "/public/Filtericon.svg";
 import InfiniteScroll from '@/components/InfiniteScroll';
 
 export default function Films() {
+  const loadingFilters = useAppSelector(
+    (state: { loading: { loadingFilters: boolean } }) => state.loading.loadingFilters
+  );
   const films = useAppSelector((state) => state.allFilms.films);
   const filtres = useAppSelector((state) => state.filters);
   const page = useAppSelector((state) => state.allFilms.page);
