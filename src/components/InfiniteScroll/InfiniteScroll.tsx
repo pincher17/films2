@@ -31,17 +31,23 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
   // колбэки меняются на каждом рендере — держим их в ref
   const loadRef = useRef(onLoad);
   loadRef.current = onLoad;
+  const countRef = useRef(count);
+  countRef.current = count;
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
 
   const tryLoad = () => {
     const node = sentinel.current;
-    if (!node || disabledRef.current || waiting.current) return;
+    if (!node || disabledRef.current || waiting.current) {
+      if (waiting.current) console.log("[fh] лента: пропуск — запрос уже в полёте");
+      return;
+    }
 
     const rect = node.getBoundingClientRect();
     if (rect.top > window.innerHeight + MARGIN) return;
 
     waiting.current = true;
+    console.log("[fh] лента: запускаю загрузку (карточек на странице:", countRef.current, ")");
     loadRef.current();
 
     // страховка: если ответ не изменил количество карточек (ошибка, отброшенный

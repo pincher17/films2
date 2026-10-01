@@ -134,6 +134,7 @@ export default function Films() {
   const showMore = () => {
     const pageToLoad = loadedPageRef.current + 1;
     loadedPageRef.current = pageToLoad;
+    console.log("[fh] запрашиваю страницу", pageToLoad, "| в списке карточек:", films.length);
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad));
   };
