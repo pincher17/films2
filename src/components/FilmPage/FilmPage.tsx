@@ -29,7 +29,6 @@ import {
   WrapperInfo,
   WrapperWatchFilm,
 } from "../../app/styles/FilmPage.styles";
-import Trailer from "../Trailer/Trailer";
 import { CloseIconTrailer, IframeTrailer, Overlay } from "../../app/styles/Trailer.styles";
 import { Line1, Line2 } from "../../app/styles/AllFilmsPage.styles";
 import SkeletonImage from "../SkeletonImage/SkeletonImage";
@@ -300,11 +299,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               )}
             </WrapperIframe>
           </WrapperWatchFilm>
-          {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? (
-            <Trailer src={`${filmInfoId?.videos.trailers[0].url}`} />
-          ) : (
-            ""
-          )}
         </WrapperInfo>
 
         {resolution.width > 1150 || resolution.width < 850 ? (
