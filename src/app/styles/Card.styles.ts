@@ -41,8 +41,10 @@ export const Rating = styled.div<{ $tier?: string }>`
         return "#6f9c1b"; // 7.0–7.9 — салатовый
       case "mid":
         return "#d98324"; // 6.0–6.9 — оранжевый
+      case "weak":
+        return "#6b6b6b"; // 5.0–5.9 — серый
       case "low":
-        return "#c0392b"; // ниже 6.0 — красный
+        return "#c0392b"; // ниже 5.0 — красный
       default:
         return "rgba(30, 30, 30, 0.85)"; // рейтинга нет — нейтральный
     }

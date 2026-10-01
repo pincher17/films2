@@ -31,6 +31,8 @@ const {
     ? "good"
     : ratingKp >= 6
     ? "mid"
+    : ratingKp >= 5
+    ? "weak"
     : "low";
 
     return (
