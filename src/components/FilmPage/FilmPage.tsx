@@ -263,8 +263,10 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     );
   }
 
-  // пока данных нет — показываем скелетон вместо полупустого интерфейса
-  if (loading) return <FilmSkeleton />;
+  // Скелетон показываем и когда данных ещё нет вовсе: до старта запроса
+  // loading === false, и на секунду успевала мелькнуть старая вёрстка
+  // с пустыми полями и рейтингом 0
+  if (loading || !filmInfoId?.name) return <FilmSkeleton />;
 
   return (
     <>
