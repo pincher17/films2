@@ -228,6 +228,10 @@ export async function GET(request) {
           ? 300
           : (yearFrom ?? 1960) >= new Date().getFullYear() - 1
           ? 20
+          : // у российского кино в TMDB мало оценок: с порогом 300 новые
+          // фильмы (2023–2026) отсекались, и список начинался с 2022
+          countryMode === "ru"
+          ? 20
           : 300),
     });
 

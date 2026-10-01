@@ -25,6 +25,10 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
   const sentinel = useRef<HTMLDivElement | null>(null);
   const lastCount = useRef(count);
   const waiting = useRef(false);
+  // функция загрузки меняется на каждом рендере — держим её в ref,
+  // иначе observer пересоздавался и мог пропустить срабатывание
+  const loadRef = useRef(onLoad);
+  loadRef.current = onLoad;
 
   // как только пришли новые карточки — снимаем блокировку
   useEffect(() => {
@@ -42,14 +46,14 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
       (entries) => {
         if (!entries[0]?.isIntersecting || waiting.current) return;
         waiting.current = true;
-        onLoad();
+        loadRef.current();
       },
       { rootMargin: "400px 0px" }
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [onLoad, disabled]);
+  }, [disabled]);
 
   if (disabled) return null;
 

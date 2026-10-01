@@ -20,7 +20,9 @@ const SortSelect: React.FC<Props> = ({ onChange, studio }) => {
   );
 
   React.useEffect(() => {
-    onChange(selected);
+    // наружу уходит строка ('date-asc' | 'rating' | 'date-desc'),
+    // иначе в API уезжал объект [object Object] и сортировка не работала
+    onChange(selected?.value || 'date-desc');
   }, [selected]);
 
   const colourStyles = {
