@@ -12,11 +12,39 @@ export const Wrapper = styled.div`
 export const Hero = styled.div`
   position: relative;
   padding-top: 40px;
-  margin-bottom: 28px;
-  max-width: 780px;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
 
   @media (max-width: 850px) {
     display: none;
+  }
+`;
+
+export const HeroText = styled.div`
+  max-width: 760px;
+  min-width: 0;
+`;
+
+/* главная обложка фильма в херо */
+export const HeroPoster = styled.div`
+  flex: 0 0 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.7);
+  background: #101010;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 1150px) {
+    flex: 0 0 220px;
   }
 `;
 

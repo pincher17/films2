@@ -14,7 +14,9 @@ import {
   HeroButtons,
   HeroDot,
   HeroMeta,
+  HeroPoster,
   HeroScore,
+  HeroText,
   HeroTitle,
   PosterBlock,
   Iframe,
@@ -186,6 +188,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       <LayoutFilm>
         {filmInfoId?.name ? (
           <Hero>
+            <HeroText>
             <HeroTitle itemProp="name">{filmInfoId.name}</HeroTitle>
             <HeroMeta>
               {filmInfoId.year ? <span>{filmInfoId.year}</span> : null}
@@ -226,6 +229,17 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 </HeroButton>
               ) : null}
             </HeroButtons>
+            </HeroText>
+
+            {filmInfoId?.poster?.previewUrl ? (
+              <HeroPoster>
+                <img
+                  src={filmInfoId.poster.previewUrl}
+                  alt={filmInfoId.name}
+                  itemProp="image"
+                />
+              </HeroPoster>
+            ) : null}
           </Hero>
         ) : null}
         <WrapperInfo>
