@@ -9,7 +9,7 @@
  */
 
 import React from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 const pulse = keyframes`
   0% { opacity: 1; }
@@ -17,7 +17,9 @@ const pulse = keyframes`
   100% { opacity: 1; }
 `;
 
-const block = `
+// css`` обязателен: без него styled-components v5+ не принимает keyframes
+// внутри обычной строки и падает с ошибкой "interpolating a keyframe declaration"
+const block = css`
   background-color: #2a2a2a;
   animation: ${pulse} 1.4s ease-in-out infinite;
 `;
