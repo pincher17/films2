@@ -75,6 +75,15 @@ export function fetchCatalog(filters, page = 1, genre = [], limit = 40) {
   return requestList(buildCatalogParams(filters, page, genre, limit));
 }
 
+/** Страница студии: тот же каталог, но по продюсерской компании */
+export function fetchStudio(filters, page, company, limit = 40) {
+  return requestList({
+    ...buildCatalogParams(filters, page, [], limit),
+    task: "studio",
+    company,
+  });
+}
+
 export function fetchSlider(slider, limit = 25) {
   return requestList({ task: "slider", slider, limit });
 }

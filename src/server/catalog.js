@@ -127,6 +127,9 @@ async function buildServerParams(media, options) {
 
   if (options.countryMode === "ru") params.with_original_language = "ru";
 
+  // страницы студий: фильмы конкретной продюсерской компании
+  if (options.companyId) params.with_companies = options.companyId;
+
   if (options.cartoonsOnly) {
     const animation = await resolveGenre("мультфильм", media);
     if (animation) params.with_genres = String(animation.id);
