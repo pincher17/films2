@@ -6,6 +6,7 @@ import { MainTag } from '../../app/Main.styles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import React, { useEffect, useState } from 'react';
 import { getFilmSearchPage, refreshResultSearchPage } from '@/redux/searchSlice';
+import InfiniteScroll from '@/components/InfiniteScroll';
 
 
 export default function SearchPage({ params }: { params: { searchQuery: string } }) {
@@ -47,6 +48,11 @@ console.log(page)
             <div><p className={s.total_films}>{`Найдено: ${totalFilms}шт.`}</p></div>
         </div>
     {resultSearch.length && <Cards cards={resultSearch} />}
+    <InfiniteScroll
+      count={resultSearch.length}
+      onLoad={showMore}
+      disabled={totalPages === page}
+    />
     {totalPages === page ? <></> : <div className={s.wrapper_btn_show_more}><button onClick={showMore} className={s.btn}>Показать еще</button></div>}
     </div>
     </MainTag>

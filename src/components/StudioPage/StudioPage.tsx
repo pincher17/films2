@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
 import {
   getAllFilmsFiltersThunk,
@@ -44,6 +44,7 @@ import Peacock from '../../../public/assets/img/studios-logo/Peacock.png';
 import Roku from '../../../public/assets/img/studios-logo/Roku.png';
 import { StaticImageData } from "next/image";
 import { Image, NameStudio, WrapperImageStudio, WrapperName } from "./StudioPage.styles";
+import InfiniteScroll from '@/components/InfiniteScroll';
 
 
 const logoMap: { [key: string]: StaticImageData } = {
@@ -94,6 +95,9 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   const filtres = useAppSelector((state) => state.filtersStudios);
   const page = useAppSelector((state) => state.allFilmsStudio.page);
   const dispatch = useAppDispatch();
+  // автоподгрузка: стоп, когда новых карточек не пришло
+  const [allLoaded, setAllLoaded] = useState<boolean>(false);
+  const prevCount = useRef(0);
 
   const searchParams = useSearchParams();
 
@@ -153,6 +157,15 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     }
   }, [slug]);
 
+  useEffect(() => {
+    if (films.length > prevCount.current) {
+      prevCount.current = films.length;
+      setAllLoaded(false);
+    } else if (films.length > 0 && films.length === prevCount.current) {
+      setAllLoaded(true);
+    }
+  }, [films]);
+
   const showMore = () => {
     const nameStudio = getValueBySlug(slug)
     dispatch(nextPage());
@@ -194,6 +207,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
             <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
           </Sidebar>
           <Cards cards={films} />
+          <InfiniteScroll count={films.length} onLoad={showMore} disabled={allLoaded} />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
           </WrapperButtonShowMore>

@@ -1,11 +1,12 @@
 'use client'
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button,NameBlock, Wrapper, WrapperButtonShowMore, WrapperNameBlock } from '../../../src/app/styles/AllFilmsPage.styles';
 import Cards from '@/components/Cards/Cards';
 import { MainTag } from '@/app/Main.styles';
 import { getFilmsSlugFirstThunk, getFilmsSlugThunk, nextPage, setNameCollection, setPage } from '@/redux/Collection';
+import InfiniteScroll from '@/components/InfiniteScroll';
 
 export default function CollectionPage({ params }: { params: { slug: string } }){
   let slug = params.slug
@@ -15,6 +16,9 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   const page = useAppSelector(state => state.collection.page);
   const allPages = useAppSelector(state => state.collection.allPages);
   const dispatch = useAppDispatch()
+  // автоподгрузка: стоп, когда новых карточек не пришло
+  const [allLoaded, setAllLoaded] = useState<boolean>(false);
+  const prevCount = useRef(0);
 
 
 
@@ -29,6 +33,15 @@ export default function CollectionPage({ params }: { params: { slug: string } })
         }
   }, []);
 
+
+  useEffect(() => {
+    if (films.length > prevCount.current) {
+      prevCount.current = films.length;
+      setAllLoaded(false);
+    } else if (films.length > 0 && films.length === prevCount.current) {
+      setAllLoaded(true);
+    }
+  }, [films]);
 
       const showMore = () => {
         dispatch(nextPage())
@@ -46,6 +59,11 @@ export default function CollectionPage({ params }: { params: { slug: string } })
         </div>
       </WrapperNameBlock>
       <Cards cards={films} />
+     <InfiniteScroll
+       count={films.length}
+       onLoad={showMore}
+       disabled={allLoaded || page >= allPages}
+     />
      <WrapperButtonShowMore>
      {page >= allPages ? '' :<Button onClick={showMore}>Показать еще</Button>}
       </WrapperButtonShowMore>
