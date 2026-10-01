@@ -37,7 +37,13 @@ const block = css`
   border-radius: 8px;
 `;
 
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
 const Page = styled.div`
+  animation: ${fadeIn} 0.18s ease;
   position: relative;
   z-index: 1;
   max-width: 1220px;

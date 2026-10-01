@@ -1,8 +1,15 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { IframeProps } from "../../components/FilmPage/Iframe.types";
 import { ImgWrap, ImgWrapper, Img } from "../../components/Card";
 
+/** Проявление контента: убирает рывок при подмене скелетона на страницу */
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
 export const Wrapper = styled.div`
+  animation: ${fadeIn} 0.22s ease;
   position: relative;
   z-index: 1;
 `;
