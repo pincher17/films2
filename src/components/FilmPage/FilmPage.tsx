@@ -247,6 +247,11 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     };
     }, [id]); */
 
+  // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
+  // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
+  // версия (старая раскладка с рейтингом 0) даже на компьютере.
+  if (loading || !filmInfoId?.name) return <FilmSkeleton />;
+
   if (resolution.width < 850) {
     return (
       <>
@@ -262,11 +267,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       </>
     );
   }
-
-  // Скелетон показываем и когда данных ещё нет вовсе: до старта запроса
-  // loading === false, и на секунду успевала мелькнуть старая вёрстка
-  // с пустыми полями и рейтингом 0
-  if (loading || !filmInfoId?.name) return <FilmSkeleton />;
 
   return (
     <>
