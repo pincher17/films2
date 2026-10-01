@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { SLIDER_IDS, buildList, buildSlider, buildTop } from "@/server/catalog";
-import { resolveCompanyId } from "@/server/tmdb";
+import { platformIds, resolveCompanyId } from "@/server/tmdb";
 import { cacheStats } from "@/server/kpMap";
 
 /**
@@ -113,10 +113,12 @@ export async function GET(request) {
         numberOrUndefined(searchParams.get("ratingTo")) ?? 10,
       ];
       const studioGenres = listOf(searchParams.get("genres"));
-      const companyId = await resolveCompanyId(company);
+      const known = platformIds(company);
+      const companyId = known ? known.company : await resolveCompanyId(company);
+      const networkId = known ? known.network : null;
 
-      if (!companyId) {
-        return NextResponse.json(empty(page, limit, `Студия не найдена в TMDB: ${company}`));
+      if (!companyId && !networkId) {
+        return NextResponse.json(empty(page, limit, `Платформа не найдена в TMDB: ${company}`));
       }
 
       const result = await buildList({
@@ -124,6 +126,7 @@ export async function GET(request) {
         limit,
         types: searchParams.get("types") || "1,2,3",
         companyId,
+        networkId,
         genres: studioGenres,
         excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre)),
         yearRange: studioYears,

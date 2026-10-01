@@ -5,12 +5,10 @@ export const allStudios = [
    { value: 'Amazon Prime Video', label: 'Amazon Prime Video', id: 3, slug: 'amazon-prime', },
    { value: 'Hulu', label: 'Hulu', id: 11, slug: 'hulu', },
    { value: 'KION', label: 'KION', id: 12, slug: 'kion', },
-   { value: 'Premier', label: 'Premier', id: 19, slug: 'premier', },
    { value: 'Disney%2B', label: 'Disney+', id: 8, slug: 'disney', },
    { value: 'DC Universe', label: 'DC Universe', id: 7, slug: 'dc-universe', },
    { value: 'Okko', label: 'Okko', id: 16, slug: 'okko', },
    { value: 'Paramount%2B', label: 'Paramount+', id: 17, slug: 'paramount', },
    { value: 'Max', label: 'Max', id: 14, slug: 'max', },
    { value: 'Peacock', label: 'Peacock', id: 18, slug: 'peacock', },
-   { value: 'Roku Channel', label: 'Roku Channel', id: 20, slug: 'roku-channel', },
 ]

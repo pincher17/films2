@@ -123,7 +123,38 @@ export async function resolveKeywordId(name) {
   return id;
 }
 
-/** Компания-студия по имени (для страниц студий) */
+/**
+ * Карта платформ: id сетей и компаний TMDB.
+ *
+ * Это внутренние номера TMDB (не кинопоисковские!): network 213 = Netflix,
+ * 49 = HBO, 2552 = Apple TV+, 1024 = Amazon. Нужны как параметры фильтра:
+ * with_networks=213 → «всё, что вышло на Netflix».
+ *
+ * Поиск компании по названию здесь не годится: TMDB отдаёт случайную
+ * компанию-однофамильца (для «Netflix» — фирму с 15 фильмами).
+ */
+export const PLATFORM_IDS = {
+  netflix: { network: 213, company: 213 },
+  hbo: { network: 49, company: 3268 },
+  "apple tv+": { network: 2552, company: 194232 },
+  "amazon prime video": { network: 1024, company: 210099 },
+  hulu: { network: 453, company: null },
+  "disney+": { network: 2739, company: 2 },
+  "paramount+": { network: 4330, company: 4 },
+  max: { network: 3186, company: 174 },
+  peacock: { network: 3353, company: null },
+  "dc universe": { network: null, company: 184898 },
+  kion: { network: null, company: 294156 },
+  okko: { network: null, company: 175169 },
+};
+
+/** id платформы по названию студии с сайта */
+export function platformIds(name) {
+  const key = String(name || "").trim().toLowerCase();
+  return PLATFORM_IDS[key] || null;
+}
+
+/** Компания-студия по имени — запасной вариант, если платформы нет в карте */
 export async function resolveCompanyId(name) {
   if (cache.companies.has(name)) return cache.companies.get(name);
 
