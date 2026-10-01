@@ -69,9 +69,14 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
     }
   }, [count, disabled]);
 
+  // ВАЖНО: зависимость от disabled. Пока список пуст, компонент возвращает null,
+  // маячка нет — и эффект с пустыми зависимостями отработал бы один раз впустую,
+  // оставив ленту без слушателей навсегда.
   useEffect(() => {
     const node = sentinel.current;
     if (!node) return;
+
+    console.log("[fh] лента: слушатели подключены");
 
     const observer = new IntersectionObserver(() => tryLoad(), {
       rootMargin: `${MARGIN}px 0px`,
@@ -87,7 +92,7 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [disabled]);
 
   if (disabled) return null;
 
