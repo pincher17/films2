@@ -74,8 +74,9 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
 
         filmsApiV4.getFilmsStudio(filters, page, nameStudio).then((response: any) =>{
             
-            // дозагрузка применяется только к своей выборке
-            if (signature !== currentSignature) return;
+            // Дозагрузку не сверяем с подписью: у TMDB пагинация по дате
+            // нестабильна, страницы перекрываются, и проверка выбрасывала
+            // годные ответы. От дублей защищает дедупликация ниже.
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
             console.log(response)
