@@ -78,8 +78,9 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
             console.log(response)
     })
     .catch((error: any) => {
-       console.log(error)
-        
+        console.warn("[студии] запрос не выполнен:", error?.message || error)
+        // важно: снимаем лоадер, иначе скелетоны останутся навсегда
+        dispatch(setLoading(false))
     });
     }
 }
@@ -100,8 +101,8 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersStudioType, 
             console.log(response)
     })
     .catch((error: any) => {
-        console.log(error)
-         
+        console.warn("[студии] запрос не выполнен:", error?.message || error)
+        dispatch(setLoadingFilters(false))
      });
     }
 }
