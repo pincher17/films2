@@ -99,6 +99,30 @@ export const HeroFacts = styled.div`
   }
 `;
 
+/* теги фильма */
+export const HeroTags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  max-width: 660px;
+`;
+
+export const HeroTag = styled.span`
+  padding: 5px 12px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+`;
+
 export const HeroDescription = styled.p`
   margin: 20px 0 0;
   max-width: 620px;

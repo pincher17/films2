@@ -142,6 +142,63 @@ async function getCountries() {
 
 const CARTOON_GENRES = ["мультфильм", "анимац", "animation"];
 
+/**
+ * TMDB отдаёт ключевые слова только по-английски, поэтому частые переводим сами.
+ * Незнакомые показываем как есть — словарь легко дополнять.
+ */
+const KEYWORD_RU = {
+  "artificial intelligence": "искусственный интеллект",
+  "space": "космос",
+  "survival": "выживание",
+  "based on novel": "по книге",
+  "dystopia": "антиутопия",
+  "post-apocalyptic": "постапокалипсис",
+  "future": "будущее",
+  "robot": "робот",
+  "alien": "пришелец",
+  "friendship": "дружба",
+  "revenge": "месть",
+  "murder": "убийство",
+  "police": "полиция",
+  "detective": "детектив",
+  "family": "семья",
+  "school": "школа",
+  "world war ii": "Вторая мировая",
+  "superhero": "супергерой",
+  "time travel": "путешествие во времени",
+  "magic": "магия",
+  "dragon": "дракон",
+  "zombie": "зомби",
+  "vampire": "вампир",
+  "ghost": "призрак",
+  "serial killer": "серийный убийца",
+  "heist": "ограбление",
+  "spy": "шпион",
+  "martial arts": "боевые искусства",
+  "sport": "спорт",
+  "music": "музыка",
+  "biography": "биография",
+  "based on true story": "по реальным событиям",
+  "coming of age": "взросление",
+  "small town": "маленький город",
+  "monster": "монстр",
+  "kidnapping": "похищение",
+  "prison": "тюрьма",
+  "virtual reality": "виртуальная реальность",
+  "cyberpunk": "киберпанк",
+  "apocalypse": "апокалипсис",
+  "desert": "пустыня",
+  "ocean": "океан",
+  "island": "остров",
+  "snow": "снег",
+  "christmas": "Рождество",
+  "new york city": "Нью-Йорк",
+  "los angeles": "Лос-Анджелес",
+  "sequel": "сиквел",
+  "family relationships": "семейные отношения",
+  "love": "любовь",
+};
+
 function isCartoon(genres) {
   return (genres || []).some((genre) =>
     CARTOON_GENRES.some((marker) => String(genre).toLowerCase().includes(marker))
@@ -261,6 +318,16 @@ export async function getFilmPageData(kinopoiskId) {
       name: countries.get(country.iso_3166_1) || country.name,
     })),
     facts: [],
+    // у фильмов ключевые слова в keywords.keywords, у сериалов — в keywords.results
+    keywords: (
+      data.keywords?.keywords ||
+      data.keywords?.results ||
+      []
+    )
+      .map((keyword) => keyword?.name)
+      .filter(Boolean)
+      .slice(0, 12)
+      .map((name) => KEYWORD_RU[String(name).toLowerCase()] || name),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
     videos: trailer
       ? {
