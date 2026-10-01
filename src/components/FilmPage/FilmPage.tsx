@@ -11,6 +11,11 @@ import {
   ActorRole,
   Backdrop,
   BigStill,
+  DetailsGrid,
+  DetailsLabel,
+  DetailsRow,
+  DetailsSection,
+  DetailsValue,
   StillCard,
   BackdropImage,
   BackdropShade,
@@ -111,6 +116,22 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     : null;
   const heroCompanies: string[] = (filmInfoId as any)?.productionCompanies || [];
   const stills: string[] = (((filmInfoId as any)?.stills || []) as string[]).slice(0, 12);
+
+  // подробности фильма — вынесены из херо в отдельный раздел внизу
+  const details = ([
+    heroDirector ? { label: "Режиссёр", value: heroDirector } : null,
+    heroCast.length ? { label: "В ролях", value: heroCast.join(", ") } : null,
+    filmInfoId?.year ? { label: "Год", value: String(filmInfoId.year) } : null,
+    filmInfoId?.movieLength ? { label: "Длительность", value: `${filmInfoId.movieLength} мин` } : null,
+    heroBudget ? { label: "Бюджет", value: heroBudget } : null,
+    heroRevenue ? { label: "Сборы", value: heroRevenue } : null,
+    heroCompanies.length ? { label: "Студии", value: heroCompanies.join(", ") } : null,
+    countries.length ? { label: "Страна", value: countries.map((country: any) => country.name).join(", ") } : null,
+    genres.length ? { label: "Жанры", value: genres.map((genre: any) => genre.name).join(", ") } : null,
+    ((filmInfoId as any)?.spokenLanguages || []).length
+      ? { label: "Языки", value: ((filmInfoId as any).spokenLanguages as string[]).join(", ") }
+      : null,
+  ].filter(Boolean) as { label: string; value: string }[]);
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
@@ -325,35 +346,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               </>
             ) : null}
 
-            {heroDirector || heroCast.length || heroBudget ? (
-              <HeroFacts>
-                {heroDirector ? (
-                  <span>
-                    Режиссёр: <b>{heroDirector}</b>
-                  </span>
-                ) : null}
-                {heroCast.length ? (
-                  <span>
-                    В ролях: <b>{heroCast.join(", ")}</b>
-                  </span>
-                ) : null}
-                {heroBudget ? (
-                  <span>
-                    Бюджет: <b>{heroBudget}</b>
-                  </span>
-                ) : null}
-                {heroRevenue ? (
-                  <span>
-                    Сборы: <b>{heroRevenue}</b>
-                  </span>
-                ) : null}
-                {heroCompanies.length ? (
-                  <span>
-                    Студии: <b>{heroCompanies.join(", ")}</b>
-                  </span>
-                ) : null}
-              </HeroFacts>
-            ) : null}
             </HeroText>
 
             {filmInfoId?.poster?.previewUrl ? (
@@ -529,6 +521,20 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               </ActorsWrapper>
             </ActorsSlider>
           </>
+        ) : null}
+
+        {details.length ? (
+          <DetailsSection>
+            <ActorsTitle>Детали</ActorsTitle>
+            <DetailsGrid>
+              {details.map((item) => (
+                <DetailsRow key={item.label}>
+                  <DetailsLabel>{item.label}</DetailsLabel>
+                  <DetailsValue>{item.value}</DetailsValue>
+                </DetailsRow>
+              ))}
+            </DetailsGrid>
+          </DetailsSection>
         ) : null}
 
         <Bottom />

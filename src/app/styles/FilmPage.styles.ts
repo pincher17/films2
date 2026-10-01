@@ -522,3 +522,38 @@ export const BigStill = styled.img`
   border-radius: 10px;
   display: block;
 `;
+
+
+/* ───────── Раздел «Детали» ───────── */
+export const DetailsSection = styled.section`
+  margin-top: 44px;
+`;
+
+export const DetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 48px;
+  margin-top: 18px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const DetailsRow = styled.div`
+  display: flex;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.45;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+`;
+
+export const DetailsLabel = styled.span`
+  flex: 0 0 130px;
+  color: rgba(255, 255, 255, 0.45);
+`;
+
+export const DetailsValue = styled.span`
+  color: rgba(255, 255, 255, 0.92);
+`;
