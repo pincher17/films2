@@ -102,7 +102,11 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
             
             // применяем, только если эта выборка всё ещё актуальна:
             // иначе устаревший ответ затрёт список текущих фильтров
-            if (currentSignature !== signature) return;
+            if (currentSignature !== signature) {
+              // снимаем флаг: если оставить его включённым, лента выключится навсегда
+              dispatch(setLoadingFilters(false));
+              return;
+            }
 
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))

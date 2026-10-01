@@ -228,7 +228,7 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
           <InfiniteScroll
             count={films.length}
             onLoad={showMore}
-            disabled={allLoaded || loadingFilters || films.length === 0}
+            disabled={loadingFilters || films.length === 0}
           />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
