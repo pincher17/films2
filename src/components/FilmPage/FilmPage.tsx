@@ -5,6 +5,9 @@ import React, { useEffect, useRef, useState } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import {
+  Backdrop,
+  BackdropImage,
+  BackdropShade,
   Description,
   Iframe,
   ImgMain,
@@ -46,6 +49,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     (state) => state.filmInfo
   );
   const refDataFilm = useRef<HTMLInputElement | null>(null);
+  // большой фон: бэкдроп TMDB, при его отсутствии — постер в размытии
+  const heroImage = filmInfoId?.backdrop?.url || filmInfoId?.poster?.url;
+  const heroBlurred = !filmInfoId?.backdrop?.url;
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
@@ -159,6 +165,12 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       <Turnstile onToken={setToken} />
     ) : (
     <Wrapper>
+      {heroImage ? (
+        <Backdrop>
+          <BackdropImage src={heroImage} alt="" $blurred={heroBlurred} />
+          <BackdropShade />
+        </Backdrop>
+      ) : null}
       <LayoutFilm>
         <WrapperInfo>
           <FilmInfoText

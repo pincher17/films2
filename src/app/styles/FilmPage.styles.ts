@@ -3,7 +3,57 @@ import { IframeProps } from "../../components/FilmPage/Iframe.types";
 import { ImgWrap, ImgWrapper, Img } from "../../components/Card";
 
 export const Wrapper = styled.div`
+  position: relative;
   z-index: 1;
+`;
+
+/* Большой фон страницы фильма: бэкдроп из TMDB, если его нет — постер в блюре */
+export const Backdrop = styled.div`
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 660px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+  background: #000;
+
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;
+
+export const BackdropImage = styled.img<{ $blurred?: boolean }>`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  filter: ${(props) =>
+    props.$blurred
+      ? "blur(26px) brightness(0.42) saturate(1.1)"
+      : "brightness(0.62) saturate(1.06)"};
+  transform: ${(props) => (props.$blurred ? "scale(1.18)" : "none")};
+`;
+
+export const BackdropShade = styled.div`
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.74) 0%,
+      rgba(0, 0, 0, 0.38) 34%,
+      rgba(0, 0, 0, 0.88) 84%,
+      #000 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.82) 0%,
+      rgba(0, 0, 0, 0.12) 42%,
+      rgba(0, 0, 0, 0.62) 100%
+    );
 `;
 export const WrapperInfo = styled.div`
     @media (max-width: 1150px){
