@@ -72,17 +72,7 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
             
             // применяем только самый свежий запрос той же выборки
             if (requestId !== latestRequest) return;
-            if (signature !== currentSignature) {
-              console.log("[filmhub] список: отбросил дозагрузку — другая выборка", { page });
-              return;
-            }
-
-            console.log("[filmhub] список: дописал", {
-              page,
-              пришло: response.data.docs.length,
-              первый: response.data.docs[0]?.name,
-              год: response.data.docs[0]?.year,
-            });
+            if (signature !== currentSignature) return;
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
             console.log(response)
@@ -100,23 +90,11 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersStudioType, 
         dispatch(setLoadingFilters(true))
         const requestId = ++latestRequest;
         currentSignature = makeSignature(filters);
-        console.log("[filmhub] список: новый запрос", {
-          page,
-          sort: (filters as any)?.sortBy,
-          country: (filters as any)?.country?.[0]?.value ?? (filters as any)?.country,
-        });
 
         filmsApiV4.getFilmsStudio(filters, page, nameStudio).then((response: any) =>{
             
             // применяем только самый свежий запрос
             if (requestId !== latestRequest) return;
-            
-            console.log("[filmhub] список: заменил", {
-              page,
-              пришло: response.data.docs.length,
-              первый: response.data.docs[0]?.name,
-              год: response.data.docs[0]?.year,
-            });
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
             console.log(response)
