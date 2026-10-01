@@ -247,25 +247,38 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     };
     }, [id]); */
 
-  // Кроссфейд: скелетон остаётся поверх ещё 300 мс и растворяется, пока под
-  // ним проявляется страница. Без этого между экранами мелькал пустой кадр.
-  const hasData = !loading && !!filmInfoId?.name;
+  // Кроссфейд: скелетон растворяется, пока проявляется страница.
+  //
+  // Важно: слой показывается РОВНО ОДИН РАЗ на фильм. Если завязать его на
+  // флаг loading, он будет возвращаться при каждом запросе страницы (а их
+  // несколько) и экран начнёт мерцать.
   const [coverVisible, setCoverVisible] = React.useState(true);
   const [coverFading, setCoverFading] = React.useState(false);
+  const coverShownFor = React.useRef<string | null>(null);
+
+  // данные готовы именно для этого фильма
+  const dataReady =
+    !!filmInfoId?.name &&
+    !loading &&
+    (filmInfoId?.id == null || String(filmInfoId.id) === String(id));
+
+  // смена фильма — слой нужен заново
+  React.useEffect(() => {
+    coverShownFor.current = null;
+    setCoverVisible(true);
+    setCoverFading(false);
+  }, [id]);
 
   React.useEffect(() => {
-    if (!hasData) {
-      setCoverVisible(true);
-      setCoverFading(false);
-      return;
-    }
+    if (!dataReady || coverShownFor.current === String(id)) return;
+    coverShownFor.current = String(id);
     setCoverFading(true);
     const timer = setTimeout(() => {
       setCoverVisible(false);
       setCoverFading(false);
     }, 300);
     return () => clearTimeout(timer);
-  }, [hasData]);
+  }, [dataReady, id]);
 
   // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
   // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
