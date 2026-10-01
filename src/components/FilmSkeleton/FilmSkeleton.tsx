@@ -1,120 +1,160 @@
 "use client";
 
 /**
- * Скелетон страницы фильма для десктопа.
+ * Скелетон страницы фильма (десктоп).
  *
- * Показывается, пока грузятся данные: повторяет сетку реальной страницы
- * (обложка, постер, заголовок, кнопки, описание, похожие), чтобы переход
- * не выглядел как сломанный интерфейс.
+ * Размеры повторяют реальную вёрстку из FilmPage.styles.ts:
+ *  - фон-обложка: абсолютный блок 780px с отступом сверху -120px;
+ *  - герой: флекс, отступ сверху 40px, зазор 48px;
+ *  - постер: 300px (220px уже 1150px);
+ *  - заголовок 56px, мета-строка, кнопки 46px, описание 4 строки шириной 620px.
+ *
+ * Анимация — бегущий блик, как у Netflix и YouTube: он читается как «данные
+ * едут» лучше, чем мигание прозрачностью.
  */
 
 import React from "react";
 import styled, { css, keyframes } from "styled-components";
 
-const pulse = keyframes`
-  0% { opacity: 1; }
-  50% { opacity: 0.55; }
-  100% { opacity: 1; }
+const shimmer = keyframes`
+  0% { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
 `;
 
 // css`` обязателен: без него styled-components v5+ не принимает keyframes
 // внутри обычной строки и падает с ошибкой "interpolating a keyframe declaration"
 const block = css`
-  background-color: #2a2a2a;
-  animation: ${pulse} 1.4s ease-in-out infinite;
+  background-color: #1c1c1c;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0) 90%
+  );
+  background-size: 500px 100%;
+  background-repeat: no-repeat;
+  animation: ${shimmer} 1.5s linear infinite;
+  border-radius: 8px;
 `;
 
-const Wrapper = styled.div`
+const Page = styled.div`
+  position: relative;
+  z-index: 1;
   max-width: 1220px;
   margin: 0 auto;
-  padding: 0 20px 60px;
+  padding: 0 20px 80px;
 `;
 
+/** Фон-обложка: в реальной вёрстке это absolute-слой высотой 780px */
 const Backdrop = styled.div`
-  ${block};
-  height: 420px;
-  border-radius: 12px;
-  background-image: linear-gradient(90deg, #333 0%, #262626 60%, #1f1f1f 100%);
-  margin-top: 20px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 40px;
-  margin-top: -120px;
-  position: relative;
-  padding: 0 30px;
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 780px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #242424 0%, #161616 55%, #0d0d0d 100%);
 
   @media (max-width: 850px) {
-    margin-top: 20px;
-    padding: 0;
+    display: none;
   }
 `;
 
-const Left = styled.div`
+const Hero = styled.div`
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 48px;
+  padding-top: 40px;
+  margin-bottom: 36px;
+`;
+
+const HeroText = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 760px;
+  min-width: 0;
   flex: 1;
-  padding-top: 140px;
 `;
 
 const Title = styled.div`
   ${block};
-  height: 46px;
-  width: 70%;
-  border-radius: 8px;
+  height: 58px;
+  width: 72%;
+`;
+
+const Slogan = styled.div`
+  ${block};
+  height: 20px;
+  width: 45%;
+  margin-top: 14px;
 `;
 
 const Meta = styled.div`
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 22px;
 `;
 
-const Chip = styled.div`
+const Chip = styled.div<{ $w?: number }>`
   ${block};
-  height: 20px;
-  width: 74px;
+  height: 22px;
+  width: ${(props) => props.$w || 84}px;
   border-radius: 6px;
 `;
 
 const Buttons = styled.div`
   display: flex;
-  gap: 14px;
-  margin-top: 28px;
+  gap: 12px;
+  margin-top: 24px;
 `;
 
-const Button = styled.div`
+const Button = styled.div<{ $w?: number }>`
   ${block};
   height: 46px;
-  width: 170px;
-  border-radius: 8px;
+  width: ${(props) => props.$w || 168}px;
+`;
+
+const Description = styled.div`
+  max-width: 620px;
+  width: 100%;
+  margin-top: 20px;
 `;
 
 const Line = styled.div<{ $w?: string }>`
   ${block};
-  height: 14px;
+  height: 13px;
   width: ${(props) => props.$w || "100%"};
   border-radius: 5px;
-  margin-top: 12px;
+  margin-top: 11px;
 `;
 
 const Poster = styled.div`
   ${block};
-  width: 260px;
-  height: 390px;
+  flex: 0 0 300px;
+  height: 450px;
   border-radius: 12px;
-  flex-shrink: 0;
-  margin-top: 60px;
+  align-self: flex-start;
+
+  @media (max-width: 1150px) {
+    flex: 0 0 220px;
+    height: 330px;
+  }
 `;
 
 const Section = styled.div`
-  margin-top: 60px;
+  margin-top: 56px;
 `;
 
 const SectionTitle = styled.div`
   ${block};
-  height: 26px;
-  width: 220px;
-  border-radius: 6px;
+  height: 28px;
+  width: 200px;
 `;
 
 const Cards = styled.div`
@@ -123,12 +163,10 @@ const Cards = styled.div`
   gap: 20px;
   margin-top: 24px;
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1150px) {
     grid-template-columns: repeat(4, 1fr);
   }
 `;
-
-const Card = styled.div``;
 
 const CardPoster = styled.div`
   ${block};
@@ -138,41 +176,44 @@ const CardPoster = styled.div`
 `;
 
 const FilmSkeleton: React.FC = () => (
-  <Wrapper aria-busy="true" aria-label="Загрузка страницы фильма">
+  <Page aria-busy="true" aria-label="Загрузка страницы фильма">
     <Backdrop />
-    <Row>
-      <Left>
+    <Hero>
+      <HeroText>
         <Title />
+        <Slogan />
         <Meta>
-          <Chip />
-          <Chip />
-          <Chip />
+          <Chip $w={72} />
+          <Chip $w={96} />
+          <Chip $w={64} />
+          <Chip $w={110} />
         </Meta>
         <Buttons>
-          <Button />
-          <Button />
+          <Button $w={180} />
+          <Button $w={150} />
         </Buttons>
-        <div style={{ marginTop: 34 }}>
+        <Description>
           <Line />
-          <Line $w="92%" />
-          <Line $w="64%" />
-        </div>
-      </Left>
+          <Line $w="94%" />
+          <Line $w="88%" />
+          <Line $w="52%" />
+        </Description>
+      </HeroText>
       <Poster />
-    </Row>
+    </Hero>
     <Section>
       <SectionTitle />
       <Cards>
         {[1, 2, 3, 4, 5, 6].map((item) => (
-          <Card key={item}>
+          <div key={item}>
             <CardPoster />
-            <Line $w="80%" />
-            <Line $w="40%" />
-          </Card>
+            <Line $w="78%" />
+            <Line $w="38%" />
+          </div>
         ))}
       </Cards>
     </Section>
-  </Wrapper>
+  </Page>
 );
 
 export default FilmSkeleton;
