@@ -75,7 +75,7 @@ import {
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
-import FilmSkeleton, { SkeletonCover } from "../FilmSkeleton/FilmSkeleton";
+import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -247,39 +247,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     };
     }, [id]); */
 
-  // Кроссфейд: скелетон растворяется, пока проявляется страница.
-  //
-  // Важно: слой показывается РОВНО ОДИН РАЗ на фильм. Если завязать его на
-  // флаг loading, он будет возвращаться при каждом запросе страницы (а их
-  // несколько) и экран начнёт мерцать.
-  const [coverVisible, setCoverVisible] = React.useState(true);
-  const [coverFading, setCoverFading] = React.useState(false);
-  const coverShownFor = React.useRef<string | null>(null);
-
-  // данные готовы именно для этого фильма
-  const dataReady =
-    !!filmInfoId?.name &&
-    !loading &&
-    (filmInfoId?.id == null || String(filmInfoId.id) === String(id));
-
-  // смена фильма — слой нужен заново
-  React.useEffect(() => {
-    coverShownFor.current = null;
-    setCoverVisible(true);
-    setCoverFading(false);
-  }, [id]);
-
-  React.useEffect(() => {
-    if (!dataReady || coverShownFor.current === String(id)) return;
-    coverShownFor.current = String(id);
-    setCoverFading(true);
-    const timer = setTimeout(() => {
-      setCoverVisible(false);
-      setCoverFading(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [dataReady, id]);
-
   // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
   // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
   // версия (старая раскладка с рейтингом 0) даже на компьютере.
@@ -303,11 +270,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
 
   return (
     <>
-    {coverVisible && (
-      <SkeletonCover $fading={coverFading}>
-        <FilmSkeleton />
-      </SkeletonCover>
-    )}
     {!isVerified ? (
       <Turnstile onToken={setToken} />
     ) : (

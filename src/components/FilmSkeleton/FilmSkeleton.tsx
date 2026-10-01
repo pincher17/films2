@@ -200,25 +200,6 @@ const CardPoster = styled.div`
   border-radius: 12px;
 `;
 
-/**
- * Слой со скелетоном поверх страницы. Нужен для кроссфейда: пока страница
- * проявляется под ним, этот слой уходит в прозрачность — перехода через
- * пустой кадр не возникает.
- */
-export const SkeletonCover = styled.div<{ $fading?: boolean }>`
-  position: fixed;
-  top: 88px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
-  background: #0a0a0a;
-  opacity: ${(props) => (props.$fading ? 0 : 1)};
-  transition: opacity 0.26s ease;
-  pointer-events: none;
-  overflow: hidden;
-`;
-
 const FilmSkeleton: React.FC = () => (
   <Page aria-busy="true" aria-label="Загрузка страницы фильма">
     <Backdrop />
