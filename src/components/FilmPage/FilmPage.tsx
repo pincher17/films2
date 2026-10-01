@@ -75,6 +75,7 @@ import {
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
+import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -261,6 +262,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       </>
     );
   }
+
+  // пока данных нет — показываем скелетон вместо полупустого интерфейса
+  if (loading) return <FilmSkeleton />;
 
   return (
     <>
