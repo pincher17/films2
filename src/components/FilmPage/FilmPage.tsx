@@ -23,8 +23,6 @@ import {
   HeroMore,
   HeroPoster,
   HeroScore,
-  HeroTag,
-  HeroTags,
   HeroText,
   HeroTitle,
   PosterBlock,
@@ -333,16 +331,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   </span>
                 ) : null}
               </HeroFacts>
-            ) : null}
-
-            {((filmInfoId as any)?.keywords || []).length >= 3 ? (
-              <HeroTags>
-                {((filmInfoId as any).keywords as string[])
-                  .slice(0, 8)
-                  .map((keyword: string) => (
-                    <HeroTag key={keyword}>{keyword}</HeroTag>
-                  ))}
-              </HeroTags>
             ) : null}
             </HeroText>
 
