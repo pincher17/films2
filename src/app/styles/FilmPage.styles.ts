@@ -494,3 +494,31 @@ export const ActorRole = styled.div`
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.3;
 `;
+
+
+/* ───────── Галерея кадров ───────── */
+export const StillCard = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  background: #141414;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  &:hover {
+    transform: scale(1.03);
+  }
+`;
+
+export const BigStill = styled.img`
+  max-width: 88vw;
+  max-height: 84vh;
+  border-radius: 10px;
+  display: block;
+`;

@@ -10,6 +10,8 @@ import {
   ActorPhoto,
   ActorRole,
   Backdrop,
+  BigStill,
+  StillCard,
   BackdropImage,
   BackdropShade,
   Description,
@@ -108,6 +110,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     ? `$${Math.round((filmInfoId as any).fees.world.value / 1000000)} млн`
     : null;
   const heroCompanies: string[] = (filmInfoId as any)?.productionCompanies || [];
+  const stills: string[] = (((filmInfoId as any)?.stills || []) as string[]).slice(0, 12);
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
@@ -119,6 +122,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   // описание: показываем кнопку «Читать полностью» только если текст обрезан
   const [descriptionOpen, setDescriptionOpen] = React.useState(false);
   const [descriptionClamped, setDescriptionClamped] = React.useState(false);
+  const [stillIndex, setStillIndex] = React.useState<number | null>(null);
   const descriptionRef = useRef<HTMLParagraphElement | null>(null);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -492,8 +496,57 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           </>
         ) : null}
 
+        {stills.length ? (
+          <>
+            <ActorsTitle>Кадры из фильма</ActorsTitle>
+            <ActorsSlider
+              cssMode={true}
+              mousewheel={true}
+              slidesPerView={1.4}
+              slidesPerGroup={1}
+              spaceBetween={12}
+              modules={[Navigation, Mousewheel]}
+              className="mySwiper"
+              speed={500}
+              navigation
+              breakpoints={{
+                577: { slidesPerGroup: 2, slidesPerView: 2, spaceBetween: 16 },
+                769: { slidesPerGroup: 2, slidesPerView: 2.6, spaceBetween: 18 },
+                1024: { slidesPerGroup: 3, slidesPerView: 3.2, spaceBetween: 20 },
+                1200: { slidesPerGroup: 3, slidesPerView: 4, spaceBetween: 22 },
+              }}
+            >
+              <ActorsWrapper>
+                {stills.map((src, index) => (
+                  <SwiperSlide key={src}>
+                    <ActorsSlide>
+                      <StillCard onClick={() => setStillIndex(index)}>
+                        <img src={src} alt="" loading="lazy" />
+                      </StillCard>
+                    </ActorsSlide>
+                  </SwiperSlide>
+                ))}
+              </ActorsWrapper>
+            </ActorsSlider>
+          </>
+        ) : null}
+
         <Bottom />
       </LayoutFilm>
+
+      {stillIndex !== null && stills[stillIndex] ? (
+        <Overlay onClick={() => setStillIndex(null)}>
+          <CloseIconTrailer sidebar={+true} onClick={() => setStillIndex(null)}>
+            <Line1 />
+            <Line2 />
+          </CloseIconTrailer>
+          <BigStill
+            src={stills[stillIndex]}
+            alt=""
+            onClick={(event) => event.stopPropagation()}
+          />
+        </Overlay>
+      ) : null}
 
       {trailerOpen && filmInfoId?.videos?.trailers?.[0] ? (
         <Overlay onClick={() => setTrailerOpen(false)}>
