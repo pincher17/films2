@@ -61,6 +61,14 @@ export const HeroTitle = styled.h1`
   text-shadow: 0 4px 28px rgba(0, 0, 0, 0.75);
 `;
 
+export const HeroSlogan = styled.p`
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 620px;
+`;
+
 export const HeroMeta = styled.div`
   display: flex;
   flex-wrap: wrap;

@@ -23,6 +23,7 @@ import {
   HeroMore,
   HeroPoster,
   HeroScore,
+  HeroSlogan,
   HeroText,
   HeroTitle,
   PosterBlock,
@@ -103,6 +104,10 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   const heroBudget = (filmInfoId as any)?.budget?.value
     ? `$${Math.round((filmInfoId as any).budget.value / 1000000)} млн`
     : null;
+  const heroRevenue = (filmInfoId as any)?.fees?.world?.value
+    ? `$${Math.round((filmInfoId as any).fees.world.value / 1000000)} млн`
+    : null;
+  const heroCompanies: string[] = (filmInfoId as any)?.productionCompanies || [];
   const [resolution, setResolution] = React.useState<any>({
     width: 0,
     height: 0,
@@ -248,6 +253,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           <Hero>
             <HeroText>
             <HeroTitle itemProp="name">{filmInfoId.name}</HeroTitle>
+            {filmInfoId?.slogan ? (
+              <HeroSlogan>«{filmInfoId.slogan}»</HeroSlogan>
+            ) : null}
             <HeroMeta>
               {filmInfoId.year ? <span>{filmInfoId.year}</span> : null}
               {ratingKinopoisk ? (
@@ -328,6 +336,16 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 {heroBudget ? (
                   <span>
                     Бюджет: <b>{heroBudget}</b>
+                  </span>
+                ) : null}
+                {heroRevenue ? (
+                  <span>
+                    Сборы: <b>{heroRevenue}</b>
+                  </span>
+                ) : null}
+                {heroCompanies.length ? (
+                  <span>
+                    Студии: <b>{heroCompanies.join(", ")}</b>
                   </span>
                 ) : null}
               </HeroFacts>

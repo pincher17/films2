@@ -464,6 +464,15 @@ export async function getFilmPageData(kinopoiskId) {
     countries: (data.production_countries || []).map((country) => ({
       name: countries.get(country.iso_3166_1) || country.name,
     })),
+    productionCompanies: (data.production_companies || [])
+      .map((company) => company?.name)
+      .filter(Boolean)
+      .slice(0, 4),
+    spokenLanguages: (data.spoken_languages || [])
+      .map((language) => language?.name || language?.english_name)
+      .filter(Boolean),
+    status: data.status || null,
+    homepage: data.homepage || null,
     facts: [],
     // у фильмов ключевые слова в keywords.keywords, у сериалов — в keywords.results
     keywords: (
