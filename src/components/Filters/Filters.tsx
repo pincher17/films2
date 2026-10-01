@@ -11,6 +11,7 @@ import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filter
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsSlice';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SelectCountry from '../SelectCountry/SelectCountry';
+import SortSelect from '../SortSelect/SortSelect';
 
 
 
@@ -22,6 +23,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [valueYear, setValueYear] = React.useState<number[]>(filters.year);
     const [valueGenre, setValueGenre] = React.useState<string[]>(filters.genre);
     const [valueCountry, setValueCountry] = React.useState<CountryType[]>(filters.country);
+    const [valueSort, setValueSort] = React.useState<string>(filters.sortBy || 'date-desc');
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
@@ -30,6 +32,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             genre: valueGenre,
             rating: valueRating,
             sortByRelease: filters.sortByRelease,
+            sortBy: valueSort,
             year: valueYear,
             typeOfMovies: typeOfMovies,
             selectedTypeOfMovies: selectedTypeOfMovies,
@@ -109,6 +112,8 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
                 <MultipleSelect options={allGenres} onChange={setValueGenre}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
                 <SelectCountry onChange={setValueCountry}/>
+                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
+                <SortSelect onChange={setValueSort}/>
             </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>

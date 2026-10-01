@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { FiltersStudiosProps } from './FiltersStudios.types';
 import MultipleSelectStudio from '../MultipleSelectStudio';
 import SelectCountryStudios from '../SelectCountryStudios';
+import SortSelect from '../SortSelect/SortSelect';
 
 
 
@@ -23,6 +24,7 @@ const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar
     const [valueYear, setValueYear] = React.useState<number[]>(filters.year);
     const [valueGenre, setValueGenre] = React.useState<string[]>(filters.genres);
     const [valueCountry, setValueCountry] = React.useState<CountryType[]>(filters.country);
+    const [valueSort, setValueSort] = React.useState<string>(filters.sortBy || 'date-desc');
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
@@ -31,6 +33,7 @@ const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar
             genres: valueGenre,
             rating: valueRating,
             sortByRelease: filters.sortByRelease,
+            sortBy: valueSort,
             year: valueYear,
             typeOfMovies: typeOfMovies,
             selectedTypeOfMovies: selectedTypeOfMovies,
@@ -108,6 +111,8 @@ console.log(filters.genre, valueGenre)
                 <MultipleSelectStudio options={allGenres} onChange={setValueGenre}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
                 <SelectCountryStudios onChange={setValueCountry}/>
+                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
+                <SortSelect onChange={setValueSort} studio/>
             </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>

@@ -17,6 +17,7 @@ export type initialStateFiltersStudioType ={
      year: number[]
      rating: number[]
      sortByRelease: string
+     sortBy?: string
      genres: any[]
      typeOfMovies: MovieType[]
      selectedTypeOfMovies: string[]
@@ -30,6 +31,7 @@ const initialState: initialStateFiltersStudioType ={
         year: [1960, 2026],
         rating: [1, 10],
         sortByRelease: '-1',
+        sortBy: 'date-desc',
         genres: [],
         typeOfMovies: [
             {name: 'Фильмы', included: true, typeNumber: '1'},
@@ -56,6 +58,9 @@ const filtersStudios = createSlice({
         setFilterRelease(state, action:PayloadAction<string>) {
             state.sortByRelease = action.payload
         },
+        setFilterSort(state, action:PayloadAction<string>) {
+            state.sortBy = action.payload
+        },
         setFilterGenre(state, action:PayloadAction<Array<any>>) {
             state.genres = action.payload
         },
@@ -64,6 +69,7 @@ const filtersStudios = createSlice({
             state.year = action.payload.year
             state.rating = action.payload.rating
             state.sortByRelease = action.payload.sortByRelease
+            state.sortBy = action.payload.sortBy || state.sortBy
             state.genres = action.payload.genres
             state.typeOfMovies = action.payload.typeOfMovies
             state.selectedTypeOfMovies = action.payload.selectedTypeOfMovies
@@ -73,6 +79,7 @@ const filtersStudios = createSlice({
 });
 
 export const {setFilterYear, setFilterRating, setFilterRelease,
+                setFilterSort,
                 setFilterGenre, setFilters, setNameStudio} = filtersStudios.actions;
 
 

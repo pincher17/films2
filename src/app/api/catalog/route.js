@@ -27,6 +27,12 @@ const DEFAULT_EXCLUDED_GENRES = [
   "новости",
 ];
 
+/** 'rating' | 'date-asc' | 'date-desc' (старые значения '1'/'-1' тоже принимаем) */
+const sortOptions = (value) => ({
+  rating: value === "rating",
+  dateAsc: value === "date-asc" || value === "1",
+});
+
 const numberOrUndefined = (value) => {
   // важно: Number(null) === 0, поэтому пустой параметр нельзя пропускать через Number
   if (value === null || value === undefined || value === "") return undefined;
@@ -136,8 +142,10 @@ export async function GET(request) {
         ratingRange: studioRatings,
         ratingFrom: studioRatings[0],
         ratingTo: studioRatings[1],
-        sort: searchParams.get("sort") === "1" ? "1" : "-1",
-        countryMode: "all",
+        sort: sortOptions(searchParams.get("sort")).dateAsc ? "1" : "-1",
+        sortBy: sortOptions(searchParams.get("sort")).rating ? "vote_average.desc" : undefined,
+        ratingSort: sortOptions(searchParams.get("sort")).rating,
+        countryMode: searchParams.get("country") || "all",
         excludeAsianByDefault: false,
         requirePoster: true,
         voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 50,
@@ -191,6 +199,7 @@ export async function GET(request) {
     const ratingFrom = numberOrUndefined(searchParams.get("ratingFrom"));
     const ratingTo = numberOrUndefined(searchParams.get("ratingTo"));
     const countryMode = searchParams.get("country") || "all";
+    const sortParam = searchParams.get("sort") || "date-desc";
     const genres = listOf(searchParams.get("genres"));
 
     const result = await buildList({
@@ -205,15 +214,21 @@ export async function GET(request) {
       ratingRange: ratingFrom !== undefined && ratingTo !== undefined ? [ratingFrom, ratingTo] : undefined,
       ratingFrom,
       ratingTo,
-      sort: searchParams.get("sort") === "1" ? "1" : "-1",
+      sort: sortOptions(sortParam).dateAsc ? "1" : "-1",
+      sortBy: sortOptions(sortParam).rating ? "vote_average.desc" : undefined,
+      ratingSort: sortOptions(sortParam).rating,
       countryMode,
       excludeAsianByDefault: countryMode === "all",
       requirePoster: true,
       voteCountMin:
         numberOrUndefined(searchParams.get("voteCountMin")) ??
-        // у релизов текущего и прошлого года оценок ещё мало — 300 голосов
-        // отсекало почти весь год, поэтому порог ниже
-        ((yearFrom ?? 1960) >= new Date().getFullYear() - 1 ? 20 : 300),
+        // при сортировке по рейтингу порог держим высоким, иначе в топ лезут
+        // фильмы с одной оценкой; для свежих лет порог ниже — оценок ещё нет
+        (sortOptions(sortParam).rating
+          ? 300
+          : (yearFrom ?? 1960) >= new Date().getFullYear() - 1
+          ? 20
+          : 300),
     });
 
     return NextResponse.json(result);

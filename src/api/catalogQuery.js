@@ -45,7 +45,10 @@ export function normalizeGenres(genres) {
  * (например "&countries.name=!Китай"), поэтому режим определяется по нему.
  */
 function countryMode(country) {
-  const raw = Array.isArray(country) ? country[0]?.value : country;
+  // react-select отдаёт выбранный пункт объектом, а в начальном состоянии
+  // слайса это массив — поддерживаем оба варианта
+  const item = Array.isArray(country) ? country[0] : country;
+  const raw = typeof item === "string" ? item : item?.value;
   if (!raw || typeof raw !== "string") return "all";
   return raw.includes("!") ? "foreign" : "ru";
 }
@@ -67,7 +70,12 @@ export function buildCatalogParams(filters = {}, page = 1, genre = [], limit = 4
     types: types.length ? types.join(",") : "1,2,3",
     genres: genres.join(","),
     country: countryMode(filters.country),
-    sort: filters.sortByRelease === "1" ? "1" : "-1",
+    sort:
+      filters.sortBy === "rating"
+        ? "rating"
+        : filters.sortBy === "date-asc" || filters.sortByRelease === "1"
+        ? "date-asc"
+        : "date-desc",
   };
 }
 
