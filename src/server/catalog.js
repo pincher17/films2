@@ -289,12 +289,17 @@ export async function buildList(options) {
   const preFilter = buildPreFilter(options);
 
   const records = [];
+  // два разных фильма TMDB могут сопоставиться с одним кинопоисковым id —
+  // в списке это даёт одинаковые key и React путает карточки, поэтому дубли убираем
+  const seenKinopoisk = new Set();
   for (const [kind, list] of byMedia.entries()) {
     const items = [...list.values()];
     const resolved = await resolveRecords(kind, items, { preFilter });
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (record) records.push(record);
+      if (!record?.kinopoiskId || seenKinopoisk.has(record.kinopoiskId)) return;
+      seenKinopoisk.add(record.kinopoiskId);
+      records.push(record);
     });
   }
 
@@ -368,9 +373,12 @@ export async function buildTop(limit = 10) {
     const resolved = await resolveRecords(kind, items, {
       preFilter: buildPreFilter({ excludeAsianByDefault: true }),
     });
+    const seen = new Set(records.map((record) => record.kinopoiskId));
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (record) records.push(record);
+      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
+      seen.add(record.kinopoiskId);
+      records.push(record);
     });
   }
 

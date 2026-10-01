@@ -75,11 +75,14 @@ export async function searchFilms(query, page = 1) {
     resolveKinopoiskByTmdbIds(shows.map((item) => item.id), "tv"),
   ]);
 
+  const seen = new Set();
   const docs = items
     .map((item) => {
       const map = item.media_type === "movie" ? movieIds : showIds;
       const kinopoiskId = map.get(item.id);
-      return kinopoiskId ? toCard(item, kinopoiskId) : null;
+      if (!kinopoiskId || seen.has(kinopoiskId)) return null;
+      seen.add(kinopoiskId);
+      return toCard(item, kinopoiskId);
     })
     .filter(Boolean);
 
