@@ -370,3 +370,93 @@ export const TrailerWrapper = styled.div`
     position: absolute;
   }
 `;
+
+/* ───────── Ряд актёров ───────── */
+export const ActorsSection = styled.section`
+  margin-top: 14px;
+  margin-bottom: 10px;
+`;
+
+export const ActorsHead = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+`;
+
+export const ActorsTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+`;
+
+export const ActorsArrows = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+export const ActorsArrow = styled.button`
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+`;
+
+export const ActorsRow = styled.div`
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+export const ActorCard = styled.div`
+  flex: 0 0 132px;
+  width: 132px;
+  text-align: center;
+`;
+
+export const ActorPhoto = styled.div`
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #141414;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+`;
+
+export const ActorName = styled.div`
+  font-size: 13.5px;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 4px;
+`;
+
+export const ActorRole = styled.div`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.3;
+`;

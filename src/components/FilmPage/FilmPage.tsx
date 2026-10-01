@@ -5,6 +5,16 @@ import React, { useEffect, useRef, useState } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import {
+  ActorCard,
+  ActorName,
+  ActorPhoto,
+  ActorRole,
+  ActorsArrow,
+  ActorsArrows,
+  ActorsHead,
+  ActorsRow,
+  ActorsSection,
+  ActorsTitle,
   Backdrop,
   BackdropImage,
   BackdropShade,
@@ -82,6 +92,11 @@ export default function FilmPage({ params }: { params: { id: number } }) {
     .filter((person: any) => person?.enProfession === "actor")
     .map((person: any) => person.name)
     .slice(0, 4);
+  const actorsRef = useRef<HTMLDivElement | null>(null);
+  const actors: any[] = (((filmInfoId as any)?.persons || []) as any[])
+    .filter((person: any) => person?.enProfession === "actor" && person?.photo)
+    .slice(0, 20);
+
   const heroBudget = (filmInfoId as any)?.budget?.value
     ? `$${Math.round((filmInfoId as any).budget.value / 1000000)} млн`
     : null;
@@ -367,6 +382,45 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             </WrapperIframe>
           </WrapperWatchFilm>
         </WrapperInfo>
+
+        {actors.length ? (
+          <ActorsSection>
+            <ActorsHead>
+              <ActorsTitle>Актёры</ActorsTitle>
+              <ActorsArrows>
+                <ActorsArrow
+                  type="button"
+                  aria-label="Назад"
+                  onClick={() =>
+                    actorsRef.current?.scrollBy({ left: -460, behavior: "smooth" })
+                  }
+                >
+                  ‹
+                </ActorsArrow>
+                <ActorsArrow
+                  type="button"
+                  aria-label="Вперёд"
+                  onClick={() =>
+                    actorsRef.current?.scrollBy({ left: 460, behavior: "smooth" })
+                  }
+                >
+                  ›
+                </ActorsArrow>
+              </ActorsArrows>
+            </ActorsHead>
+            <ActorsRow ref={actorsRef}>
+              {actors.map((person: any) => (
+                <ActorCard key={`${person.id}-${person.name}`}>
+                  <ActorPhoto>
+                    <img src={person.photo} alt={person.name} loading="lazy" />
+                  </ActorPhoto>
+                  <ActorName>{person.name}</ActorName>
+                  {person.description ? <ActorRole>{person.description}</ActorRole> : null}
+                </ActorCard>
+              ))}
+            </ActorsRow>
+          </ActorsSection>
+        ) : null}
 
 
     <SwiperWrapperSimilar>
