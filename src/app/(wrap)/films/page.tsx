@@ -126,11 +126,14 @@ export default function Films() {
     }
   }, [films]);
 
+  // смена фильтров — снова с первой страницы
+  useEffect(() => {
+    loadedPageRef.current = 1;
+  }, [filtres]);
+
   const showMore = () => {
-    // номер следующей страницы считаем по количеству уже загруженных карточек:
-    // счётчик в redux не успевает обновиться при быстрой прокрутке, из-за чего
-    // дважды запрашивалась одна и та же страница и лента вставала
-    const pageToLoad = Math.floor(films.length / 40) + 1;
+    const pageToLoad = loadedPageRef.current + 1;
+    loadedPageRef.current = pageToLoad;
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad));
   };
