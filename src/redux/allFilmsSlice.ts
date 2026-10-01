@@ -44,11 +44,9 @@ const allFilms = createSlice({
             // страховка: одна и та же карточка не должна попасть в список дважды
             const seen = new Set(state.films.map((film: any) => film.id));
             const fresh = action.payload.filter((film: any) => !seen.has(film.id));
-            console.log("[fh] дозагрузка: пришло", action.payload.length, "| новых", fresh.length, "| стало", state.films.length + fresh.length);
             state.films = state.films.concat(fresh);
         },
         addFilmsNewFilters(state, action:PayloadAction<ArrayFilmsType>) {
-            console.log("[fh] список заменён:", action.payload.length, "карточек");
             state.films = action.payload;
         },
         clearFilms(state) {

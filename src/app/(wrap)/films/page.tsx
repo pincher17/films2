@@ -136,7 +136,6 @@ export default function Films() {
     // и от обнуления счётчика
     const pageToLoad = Math.max(loadedPageRef.current, page) + 1;
     loadedPageRef.current = pageToLoad;
-    console.log("[fh] запрашиваю страницу", pageToLoad, "| в списке карточек:", films.length);
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad));
   };

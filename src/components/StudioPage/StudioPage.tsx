@@ -185,7 +185,6 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     // и от обнуления счётчика
     const pageToLoad = Math.max(loadedPageRef.current, page) + 1;
     loadedPageRef.current = pageToLoad;
-    console.log("[fh] запрашиваю страницу", pageToLoad, "| в списке карточек:", films.length);
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad, filtres.nameStudio));
   };

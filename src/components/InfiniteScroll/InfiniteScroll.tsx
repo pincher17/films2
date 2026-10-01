@@ -38,16 +38,12 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
 
   const tryLoad = () => {
     const node = sentinel.current;
-    if (!node || disabledRef.current || waiting.current) {
-      if (waiting.current) console.log("[fh] лента: пропуск — запрос уже в полёте");
-      return;
-    }
+    if (!node || disabledRef.current || waiting.current) return;
 
     const rect = node.getBoundingClientRect();
     if (rect.top > window.innerHeight + MARGIN) return;
 
     waiting.current = true;
-    console.log("[fh] лента: запускаю загрузку (карточек на странице:", countRef.current, ")");
     loadRef.current();
 
     // страховка: если ответ не изменил количество карточек (ошибка, отброшенный
@@ -75,8 +71,6 @@ const InfiniteScroll: React.FC<Props> = ({ count, onLoad, disabled }) => {
   useEffect(() => {
     const node = sentinel.current;
     if (!node) return;
-
-    console.log("[fh] лента: слушатели подключены");
 
     const observer = new IntersectionObserver(() => tryLoad(), {
       rootMargin: `${MARGIN}px 0px`,
