@@ -39,8 +39,33 @@ export const filmsApiV4 = {
         })
     },
 
-    /** Поиск по названию. apiget не отдаёт общее число найденного — только has_next */
+    /**
+     * Поиск по названию.
+     * Основной источник — TMDB (бесплатно, точное число найденного),
+     * запасной — apiget, если TMDB ничего не отдал.
+     */
     async getFilmSearchV4(query, page = 1){
+        try {
+            const response = await axios.get("/api/search", {
+                params: { query, page, limit: SEARCH_LIMIT },
+            });
+            const data = response.data || {};
+
+            if (data.docs?.length) {
+                return {
+                    data: {
+                        docs: data.docs,
+                        total: data.total || 0,
+                        page: data.page || page,
+                        pages: data.pages || page,
+                        limit: data.limit || SEARCH_LIMIT,
+                    },
+                };
+            }
+        } catch (error) {
+            console.warn("[search] /api/search недоступен:", error?.message);
+        }
+
         const response = await apigetApi.search({ query, page, limit: SEARCH_LIMIT });
 
         if (!response.results?.length) return emptyDocsResponse(page, SEARCH_LIMIT);
