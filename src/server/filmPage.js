@@ -197,7 +197,65 @@ const KEYWORD_RU = {
   "sequel": "сиквел",
   "family relationships": "семейные отношения",
   "love": "любовь",
+  "man vs machine": "человек против машины",
+  "saving the world": "спасение мира",
+  "prophecy": "пророчество",
+  "philosophy": "философия",
+  "allegory": "аллегория",
+  "chosen one": "избранный",
+  "simulated reality": "смоделированная реальность",
+  "fortune teller": "гадалка",
+  "insurgence": "восстание",
+  "hacker": "хакер",
+  "computer virus": "компьютерный вирус",
+  "dreams": "сны",
+  "memory": "память",
+  "identity": "идентичность",
+  "war": "война",
+  "guns": "оружие",
+  "escape": "побег",
+  "rescue": "спасение",
+  "sacrifice": "жертва",
+  "betrayal": "предательство",
+  "brotherhood": "братство",
+  "competition": "соперничество",
+  "teenager": "подростки",
+  "college": "колледж",
+  "holiday": "отпуск",
+  "wedding": "свадьба",
+  "supernatural": "сверхъестественное",
+  "curse": "проклятие",
+  "demon": "демон",
+  "witch": "ведьма",
+  "king": "король",
+  "queen": "королева",
+  "princess": "принцесса",
+  "treasure": "сокровище",
+  "pirates": "пираты",
+  "cowboy": "ковбой",
+  "space travel": "космический полёт",
+  "spaceship": "космический корабль",
+  "planet": "планета",
+  "astronaut": "космонавт",
+  "nasa": "NASA",
+  "science": "наука",
+  "experiment": "эксперимент",
+  "scientist": "учёный",
+  "biotechnology": "биотехнологии",
 };
+
+/** «Artificial Intelligence (A.I.)» -> «artificial intelligence» */
+function translateKeyword(name) {
+  const cleaned = String(name || "")
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[^0-9a-zа-я\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return null;
+  return KEYWORD_RU[cleaned] || cleaned;
+}
 
 function isCartoon(genres) {
   return (genres || []).some((genre) =>
@@ -324,10 +382,9 @@ export async function getFilmPageData(kinopoiskId) {
       data.keywords?.results ||
       []
     )
-      .map((keyword) => keyword?.name)
+      .map((keyword) => translateKeyword(keyword?.name))
       .filter(Boolean)
-      .slice(0, 12)
-      .map((name) => KEYWORD_RU[String(name).toLowerCase()] || name),
+      .slice(0, 12),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
     videos: trailer
       ? {
