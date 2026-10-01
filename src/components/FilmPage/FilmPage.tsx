@@ -298,7 +298,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 }
                 </>
               )}
-            <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
             </WrapperIframe>
           </WrapperWatchFilm>
           {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? (
