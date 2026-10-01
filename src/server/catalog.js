@@ -46,7 +46,7 @@ function cardType(record) {
 }
 
 export function toCard(record) {
-  const year = record.kpYear ?? record.tmdbYear ?? null;
+  const year = record.tmdbYear ?? record.kpYear ?? null;
   const name = record.kpTitle || record.tmdbTitle || "";
   const tmdbPoster = posterUrl(record.tmdbPoster);
   const big = record.kpPosterBig || tmdbPoster;
@@ -86,6 +86,12 @@ export function toCard(record) {
 function inRange(value, range) {
   return typeof value === "number" && value >= range[0] && value <= range[1];
 }
+
+/**
+ * Год везде берём из TMDB: он есть всегда, а кинопоисковский появляется только
+ * при пополненном балансе apiget. Иначе поведение фильтров зависело бы от
+ * состояния чужого кошелька, а год в фильтре мог не совпадать с годом на карточке.
+ */
 
 /** Фильтры TMDB по типу материала */
 function mediaList(types) {
@@ -202,7 +208,7 @@ function buildPreFilter(options) {
 function passesLocalFilters(record, options) {
   if (!record?.kinopoiskId) return false;
 
-  const year = record.kpYear ?? record.tmdbYear;
+  const year = record.tmdbYear ?? record.kpYear;
   if (options.yearRange && !inRange(year, options.yearRange)) return false;
 
   const rating = record.kpRating ?? record.tmdbRating;
@@ -228,8 +234,8 @@ function passesLocalFilters(record, options) {
 
 function sortRecords(records, sort) {
   return records.slice().sort((a, b) => {
-    const yearA = a.kpYear ?? a.tmdbYear ?? 0;
-    const yearB = b.kpYear ?? b.tmdbYear ?? 0;
+    const yearA = a.tmdbYear ?? a.kpYear ?? 0;
+    const yearB = b.tmdbYear ?? b.kpYear ?? 0;
     if (yearA !== yearB) return sort === "1" ? yearA - yearB : yearB - yearA;
     const ratingA = a.kpRating ?? a.tmdbRating ?? 0;
     const ratingB = b.kpRating ?? b.tmdbRating ?? 0;
