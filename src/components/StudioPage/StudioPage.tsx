@@ -169,14 +169,14 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     } else if (films.length > 0) {
       // считаем «всё загружено» только после двух подряд попыток без новых карточек
       stuckCount.current += 1;
-      if (stuckCount.current >= 2) setAllLoaded(true);
+      if (stuckCount.current >= 3) setAllLoaded(true);
     }
   }, [films]);
 
   const showMore = () => {
-    const nameStudio = getValueBySlug(slug)
+    const pageToLoad = Math.floor(films.length / 40) + 1;
     dispatch(nextPage());
-    dispatch(getAllFilmsThunk(filtres, page + 1, nameStudio));
+    dispatch(getAllFilmsThunk(filtres, pageToLoad, filtres.nameStudio));
   };
 
   const toggleSidebar = () => {

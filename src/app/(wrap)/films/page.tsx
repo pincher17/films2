@@ -120,13 +120,17 @@ export default function Films() {
     } else if (films.length > 0) {
       // считаем «всё загружено» только после двух подряд попыток без новых карточек
       stuckCount.current += 1;
-      if (stuckCount.current >= 2) setAllLoaded(true);
+      if (stuckCount.current >= 3) setAllLoaded(true);
     }
   }, [films]);
 
   const showMore = () => {
+    // номер следующей страницы считаем по количеству уже загруженных карточек:
+    // счётчик в redux не успевает обновиться при быстрой прокрутке, из-за чего
+    // дважды запрашивалась одна и та же страница и лента вставала
+    const pageToLoad = Math.floor(films.length / 40) + 1;
     dispatch(nextPage());
-    dispatch(getAllFilmsThunk(filtres, page + 1));
+    dispatch(getAllFilmsThunk(filtres, pageToLoad));
   };
 
   const toggleSidebar = () => {
