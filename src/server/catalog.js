@@ -102,10 +102,10 @@ function mediaList(types) {
   const cartoons = has("3");
 
   if (!movies && !series && !cartoons) return [];
-  if (cartoons && !movies && !series) return ["movie", "tv"];
-  if (series && !movies) return ["tv"];
-  if (movies && !series && !cartoons) return ["movie"];
-  return ["movie", "tv"];
+  // мультфильмы — это фильмы, мультсериалы — сериалы, поэтому:
+  if (movies && !series) return ["movie"]; // «Фильмы», «Фильмы+Мультфильмы»
+  if (!movies && series) return ["tv"]; // «Сериалы», «Сериалы+Мультфильмы»
+  return ["movie", "tv"]; // выбрано и то, и другое
 }
 
 async function buildServerParams(media, options) {

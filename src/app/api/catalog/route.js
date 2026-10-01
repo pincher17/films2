@@ -40,6 +40,12 @@ const numberOrUndefined = (value) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+/** отмечен только чекбокс «Мультфильмы» */
+const isCartoonsOnly = (types) => {
+  const list = String(types || "1,2,3").split(",");
+  return list.includes("3") && !list.includes("1") && !list.includes("2");
+};
+
 const listOf = (value) =>
   String(value || "")
     .split(",")
@@ -120,6 +126,7 @@ export async function GET(request) {
         numberOrUndefined(searchParams.get("ratingTo")) ?? 10,
       ];
       const studioGenres = listOf(searchParams.get("genres"));
+      const studioTypes = searchParams.get("types") || "1,2,3";
       const known = platformIds(company);
       const companyId = known ? known.company : await resolveCompanyId(company);
       const networkId = known ? known.network : null;
@@ -131,7 +138,8 @@ export async function GET(request) {
       const result = await buildList({
         page,
         limit,
-        types: searchParams.get("types") || "1,2,3",
+        types: studioTypes,
+        cartoonsOnly: isCartoonsOnly(studioTypes),
         companyId,
         networkId,
         genres: studioGenres,
@@ -200,12 +208,15 @@ export async function GET(request) {
     const ratingTo = numberOrUndefined(searchParams.get("ratingTo"));
     const countryMode = searchParams.get("country") || "all";
     const sortParam = searchParams.get("sort") || "date-desc";
+    const typesParam = searchParams.get("types") || "1,2,3";
+    const cartoonsOnly = isCartoonsOnly(typesParam);
     const genres = listOf(searchParams.get("genres"));
 
     const result = await buildList({
       page,
       limit,
-      types: searchParams.get("types") || "1,2,3",
+      types: typesParam,
+      cartoonsOnly,
       genres,
       excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre)),
       yearRange: yearFrom !== undefined && yearTo !== undefined ? [yearFrom, yearTo] : undefined,
