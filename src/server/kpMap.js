@@ -22,7 +22,19 @@ const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 // неудачные сопоставления перепроверяем чаще: база Кинопоиска и Wikidata пополняются
 const NEGATIVE_TTL_MS = 60 * 60 * 1000;
 // если apiget недоступен (например, кончился баланс) — не долбим его на каждом запросе
-const APIGET_COOLDOWN_MS = 5 * 60 * 1000;
+const APIGET_COOLDOWN_MS = 15 * 60 * 1000;
+// метку «apiget недоступен» храним на диске: иначе при каждом перезапуске
+// дев-сервера мы снова и снова тратили запрос на заведомо пустой баланс
+const APIGET_BLOCK_FILE = path.join(process.cwd(), ".cache", "apiget-block.json");
+
+function readApigetBlock() {
+  try {
+    const data = JSON.parse(fs.readFileSync(APIGET_BLOCK_FILE, "utf8"));
+    return Number(data?.until) || 0;
+  } catch {
+    return 0;
+  }
+}
 const SPARQL_BATCH = 50;
 const APIGET_BATCH = 100;
 
@@ -128,7 +140,7 @@ async function mapWikidataToKinopoisk(qids) {
  * пять минут вообще не обращаемся к нему — иначе каждый запрос страницы заново
  * перепроверяет все несопоставленные фильмы и страница грузится десятки секунд.
  */
-let apigetBlockedUntil = 0;
+let apigetBlockedUntil = readApigetBlock();
 
 function apigetAvailable() {
   return Date.now() >= apigetBlockedUntil;
@@ -136,7 +148,23 @@ function apigetAvailable() {
 
 function noteApiget(response) {
   const error = response?.error;
-  if (error !== undefined && error !== 0) apigetBlockedUntil = Date.now() + APIGET_COOLDOWN_MS;
+  if (error !== undefined && error !== 0) {
+    apigetBlockedUntil = Date.now() + APIGET_COOLDOWN_MS;
+    try {
+      fs.mkdirSync(path.dirname(APIGET_BLOCK_FILE), { recursive: true });
+      fs.writeFileSync(
+        APIGET_BLOCK_FILE,
+        JSON.stringify({ until: apigetBlockedUntil, error, at: new Date().toISOString() })
+      );
+    } catch {
+      undefined;
+    }
+    console.warn(
+      `[apiget] недоступен (ошибка ${error}) — не обращаемся ${Math.round(
+        APIGET_COOLDOWN_MS / 60000
+      )} мин`
+    );
+  }
   return response;
 }
 

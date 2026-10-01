@@ -78,8 +78,9 @@ export const getAllFilmsThunk = (filters: initialStateFiltersType, page: any) =>
             /* console.log(response) */
     })
     .catch((error: any) => {
-       /* console.log(error) */
-        
+        console.warn("[список] запрос не выполнен:", error?.message || error)
+        // важно: снимаем лоадер, иначе скелетоны останутся навсегда
+        dispatch(setLoading(false))
     });
     }
 }
@@ -100,8 +101,8 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersType, page: 
             /* console.log(response) */
     })
     .catch((error: any) => {
-        /* console.log(error) */
-         
+        console.warn("[список] запрос не выполнен:", error?.message || error)
+        dispatch(setLoadingFilters(false))
      });
     }
 }
