@@ -155,9 +155,13 @@ const Poster = styled.div`
 const PlayerBlock = styled.div`
   ${block};
   width: 100%;
-  padding-bottom: 56.25%;
+  height: 533px;
   border-radius: 12px;
-  margin-top: 8px;
+  margin-top: -15px;
+
+  @media (max-width: 1150px) {
+    height: 420px;
+  }
 `;
 
 const Section = styled.div`
