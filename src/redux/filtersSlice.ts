@@ -26,7 +26,7 @@ export type initialStateFiltersType ={
 
 
 const initialState: initialStateFiltersType ={
-        year: [1960, 2024],
+        year: [1960, 2026],
         rating: [1, 10],
         sortByRelease: '-1',
         genre: [],

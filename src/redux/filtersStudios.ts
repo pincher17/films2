@@ -27,7 +27,7 @@ export type initialStateFiltersStudioType ={
 
 const initialState: initialStateFiltersStudioType ={
         nameStudio: '',
-        year: [1960, 2024],
+        year: [1960, 2026],
         rating: [1, 10],
         sortByRelease: '-1',
         genres: [],
