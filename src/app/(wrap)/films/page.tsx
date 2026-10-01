@@ -47,6 +47,8 @@ export default function Films() {
 
   const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(false);
   // автоподгрузка: останавливаемся, когда новых карточек не пришло
+  // последняя запрошенная страница: считаем её сами, а не по длине списка
+  const loadedPageRef = useRef(1);
   const [allLoaded, setAllLoaded] = useState<boolean>(false);
   const prevCount = useRef(0);
   const stuckCount = useRef(0);

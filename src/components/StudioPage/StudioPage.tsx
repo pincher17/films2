@@ -99,6 +99,8 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   const loadingFilters = useAppSelector(
     (state: { loading: { loadingFilters: boolean } }) => state.loading.loadingFilters
   );
+  // последняя запрошенная страница: считаем её сами, а не по длине списка
+  const loadedPageRef = useRef(1);
   const [allLoaded, setAllLoaded] = useState<boolean>(false);
   const prevCount = useRef(0);
   const stuckCount = useRef(0);
@@ -173,8 +175,14 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     }
   }, [films]);
 
+  // смена фильтров — начинаем с первой страницы
+  useEffect(() => {
+    loadedPageRef.current = 1;
+  }, [filtres]);
+
   const showMore = () => {
-    const pageToLoad = Math.floor(films.length / 40) + 1;
+    const pageToLoad = loadedPageRef.current + 1;
+    loadedPageRef.current = pageToLoad;
     dispatch(nextPage());
     dispatch(getAllFilmsThunk(filtres, pageToLoad, filtres.nameStudio));
   };
