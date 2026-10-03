@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import Link from 'next/link';
-import { GenreButton } from './GenreButton.types';
+import type { GenreButton as GenreButtonProps } from './GenreButton.types';
 import { SvgDiv, Title, WrapperGenre } from '../../app/styles/GenreButton.styles';
 import { useSearchParams } from 'next/navigation';
 import { setFilterGenre, setUpdateGenre } from '@/redux/filtersSlice';
@@ -38,14 +38,14 @@ const iconComponents: IconComponents = {
   
 
 
-const GenreButton: React.FC<GenreButton> = ({title}) =>{
+const GenreButton: React.FC<GenreButtonProps> = ({ title }) => {
   const IconComponent = iconComponents[title] || ''
   const searchParams = useSearchParams()!
   const dispatch = useAppDispatch()
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams)
+      const params = new URLSearchParams(searchParams.toString())
       params.set(name, value)
  
       return params.toString()

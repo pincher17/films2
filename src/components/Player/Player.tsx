@@ -241,7 +241,9 @@ const Player: React.FC<Props> = ({ source }) => {
 
       // DASH — подключаем dash.js только когда он реально нужен
       if (detected === "dash") {
-        const dashjs = (await import("dashjs")).default;
+        // типы dash.js не описывают default-экспорт, поэтому берём модуль как есть
+        const dashModule: any = await import("dashjs");
+        const dashjs = dashModule.default ?? dashModule;
         if (disposed) return;
 
         const player = dashjs.MediaPlayer().create();
