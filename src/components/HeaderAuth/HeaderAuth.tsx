@@ -15,6 +15,12 @@ const Wrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  // отступ от «Все фильмы»: без него на узких экранах они слипаются
+  margin-left: 28px;
+
+  @media (max-width: 700px) {
+    margin-left: 14px;
+  }
 `;
 
 const SignIn = styled(Link)`
