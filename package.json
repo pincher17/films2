@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.14",
+    "@prisma/client": "^6.19.3",
     "@reduxjs/toolkit": "^1.9.7",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.5.1",
@@ -32,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "prisma": "^6.19.3",
     "typescript": "^5"
   }
 }
