@@ -14,6 +14,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { detectStreamFormat } from "./streamFormat";
+import { loadWatchPosition, saveWatchPosition } from "@/api/watchPosition";
 
 export type PlayerSource = {
   id: string;
@@ -374,10 +375,82 @@ const Player: React.FC<Props> = ({ source }) => {
       const video = videoRef.current;
       if (video && !video.paused && video.currentTime > 15) {
         localStorage.setItem(storageKey, String(Math.floor(video.currentTime)));
+        // время записи нужно, чтобы при входе выбрать более свежую позицию —
+        // свою локальную или серверную
+        localStorage.setItem(`${storageKey}:at`, String(Date.now()));
       }
     }, 5000);
     return () => clearInterval(id);
   }, [storageKey]);
+
+  // --- синхронизация с сервером ---
+
+  // при открытии: если на сервере позиция свежее локальной — продолжаем с неё
+  useEffect(() => {
+    if (!source?.id) return;
+    let cancelled = false;
+
+    (async () => {
+      const remote = await loadWatchPosition({ filmId: Number(source.id) });
+      if (cancelled || !remote?.seconds || remote.seconds <= 15) return;
+
+      const localSeconds = Number(localStorage.getItem(storageKey) || 0);
+      const localAt = Number(localStorage.getItem(`${storageKey}:at`) || 0);
+      const remoteAt = new Date(remote.updatedAt).getTime();
+
+      // побеждает более свежая запись, а не просто большая: иначе устройство,
+      // где смотрели неделю назад, откатило бы просмотр назад
+      if (localSeconds > remote.seconds && localAt > remoteAt) return;
+
+      localStorage.setItem(storageKey, String(remote.seconds));
+      localStorage.setItem(`${storageKey}:at`, String(remoteAt));
+
+      const video = videoRef.current;
+      if (video && Math.abs(video.currentTime - remote.seconds) > 5) {
+        try {
+          video.currentTime = remote.seconds;
+          setResumeAt(remote.seconds);
+        } catch {
+          undefined;
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [source?.id, storageKey]);
+
+  // во время просмотра отправляем позицию нечасто, при закрытии — сразу
+  useEffect(() => {
+    if (!source?.id) return;
+    const filmId = Number(source.id);
+
+    const send = (beacon: boolean) => {
+      const video = videoRef.current;
+      if (!video || video.currentTime <= 15) return;
+      saveWatchPosition({
+        filmId,
+        seconds: Math.floor(video.currentTime),
+        duration: Number.isFinite(video.duration) ? Math.floor(video.duration) : undefined,
+        beacon,
+      });
+    };
+
+    const id = setInterval(() => {
+      const video = videoRef.current;
+      if (video && !video.paused) send(false);
+    }, 25000);
+
+    const onHide = () => send(true);
+    window.addEventListener("pagehide", onHide);
+
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("pagehide", onHide);
+      send(true);
+    };
+  }, [source?.id]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
