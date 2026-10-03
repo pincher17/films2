@@ -81,15 +81,20 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       const name = data.event;
       if (!name) return;
 
-      // Показываем первые события, чтобы видеть, отвечает ли плеер вообще.
-      // «Готовым» считаем только timeupdate/duration — посторонние скрипты на
-      // странице тоже шлют сообщения с полем event, и раньше это давало ложный сигнал.
-      if (seenRef.current < 15) {
-        seenRef.current += 1;
-        console.debug("[bridge] сообщение:", name, data.value ?? "");
+      // События плеера показываем всегда (первое — точно), а посторонние
+      // сообщения только первыми десятью: их шлют метрика, dev-сервер и реклама,
+      // и раньше они вытесняли из лога настоящие события плеера.
+      if (name !== "timeupdate" && name !== "duration") {
+        if (seenRef.current < 10) {
+          seenRef.current += 1;
+          console.debug("[bridge] постороннее сообщение:", name);
+        }
+        return;
       }
 
-      if (name !== "timeupdate" && name !== "duration") return;
+      if (!readyRef.current) {
+        console.info("[bridge] событие плеера:", name, data.value ?? "");
+      }
 
       if (!readyRef.current) {
         readyRef.current = true;
