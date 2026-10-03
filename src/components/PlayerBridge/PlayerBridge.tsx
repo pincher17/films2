@@ -3,13 +3,15 @@
 /**
  * Мост к встроенному (iframe) плееру.
  *
- * Время из чужого iframe напрямую не прочитать — браузер запрещает. Но плееры
- * поддерживают протокол playerjs: обмен сообщениями через postMessage, и
- * официальный SDK делает рукопожатие правильно (рукописный вариант не работал —
- * события от плеера не доходили).
+ * Позицию просмотра нельзя прочитать из чужого iframe напрямую — браузер это
+ * запрещает. Но многие плееры умеют протокол playerjs: обмен сообщениями через
+ * postMessage. Этот компонент подписывается на события такого плеера и пишет
+ * текущую секунду в нашу базу — тогда «Продолжить просмотр» работает и со
+ * встроенным плеером.
  *
- * Компонент универсален: он не знает, какой плеер вставлен и откуда видео.
- * Если плеер playerjs не поддерживает — событий не будет, и мы это увидим.
+ * Компонент универсальный: он не знает, какой именно плеер вставлен, и не
+ * зависит от источника видео. Если плеер не поддерживает playerjs, сообщений
+ * просто не придёт — и мы это увидим в консоли.
  */
 
 import React from "react";
@@ -17,8 +19,10 @@ import { saveWatchPosition } from "@/api/watchPosition";
 
 type Props = {
   filmId: string | number;
+  /** сезон и серия для сериалов; 0 для фильмов */
   season?: number;
   episode?: number;
+  /** интервал сохранения, мс */
   saveEvery?: number;
 };
 
@@ -26,56 +30,82 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
   const timeRef = React.useRef(0);
   const durationRef = React.useRef(0);
   const readyRef = React.useRef(false);
+  const seenRef = React.useRef(0);
 
   React.useEffect(() => {
     if (!filmId) return;
     let stopped = false;
-    let player: any = null;
-    const timers: number[] = [];
 
-    const attach = async () => {
-      const frame = document.querySelector<HTMLIFrameElement>("#fh-player iframe");
-      if (!frame || stopped) return false;
-      try {
-        const mod: any = await import("playerjs");
-        const Player = mod?.default ?? mod?.Player ?? mod;
-        player = new Player(frame);
+    const findFrame = (): HTMLIFrameElement | null =>
+      document.querySelector<HTMLIFrameElement>("#fh-player iframe");
 
-        player.on("ready", () => {
-          readyRef.current = true;
-          console.info("[bridge] плеер на связи (playerjs) — синхронизация включена");
-          try {
-            player.getDuration();
-          } catch {
-            undefined;
-          }
-        });
+    // плеер может создаваться позже — пробуем несколько раз
+    const registrations: number[] = [];
+    const subscribe = (frame: HTMLIFrameElement) => {
+      if (!frame.contentWindow) return;
+      const ask = (method: string, value?: unknown) => {
+        try {
+          frame.contentWindow?.postMessage(JSON.stringify({ method, value }), "*");
+        } catch {
+          undefined;
+        }
+      };
+      ask("addEventListener", "ready");
+      ask("addEventListener", "timeupdate");
+      ask("addEventListener", "duration");
+      ask("addEventListener", "play");
+      ask("getDuration");
+    };
 
-        player.on("timeupdate", (data: any) => {
-          const value = Number(typeof data === "object" ? data?.seconds ?? data?.value : data);
-          if (Number.isFinite(value) && value > 0) timeRef.current = value;
-        });
+    const timers = [0, 1500, 4000, 8000].map((delay) =>
+      window.setTimeout(() => {
+        if (stopped) return;
+        const frame = findFrame();
+        if (frame) subscribe(frame);
+      }, delay)
+    );
+    registrations.push(...timers);
 
-        player.on("duration", (data: any) => {
-          const value = Number(typeof data === "object" ? data?.seconds ?? data?.value : data);
-          if (Number.isFinite(value) && value > 0) durationRef.current = value;
-        });
+    const onMessage = (event: MessageEvent) => {
+      let data: any = event.data;
+      if (typeof data === "string") {
+        try {
+          data = JSON.parse(data);
+        } catch {
+          return;
+        }
+      }
+      if (!data || typeof data !== "object") return;
 
-        return true;
-      } catch (error: any) {
-        console.warn("[bridge] не удалось подключиться к плееру:", error?.message);
-        return false;
+      // некоторые плееры шлют объект вида { event, value }
+      const name = data.event;
+      if (!name) return;
+
+      // Показываем первые события, чтобы видеть, отвечает ли плеер вообще.
+      // «Готовым» считаем только timeupdate/duration — посторонние скрипты на
+      // странице тоже шлют сообщения с полем event, и раньше это давало ложный сигнал.
+      if (seenRef.current < 15) {
+        seenRef.current += 1;
+        console.debug("[bridge] сообщение:", name, data.value ?? "");
+      }
+
+      if (name !== "timeupdate" && name !== "duration") return;
+
+      if (!readyRef.current) {
+        readyRef.current = true;
+        console.info("[bridge] плеер отвечает по playerjs — синхронизация позиции включена");
+      }
+
+      if (name === "timeupdate") {
+        const value = Number(data.value ?? data.seconds ?? 0);
+        if (Number.isFinite(value) && value > 0) timeRef.current = value;
+      } else if (name === "duration") {
+        const value = Number(data.value ?? data.seconds ?? 0);
+        if (Number.isFinite(value) && value > 0) durationRef.current = value;
       }
     };
 
-    // плеер может появиться позже — пробуем несколько раз
-    [0, 1500, 4000, 8000].forEach((delay) => {
-      timers.push(
-        window.setTimeout(() => {
-          if (!stopped && !readyRef.current) attach();
-        }, delay)
-      );
-    });
+    window.addEventListener("message", onMessage);
 
     const save = (beacon: boolean) => {
       const seconds = Math.floor(timeRef.current);
@@ -98,14 +128,9 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       stopped = true;
       timers.forEach((id) => window.clearTimeout(id));
       window.clearInterval(interval);
+      window.removeEventListener("message", onMessage);
       window.removeEventListener("pagehide", onHide);
       save(true);
-      try {
-        player?.off?.("timeupdate");
-        player?.off?.("duration");
-      } catch {
-        undefined;
-      }
     };
   }, [filmId, season, episode, saveEvery]);
 
