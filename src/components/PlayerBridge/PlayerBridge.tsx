@@ -30,6 +30,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
   const timeRef = React.useRef(0);
   const durationRef = React.useRef(0);
   const readyRef = React.useRef(false);
+  const seenRef = React.useRef(0);
 
   React.useEffect(() => {
     if (!filmId) return;
@@ -79,6 +80,16 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       // некоторые плееры шлют объект вида { event, value }
       const name = data.event;
       if (!name) return;
+
+      // Показываем первые события, чтобы видеть, отвечает ли плеер вообще.
+      // «Готовым» считаем только timeupdate/duration — посторонние скрипты на
+      // странице тоже шлют сообщения с полем event, и раньше это давало ложный сигнал.
+      if (seenRef.current < 15) {
+        seenRef.current += 1;
+        console.debug("[bridge] сообщение:", name, data.value ?? "");
+      }
+
+      if (name !== "timeupdate" && name !== "duration") return;
 
       if (!readyRef.current) {
         readyRef.current = true;
