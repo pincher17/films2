@@ -76,6 +76,7 @@ import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
 import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
+import PlayerBridge from "../PlayerBridge/PlayerBridge";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -387,6 +388,8 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               </div>
             </PosterBlock>
             <WrapperIframe key={id.toString()} id="fh-player">
+              {/* мост к встроенному плееру: пишет позицию в нашу базу */}
+              <PlayerBridge filmId={id} />
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
               {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.lol */}
