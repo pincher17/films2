@@ -45,6 +45,43 @@ function cardType(record) {
   return cartoon ? "cartoon" : "movie";
 }
 
+/**
+ * Карточки по кинопоисковым номерам: нужно для «Продолжить просмотр», где в
+ * базе лежат именно эти номера. Порядок входа сохраняем.
+ */
+export async function buildCardsByKinopoiskIds(ids, errors) {
+  const { resolveTmdbByKinopoisk } = await import("./filmPage");
+  const { tmdbGet } = await import("./tmdb");
+  const cards = [];
+
+  for (const rawId of ids) {
+    const kinopoiskId = Number(rawId);
+    if (!kinopoiskId) continue;
+    try {
+      // resolveTmdbByKinopoisk отдаёт только { tmdbId, media } — сам фильм
+      // нужно запросить отдельно
+      const link = await resolveTmdbByKinopoisk(kinopoiskId);
+      if (!link?.tmdbId) {
+        errors?.push(`${kinopoiskId}: нет соответствия в TMDB`);
+        continue;
+      }
+      const media = link.media === "tv" ? "tv" : "movie";
+      const item = await tmdbGet(`/${media}/${link.tmdbId}`);
+      if (!item?.id) {
+        errors?.push(`${kinopoiskId}: TMDB не отдал данные (${media}/${link.tmdbId})`);
+        continue;
+      }
+      const records = await resolveRecords(media, [item]);
+      const record = records.get(item.id) || [...records.values()][0];
+      if (record) cards.push(toCard(record));
+    } catch (error) {
+      console.warn("[cards] не удалось собрать карточку", kinopoiskId, error?.message);
+      errors?.push(`${kinopoiskId}: ${error?.message}`);
+    }
+  }
+  return cards;
+}
+
 export function toCard(record) {
   const year = record.tmdbYear ?? record.kpYear ?? null;
   const name = record.kpTitle || record.tmdbTitle || "";
