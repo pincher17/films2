@@ -488,7 +488,10 @@ export async function getFilmPageData(kinopoiskId) {
       ? {
           trailers: [
             {
-              url: `https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`,
+              // youtube-nocookie мягче к встраиванию, autoplay убран: именно
+              // он чаще всего провоцирует проверку «подтвердите, что вы не бот»
+              url: `https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1`,
+              watchUrl: `https://www.youtube.com/watch?v=${trailer.key}`,
               name: trailer.name || "",
               site: "YouTube",
             },
