@@ -11,7 +11,7 @@
 import React from "react";
 import styled from "styled-components";
 
-type Track = { number: number; title: string; length: number | null };
+type Track = { number: number; title: string; artist?: string; length: number | null };
 
 type Soundtrack = {
   album?: string;
@@ -116,6 +116,19 @@ const TrackName = styled.span`
   white-space: nowrap;
 `;
 
+/**
+ * Исполнитель трека показывается только если он отличается от исполнителя
+ * альбома: иначе в списке из 16 треков имя композитора повторялось бы 16 раз.
+ */
+const TrackArtist = styled.span`
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+`;
+
 const Length = styled.span`
   color: rgba(255, 255, 255, 0.45);
   font-variant-numeric: tabular-nums;
@@ -189,7 +202,13 @@ const SoundtrackSection: React.FC<Props> = ({ kpId, title, originalTitle, year }
         <div>
           <AlbumName>{data.album || "Саундтрек"}</AlbumName>
           <AlbumMeta>
-            {[data.artist, data.year, data.tracks.length ? `${data.tracks.length} треков` : null]
+            {[
+              data.tracks.some((track) => track.artist && track.artist !== data.artist)
+                ? "разные исполнители"
+                : data.artist,
+              data.year,
+              data.tracks.length ? `${data.tracks.length} треков` : null,
+            ]
               .filter(Boolean)
               .join(" • ")}
           </AlbumMeta>
@@ -201,6 +220,9 @@ const SoundtrackSection: React.FC<Props> = ({ kpId, title, originalTitle, year }
           <Row key={`${track.number}-${track.title}`}>
             <Number>{track.number}</Number>
             <TrackName title={track.title}>{track.title}</TrackName>
+            {track.artist && track.artist !== data.artist ? (
+              <TrackArtist title={track.artist}>{track.artist}</TrackArtist>
+            ) : null}
             <Length>{format(track.length)}</Length>
           </Row>
         ))}

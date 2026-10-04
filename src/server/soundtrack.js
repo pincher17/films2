@@ -117,6 +117,8 @@ async function tracksFromMusicBrainz(releaseGroupId) {
       tracks.push({
         number: tracks.length + 1,
         title: track.title || "",
+        // у каждого трека может быть свой исполнитель (в сборниках песен так и есть)
+        artist: creditName(track["artist-credit"]) || "",
         // MusicBrainz отдаёт миллисекунды (235999): округление вверх давало
         // лишнюю секунду на каждом треке
         length: track.length ? Math.floor(track.length / 1000) : null,
@@ -186,6 +188,7 @@ async function fromDeezer({ title, originalTitle, year }) {
   const tracks = (full?.tracks?.data || []).map((track, index) => ({
     number: index + 1,
     title: track.title || "",
+    artist: track.artist?.name || "",
     length: Number(track.duration) || null,
   }));
   if (tracks.length < 5) return null;
@@ -237,6 +240,7 @@ async function fromItunes({ title, originalTitle, year }) {
   const tracks = songs.map((song, index) => ({
     number: Number(song.trackNumber) || index + 1,
     title: song.trackName || "",
+    artist: song.artistName || "",
     length: song.trackTimeMillis ? Math.floor(song.trackTimeMillis / 1000) : null,
   }));
   if (tracks.length < 5) return null;
