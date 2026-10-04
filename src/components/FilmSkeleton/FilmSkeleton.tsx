@@ -24,11 +24,11 @@ const shimmer = keyframes`
 // css`` обязателен: без него styled-components v5+ не принимает keyframes
 // внутри обычной строки и падает с ошибкой "interpolating a keyframe declaration"
 const block = css`
-  background-color: #262626;
+  background-color: #141414;
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 45%,
+    rgba(255, 255, 255, 0.045) 45%,
     rgba(255, 255, 255, 0) 90%
   );
   background-size: 500px 100%;
@@ -83,7 +83,7 @@ const Backdrop = styled.div`
   height: 780px;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, #2e2e2e 0%, #1d1d1d 55%, #0d0d0d 100%);
+  background: linear-gradient(180deg, #191919 0%, #111111 55%, #0a0a0a 100%);
 
   @media (max-width: 850px) {
     display: none;
