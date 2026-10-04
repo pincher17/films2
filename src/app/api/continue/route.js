@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/server/prisma";
 import { buildCardsByKinopoiskIds } from "@/server/catalog";
+import { currentProfile } from "@/server/profile";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,17 @@ const noStore = { "Cache-Control": "no-store" };
  * входа — а после входа подхватывает историю аккаунта.
  */
 export async function GET() {
-  const userId = cookies().get("fh_profile")?.value;
+  const userId = await currentProfile(false);
   if (!userId) return NextResponse.json({ docs: [] }, { headers: noStore });
 
   const rows = await prisma.watchPosition.findMany({
-    where: { userId, seconds: { gt: 15 }, completed: false },
+    where: {
+      userId,
+      completed: false,
+      // либо настоящая позиция из нашего плеера, либо накопленное время
+      // у встроенного плеера (fallback): порог — минута
+      OR: [{ seconds: { gt: 15 } }, { watchedSeconds: { gte: 60 } }],
+    },
     orderBy: { updatedAt: "desc" },
     take: 20,
   });
@@ -39,6 +46,8 @@ export async function GET() {
       ...card,
       // для фильмов показываем остаток, для сериалов — сезон и серию
       progress: {
+        source: row?.source || "fallback",
+        watchedSeconds: row?.watchedSeconds || 0,
         seconds: row?.seconds ?? 0,
         duration,
         percent,
@@ -53,4 +62,23 @@ export async function GET() {
   }
 
   return NextResponse.json({ docs }, { headers: noStore });
+}
+
+/** Убрать запись из ряда «Продолжить просмотр» (крестик на карточке) */
+export async function DELETE(request) {
+  const { searchParams } = new URL(request.url);
+  const filmId = Number(searchParams.get("filmId"));
+  if (!Number.isInteger(filmId) || filmId <= 0) {
+    return NextResponse.json({ ok: false, error: "нужен filmId" }, { status: 400, headers: noStore });
+  }
+
+  const userId = await currentProfile(false);
+  if (!userId) return NextResponse.json({ ok: false }, { status: 200, headers: noStore });
+
+  const season = Math.max(0, Math.floor(Number(searchParams.get("season")) || 0));
+  const episode = Math.max(0, Math.floor(Number(searchParams.get("episode")) || 0));
+
+  await prisma.watchPosition.deleteMany({ where: { userId, filmId, season, episode } });
+
+  return NextResponse.json({ ok: true }, { headers: noStore });
 }
