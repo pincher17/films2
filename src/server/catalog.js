@@ -365,27 +365,79 @@ export async function buildList(options) {
 
 // Годы считаем от текущей даты, а не пишем числами: иначе выдача «застывает»
 // на годе, который был актуален в момент написания кода.
+//
+// Диапазон намеренно широкий, а сортировка — по рейтингу, а не по дате: иначе
+// в ряду оказываются только самые свежие фильмы, хотя интересны и старые тоже.
 const CURRENT_YEAR = new Date().getFullYear();
 
 const SLIDERS = {
-  // последние 4 года выпуска
-  films: { types: "1", years: [CURRENT_YEAR - 3, CURRENT_YEAR], ratings: [6, 10] },
-  // сериалы живут дольше, поэтому окно шире
-  series: { types: "2", years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  thriller: { types: "1", genres: ["триллер"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  comedy: { types: "1", genres: ["комедия"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  drama: { types: "1", genres: ["драма"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  boevik: { types: "1", genres: ["боевик"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  detective: { types: "1", genres: ["детектив"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  fantasy: { types: "1", genres: ["фантастика"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
-  // только текущий год
-  new: { types: "1", years: [CURRENT_YEAR, CURRENT_YEAR], ratings: [6.5, 10] },
+  films: { types: "1", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  thriller: { types: "1", genres: ["триллер"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  comedy: { types: "1", genres: ["комедия"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  drama: { types: "1", genres: ["драма"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  boevik: { types: "1", genres: ["боевик"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  detective: { types: "1", genres: ["детектив"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  fantasy: { types: "1", genres: ["фантастика"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  // «Новинки» — единственный ряд, где важна именно свежесть
+  new: { types: "1", years: [CURRENT_YEAR, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "date" },
 };
+
+/**
+ * Тренды TMDB: реальный «топ» за сутки или неделю. В отличие от подборки по
+ * рейтингу, это то, что люди смотрят сейчас — меняется само.
+ * Окна у TMDB только day и week, «за месяц» не существует.
+ */
+export async function buildTrending(window = "week", limit = 25, types = "1,2") {
+  const media = [];
+  if (String(types).includes("1")) media.push("movie");
+  if (String(types).includes("2")) media.push("tv");
+  if (!media.length) return { docs: [], total: 0, page: 1, pages: 1, limit };
+
+  const responses = await Promise.all(
+    media.map((kind) => tmdbGet(`/trending/${kind}/${window === "day" ? "day" : "week"}`))
+  );
+
+  const records = [];
+  const seen = new Set();
+
+  for (const [index, response] of responses.entries()) {
+    const kind = media[index];
+    const items = response?.results || [];
+    const resolved = await resolveRecords(kind, items, {
+      preFilter: buildPreFilter({ excludeAsianByDefault: false }),
+    });
+    items.forEach((item) => {
+      const record = resolved.get(item.id);
+      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
+      seen.add(record.kinopoiskId);
+      records.push(record);
+    });
+  }
+
+  const kept = records.filter((record) => passesLocalFilters(record, { requirePoster: true }));
+
+  const docs = kept.slice(0, limit).map(toCard).filter((card) => card.id);
+
+  return {
+    docs,
+    total: docs.length,
+    page: 1,
+    pages: 1,
+    limit,
+    debug: { media, пришло: responses.map((r) => r?.results?.length ?? 0), записей: records.length, прошло: kept.length },
+  };
+}
 
 export function buildSlider(slider, limit = 25, voteCountMin) {
   const preset = SLIDERS[slider] || SLIDERS.films;
+  const byRating = preset.sortBy !== "date";
+
   return buildList({
-    voteCountMin,
+    // Для сортировки по рейтингу порог голосов обязателен: у свежих фильмов
+    // рейтинг завышен (мало оценок, но много энтузиазма), и без порога они
+    // вытесняют классику. 1000 голосов убирает этот эффект.
+    voteCountMin: voteCountMin ?? (byRating ? 1000 : 50),
     types: preset.types,
     genres: preset.genres || [],
     yearRange: preset.years,
@@ -394,6 +446,8 @@ export function buildSlider(slider, limit = 25, voteCountMin) {
     ratingRange: preset.ratings,
     ratingFrom: preset.ratings[0],
     ratingTo: preset.ratings[1],
+    sortBy: byRating ? "vote_average.desc" : undefined,
+    ratingSort: byRating,
     sort: "-1",
     limit,
     page: 1,

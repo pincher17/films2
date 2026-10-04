@@ -8,6 +8,7 @@ import { CollectionType } from "@/types/CollectionType";
 import { allStudios } from "@/data/AllStudios";
 import SwiperStudios from "../SwiperStudios/SwiperStudios";
 import ContinueWatching from "../ContinueWatching/ContinueWatching";
+import TrendingRow from "../TrendingRow/TrendingRow";
 
 
 
@@ -95,6 +96,10 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   
   <SwiperWrapper>
   <SwiperFilms cards={top10} title="Топ 10"/>
+
+  {/* тренды: живой список, меняется сам */}
+  <TrendingRow title="Тренды недели" window="week" />
+  <TrendingRow title="Тренды дня" window="day" />
   </SwiperWrapper>
 
   <SwiperWrapper>
