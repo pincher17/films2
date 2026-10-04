@@ -78,10 +78,19 @@ async function tracksFromMusicBrainz(releaseGroupId) {
   const releases = (group?.releases || []).filter((item) => item?.id);
   if (!releases.length) return null;
 
-  // берём самый ранний официальный релиз — обычно это оригинальное издание
-  const release = releases.sort((a, b) =>
-    String(a.date || "9999").localeCompare(String(b.date || "9999"))
-  )[0];
+  // Изданий у альбома бывает несколько (обычное и расширенное). Для страницы
+  // фильма полезнее самое полное: там больше музыки из фильма. Если MusicBrainz
+  // не сообщил число треков — берём самое раннее издание.
+  const trackCount = (release) =>
+    (release.media || []).reduce((sum, medium) => sum + (Number(medium["track-count"]) || 0), 0) ||
+    Number(release["track-count"]) ||
+    0;
+
+  const release = [...releases].sort((a, b) => {
+    const diff = trackCount(b) - trackCount(a);
+    if (diff) return diff;
+    return String(a.date || "9999").localeCompare(String(b.date || "9999"));
+  })[0];
 
   const full = await musicbrainz(`release/${release.id}?inc=recordings&fmt=json`);
   const tracks = [];
@@ -90,7 +99,9 @@ async function tracksFromMusicBrainz(releaseGroupId) {
       tracks.push({
         number: tracks.length + 1,
         title: track.title || "",
-        length: track.length ? Math.round(track.length / 1000) : null,
+        // MusicBrainz отдаёт миллисекунды (235999): округление вверх давало
+        // лишнюю секунду на каждом треке
+        length: track.length ? Math.floor(track.length / 1000) : null,
       });
     });
   });
