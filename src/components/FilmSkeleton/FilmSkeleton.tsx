@@ -44,11 +44,33 @@ const fadeIn = keyframes`
 
 const Page = styled.div`
   animation: ${fadeIn} 0.18s ease;
+
+  /**
+   * Ровно как .layout в LayoutFilm.module.css: реальная страница лежит внутри
+   * этого контейнера, и без тех же значений скелетон стоит не на своём месте —
+   * в частности без отступа 120px сверху контент прижимается к шапке.
+   */
+  width: 1440px;
+  margin: 120px auto 0;
+  height: 100%;
   position: relative;
   z-index: 1;
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 0 20px 80px;
+
+  @media (max-width: 1500px) {
+    width: 1250px;
+  }
+
+  @media (max-width: 1300px) {
+    width: 1050px;
+  }
+
+  @media (max-width: 1150px) {
+    width: 800px;
+  }
+
+  @media (max-width: 850px) {
+    width: 100%;
+  }
 `;
 
 /** Фон-обложка: в реальной вёрстке это absolute-слой высотой 780px */
