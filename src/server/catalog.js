@@ -363,16 +363,23 @@ export async function buildList(options) {
 
 // ------------------------------------------------------------ пресеты сайта
 
+// Годы считаем от текущей даты, а не пишем числами: иначе выдача «застывает»
+// на годе, который был актуален в момент написания кода.
+const CURRENT_YEAR = new Date().getFullYear();
+
 const SLIDERS = {
-  films: { types: "1", years: [2021, 2024], ratings: [6, 10] },
-  series: { types: "2", years: [2019, 2024], ratings: [6.5, 10] },
-  thriller: { types: "1", genres: ["триллер"], years: [2019, 2024], ratings: [6.5, 10] },
-  comedy: { types: "1", genres: ["комедия"], years: [2019, 2024], ratings: [6.5, 10] },
-  drama: { types: "1", genres: ["драма"], years: [2019, 2024], ratings: [6.5, 10] },
-  boevik: { types: "1", genres: ["боевик"], years: [2019, 2024], ratings: [6.5, 10] },
-  detective: { types: "1", genres: ["детектив"], years: [2019, 2024], ratings: [6.5, 10] },
-  fantasy: { types: "1", genres: ["фантастика"], years: [2019, 2024], ratings: [6.5, 10] },
-  new: { types: "1", years: [2024, 2024], ratings: [6.5, 10] },
+  // последние 4 года выпуска
+  films: { types: "1", years: [CURRENT_YEAR - 3, CURRENT_YEAR], ratings: [6, 10] },
+  // сериалы живут дольше, поэтому окно шире
+  series: { types: "2", years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  thriller: { types: "1", genres: ["триллер"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  comedy: { types: "1", genres: ["комедия"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  drama: { types: "1", genres: ["драма"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  boevik: { types: "1", genres: ["боевик"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  detective: { types: "1", genres: ["детектив"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  fantasy: { types: "1", genres: ["фантастика"], years: [CURRENT_YEAR - 6, CURRENT_YEAR], ratings: [6.5, 10] },
+  // только текущий год
+  new: { types: "1", years: [CURRENT_YEAR, CURRENT_YEAR], ratings: [6.5, 10] },
 };
 
 export function buildSlider(slider, limit = 25, voteCountMin) {
