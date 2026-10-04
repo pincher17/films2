@@ -59,6 +59,23 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
     dispatch(getBoevik())
     }, [])
 
+  // Клик по логотипу на главной — переход на тот же адрес, компонент не
+  // пересоздаётся, поэтому ряды перезапрашиваем вручную. Данные на сервере
+  // случайные, так что выдача обновится целиком.
+  useEffect(() => {
+    const onRefresh = () => {
+    dispatch(getFilmsTop10())
+    dispatch(getFilmsThunk())
+    dispatch(getSeries())
+    dispatch(getThriller())
+    dispatch(getComedy())
+    dispatch(getDrama())
+    dispatch(getBoevik())
+    };
+    window.addEventListener("fh:refresh-home", onRefresh);
+    return () => window.removeEventListener("fh:refresh-home", onRefresh);
+  }, [dispatch]);
+
 /*     const responseDataFilmsTop10 = await filmsApi.getFilmsTop10()
     const dataFilmsTop10 = responseDataFilmsTop10.data.docs.top10
 

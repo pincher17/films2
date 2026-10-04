@@ -17,7 +17,15 @@ const Header: React.FC = () =>{
         <header className={s.header}>
         <div className={s.header_wrapper}>
         {/* <NavLink to={'/'} className={s.logo}>FILMS</NavLink> */}
-        <Link href={'/'} className={s.logo}>
+        <Link
+          href={'/'}
+          className={s.logo}
+          onClick={() => {
+            // уже на главной — переход не пересоздаст компонент, поэтому просим
+            // страницу обновить ряды вручную
+            if (pathname === '/') window.dispatchEvent(new Event('fh:refresh-home'));
+          }}
+        >
           <Logo className={s.logo} alt='filmhub' />
         </Link>
         <Search />
