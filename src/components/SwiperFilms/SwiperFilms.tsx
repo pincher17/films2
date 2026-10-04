@@ -43,20 +43,14 @@ const RemoveButton = styled.button`
   line-height: 1;
   color: #fff;
   background: rgba(15, 15, 15, 0.78);
-  opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 
   &:hover {
     background: #b81616;
   }
 
-  /* показываем при наведении на карточку, на тач-устройствах — всегда */
-  .fh-card-holder:hover > & {
-    opacity: 1;
-  }
-
-  @media (hover: none) {
-    opacity: 1;
+  &:active {
+    transform: scale(0.94);
   }
 `;
 
