@@ -148,6 +148,8 @@ const MenuButton = styled.button`
 const HeaderAuth: React.FC = () => {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  // если картинка Google не загрузилась — показываем букву, а не «сломанную» иконку
+  const [imageFailed, setImageFailed] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -174,7 +176,16 @@ const HeaderAuth: React.FC = () => {
   return (
     <Wrapper ref={ref}>
       <Avatar type="button" onClick={() => setOpen((value) => !value)} aria-label="Меню профиля">
-        {user?.image ? <AvatarImage src={user.image} alt="" /> : <AvatarFallback>{letter}</AvatarFallback>}
+        {user?.image && !imageFailed ? (
+          <AvatarImage
+            src={user.image}
+            alt=""
+            referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <AvatarFallback>{letter}</AvatarFallback>
+        )}
       </Avatar>
 
       {open && (

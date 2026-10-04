@@ -47,6 +47,17 @@ model WatchPosition {
   seconds   Int      @default(0)
   duration  Int?
   completed Boolean  @default(false)
+
+  /// Оценка времени у плеера (fallback, когда позиция недоступна).
+  /// Ограничиваем двумя минутами сверху: точнее всё равно не узнать.
+  watchedSeconds Int  @default(0)
+  /// Сколько раз пользователь запускал просмотр
+  opens          Int  @default(0)
+  /// 'player' — настоящая позиция из нашего плеера, 'fallback' — только факт просмотра
+  source         String  @default("fallback")
+  startedAt      DateTime?
+  lastOpenedAt   DateTime?
+
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
