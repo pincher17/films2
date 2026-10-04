@@ -60,6 +60,33 @@ async function sparql(query) {
 }
 
 /** kinopoisk_id -> { tmdbId, media } */
+/**
+ * Выбор лучшего трейлера. Берём не первый попавшийся, а официальный трейлер,
+ * желательно на русском: возрастные ролики и фанатские нарезки YouTube либо
+ * не встраивает вовсе, либо показывает проверку «подтвердите, что вы не бот».
+ */
+function pickTrailer(videos = []) {
+  const candidates = (videos || []).filter((video) => video?.site === "YouTube" && video?.key);
+  if (!candidates.length) return null;
+
+  const score = (video) => {
+    let value = 0;
+    if (video.type === "Trailer") value += 40;
+    else if (video.type === "Teaser") value += 15;
+    if (video.official) value += 20;
+    if (video.iso_639_1 === "ru") value += 25;
+    else if (video.iso_639_1 === "en") value += 10;
+    if (Number(video.size) >= 1080) value += 5;
+    return value;
+  };
+
+  return [...candidates].sort(
+    (a, b) =>
+      score(b) - score(a) ||
+      String(b.published_at || "").localeCompare(String(a.published_at || ""))
+  )[0];
+}
+
 export async function resolveTmdbByKinopoisk(kinopoiskId) {
   const key = String(kinopoiskId ?? "").trim();
   if (!key) return null;
@@ -401,10 +428,7 @@ export async function getFilmPageData(kinopoiskId) {
   const countries = await getCountries();
   const genres = (data.genres || []).map((genre) => genre.name);
   const cartoon = isCartoon(genres);
-  const trailer =
-    (data.videos?.results || []).find(
-      (video) => video.site === "YouTube" && video.type === "Trailer"
-    ) || (data.videos?.results || [])[0];
+  const trailer = pickTrailer(data.videos?.results);
 
   const backdrop = posterUrl(data.backdrop_path, "w1280");
   const posterBig = posterUrl(data.poster_path, "original");
