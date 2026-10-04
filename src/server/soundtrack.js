@@ -66,6 +66,12 @@ async function musicbrainz(pathname) {
   return response.json();
 }
 
+async function itunes(pathname) {
+  const response = await fetch(`https://itunes.apple.com/${pathname}`);
+  if (!response.ok) throw new Error(`iTunes ${response.status}`);
+  return response.json();
+}
+
 async function deezer(pathname) {
   const response = await fetch(`https://api.deezer.com/${pathname}`);
   if (!response.ok) throw new Error(`Deezer ${response.status}`);
@@ -181,6 +187,57 @@ async function fromDeezer({ title, originalTitle, year }) {
   };
 }
 
+/**
+ * Третий источник: iTunes. Другой индекс, иногда находит альбомы, которых нет
+ * в Deezer. Проверки те же — название фильма и год обязательны.
+ */
+async function fromItunes({ title, originalTitle, year }) {
+  const term = `${originalTitle || title} original motion picture soundtrack`;
+  const search = await itunes(`search?term=${encodeURIComponent(term)}&entity=album&limit=25`);
+  const items = search?.results || [];
+
+  const normalize = (value) =>
+    String(value || "").toLowerCase().replace(/[^a-zа-я0-9]+/gi, " ").trim();
+  const filmTitles = [originalTitle, title].map(normalize).filter((value) => value.length > 3);
+
+  const best = items
+    .filter((album) => Number(album.trackCount) >= 5)
+    .filter((album) => {
+      const name = String(album.collectionName || "").toLowerCase();
+      return /soundtrack|original motion picture|original score|music from|ost/.test(name);
+    })
+    .filter((album) => {
+      const name = normalize(album.collectionName);
+      return filmTitles.some((filmTitle) => name.includes(filmTitle));
+    })
+    .filter((album) => {
+      const albumYear = String(album.releaseDate || "").slice(0, 4);
+      if (!albumYear) return false;
+      return Math.abs(Number(albumYear) - Number(year)) <= 1;
+    })
+    .sort((a, b) => Number(b.trackCount) - Number(a.trackCount))[0];
+
+  if (!best) return null;
+
+  const lookup = await itunes(`lookup?id=${best.collectionId}&entity=song&limit=200`);
+  const songs = (lookup?.results || []).filter((item) => item.wrapperType === "track");
+  const tracks = songs.map((song, index) => ({
+    number: Number(song.trackNumber) || index + 1,
+    title: song.trackName || "",
+    length: song.trackTimeMillis ? Math.floor(song.trackTimeMillis / 1000) : null,
+  }));
+  if (tracks.length < 5) return null;
+
+  return {
+    album: best.collectionName || "",
+    artist: best.artistName || "",
+    cover: String(best.artworkUrl100 || "").replace("100x100", "600x600") || null,
+    year: String(best.releaseDate || "").slice(0, 4) || null,
+    source: "iTunes",
+    tracks,
+  };
+}
+
 /** Основной путь: Wikidata даёт альбом, MusicBrainz — треки */
 async function fromWikidata(kpId) {
   const rows = await sparql(`
@@ -234,6 +291,16 @@ export async function getSoundtrack({ kpId, title, originalTitle, year }) {
       if (fallback?.tracks?.length) result = fallback;
     } catch (error) {
       console.warn("[soundtrack] Deezer недоступен:", error?.message);
+    }
+  }
+
+  // если Deezer не нашёл — пробуем iTunes: индекс другой, иногда удачнее
+  if (!result?.tracks?.length) {
+    try {
+      const fallback = await fromItunes({ title, originalTitle, year });
+      if (fallback?.tracks?.length) result = fallback;
+    } catch (error) {
+      console.warn("[soundtrack] iTunes недоступен:", error?.message);
     }
   }
 
