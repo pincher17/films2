@@ -98,7 +98,19 @@ async function tracksFromMusicBrainz(releaseGroupId) {
     return String(a.date || "9999").localeCompare(String(b.date || "9999"));
   })[0];
 
-  const full = await musicbrainz(`release/${release.id}?inc=recordings&fmt=json`);
+  // artist-credits нужен, чтобы показать композитора: без него в секции
+  // остаются только названия треков
+  const full = await musicbrainz(
+    `release/${release.id}?inc=recordings+artist-credits&fmt=json`
+  );
+
+  const creditName = (credit) =>
+    (credit || [])
+      .map((item) => item?.name || item?.artist?.name || "")
+      .filter(Boolean)
+      .join(", ");
+
+  const artist = creditName(full?.["artist-credit"]) || creditName(release["artist-credit"]);
   const tracks = [];
   (full?.media || []).forEach((medium) => {
     (medium?.tracks || []).forEach((track) => {
@@ -116,6 +128,7 @@ async function tracksFromMusicBrainz(releaseGroupId) {
   return {
     tracks,
     album: release.title || "",
+    artist,
     year: (release.date || "").slice(0, 4) || null,
   };
 }
@@ -261,6 +274,7 @@ async function fromWikidata(kpId) {
 
   return {
     album: fromMb.album || albumLabel,
+    artist: fromMb.artist || "",
     year: fromMb.year,
     source: "MusicBrainz",
     tracks: fromMb.tracks,
