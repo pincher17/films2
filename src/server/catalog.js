@@ -371,8 +371,8 @@ export async function buildList(options) {
 const CURRENT_YEAR = new Date().getFullYear();
 
 const SLIDERS = {
-  films: { types: "1", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
+  films: { types: "1", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating", voteCountMin: 4000 },
+  series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating", voteCountMin: 2000 },
   thriller: { types: "1", genres: ["триллер"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
   comedy: { types: "1", genres: ["комедия"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
   drama: { types: "1", genres: ["драма"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
@@ -437,7 +437,7 @@ export function buildSlider(slider, limit = 25, voteCountMin) {
     // Для сортировки по рейтингу порог голосов обязателен: у свежих фильмов
     // рейтинг завышен (мало оценок, но много энтузиазма), и без порога они
     // вытесняют классику. 1000 голосов убирает этот эффект.
-    voteCountMin: voteCountMin ?? (byRating ? 1000 : 50),
+    voteCountMin: voteCountMin ?? preset.voteCountMin ?? (byRating ? 1000 : 50),
     types: preset.types,
     genres: preset.genres || [],
     yearRange: preset.years,
