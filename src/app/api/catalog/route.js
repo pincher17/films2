@@ -166,7 +166,8 @@ export async function GET(request) {
     const window = searchParams.get("window") === "day" ? "day" : "week";
     const limit = numberOrUndefined(searchParams.get("limit")) ?? 25;
     const types = searchParams.get("types") || "1,2";
-    const data = await buildTrending(window, limit, types);
+    const skip = numberOrUndefined(searchParams.get("skip")) ?? 0;
+    const data = await buildTrending(window, limit, types, skip);
     return NextResponse.json(data);
   }
 

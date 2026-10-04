@@ -13,9 +13,11 @@ type Props = {
   window?: "day" | "week";
   /** какой список запрашивать: тренды, сейчас в кино или скоро */
   task?: "trending" | "now_playing" | "upcoming";
+  /** пропустить первые N записей (чтобы ряды трендов не повторялись) */
+  skip?: number;
 };
 
-const TrendingRow: React.FC<Props> = ({ title, window = "week", task = "trending" }) => {
+const TrendingRow: React.FC<Props> = ({ title, window = "week", task = "trending", skip = 0 }) => {
   const [docs, setDocs] = React.useState<any[]>([]);
 
   React.useEffect(() => {
@@ -23,7 +25,7 @@ const TrendingRow: React.FC<Props> = ({ title, window = "week", task = "trending
 
     const url =
       task === "trending"
-        ? `/api/catalog?task=trending&window=${window}&limit=25`
+        ? `/api/catalog?task=trending&window=${window}&limit=25&skip=${skip}`
         : `/api/catalog?task=${task}&limit=25`;
 
     fetch(url, { cache: "no-store" })
@@ -36,7 +38,7 @@ const TrendingRow: React.FC<Props> = ({ title, window = "week", task = "trending
     return () => {
       cancelled = true;
     };
-  }, [window, task]);
+  }, [window, task, skip]);
 
   if (!docs.length) return null;
 

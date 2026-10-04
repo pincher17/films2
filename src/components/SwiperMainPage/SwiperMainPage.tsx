@@ -111,9 +111,9 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   
   <SwiperWrapper>
 
-  {/* тренды: живой список, меняется сам */}
+  {/* тренды недели: дневной список TMDB целиком входит в недельный, поэтому
+      второй ряд был бы дублем */}
   <TrendingRow title="Тренды недели" window="week" />
-  <TrendingRow title="Тренды дня" window="day" />
   </SwiperWrapper>
 
   <SwiperWrapper>

@@ -402,7 +402,7 @@ const SLIDERS = {
  * рейтингу, это то, что люди смотрят сейчас — меняется само.
  * Окна у TMDB только day и week, «за месяц» не существует.
  */
-export async function buildTrending(window = "week", limit = 25, types = "1,2") {
+export async function buildTrending(window = "week", limit = 25, types = "1,2", skip = 0) {
   const media = [];
   if (String(types).includes("1")) media.push("movie");
   if (String(types).includes("2")) media.push("tv");
@@ -431,7 +431,9 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2") 
 
   const kept = records.filter((record) => passesLocalFilters(record, { requirePoster: true }));
 
-  const docs = kept.slice(0, limit).map(toCard).filter((card) => card.id);
+  // skip нужен, чтобы два ряда трендов не показывали одно и то же:
+  // «за сутки» и «за неделю» у TMDB сильно пересекаются
+  const docs = kept.slice(skip, skip + limit).map(toCard).filter((card) => card.id);
 
   return { docs, total: docs.length, page: 1, pages: 1, limit };
 }
