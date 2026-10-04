@@ -269,6 +269,16 @@ function passesLocalFilters(record, options) {
   return true;
 }
 
+/** Перемешивание (Фишер–Йетс): нужно для подборок-«находок», а не топов */
+function shuffleArray(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 function sortRecords(records, sort) {
   return records.slice().sort((a, b) => {
     const yearA = a.tmdbYear ?? a.kpYear ?? 0;
@@ -341,7 +351,9 @@ export async function buildList(options) {
   }
 
   const passed = records.filter((record) => passesLocalFilters(record, options));
-  const filtered = options.ratingSort
+  const filtered = options.shuffle
+    ? shuffleArray(passed)
+    : options.ratingSort
     ? passed.sort(
         (a, b) =>
           (b.kpRating ?? b.tmdbRating ?? 0) - (a.kpRating ?? a.tmdbRating ?? 0) ||
@@ -371,15 +383,17 @@ export async function buildList(options) {
 const CURRENT_YEAR = new Date().getFullYear();
 
 const SLIDERS = {
-  films: { types: "1", years: [1970, CURRENT_YEAR], ratings: [7.5, 10], sortBy: "rating", voteCountMin: 8000 },
-  series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating", voteCountMin: 2000 },
-  thriller: { types: "1", genres: ["триллер"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  comedy: { types: "1", genres: ["комедия"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  drama: { types: "1", genres: ["драма"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  boevik: { types: "1", genres: ["боевик"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  detective: { types: "1", genres: ["детектив"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  fantasy: { types: "1", genres: ["фантастика"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
-  // «Новинки» — единственный ряд, где важна именно свежесть
+  // sortBy: "random" — не «лучшее по порядку», а случайная выборка с приличным
+  // рейтингом: смысл в том, чтобы наткнуться на интересный фильм.
+  films: { types: "1", years: [1970, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 800 },
+  series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 300 },
+  thriller: { types: "1", genres: ["триллер"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  comedy: { types: "1", genres: ["комедия"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  drama: { types: "1", genres: ["драма"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  boevik: { types: "1", genres: ["боевик"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  detective: { types: "1", genres: ["детектив"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  fantasy: { types: "1", genres: ["фантастика"], years: [1990, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "random", voteCountMin: 500 },
+  // «Новинки» — единственный ряд, где важен именно свежий год
   new: { types: "1", years: [CURRENT_YEAR, CURRENT_YEAR], ratings: [6.5, 10], sortBy: "date" },
 };
 
@@ -431,13 +445,13 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2") 
 
 export function buildSlider(slider, limit = 25, voteCountMin) {
   const preset = SLIDERS[slider] || SLIDERS.films;
-  const byRating = preset.sortBy !== "date";
+  const random = preset.sortBy === "random";
 
   return buildList({
-    // Для сортировки по рейтингу порог голосов обязателен: у свежих фильмов
-    // рейтинг завышен (мало оценок, но много энтузиазма), и без порога они
-    // вытесняют классику. 1000 голосов убирает этот эффект.
-    voteCountMin: voteCountMin ?? preset.voteCountMin ?? (byRating ? 1000 : 50),
+    // Для случайных подборок: берём случайное окно выдачи TMDB и перемешиваем
+    // результат. Порог голосов держим умеренным, чтобы пул был широким, а
+    // рейтинг отсекаем локально (не ниже 6.5).
+    voteCountMin: voteCountMin ?? preset.voteCountMin ?? 300,
     types: preset.types,
     genres: preset.genres || [],
     yearRange: preset.years,
@@ -446,11 +460,12 @@ export function buildSlider(slider, limit = 25, voteCountMin) {
     ratingRange: preset.ratings,
     ratingFrom: preset.ratings[0],
     ratingTo: preset.ratings[1],
-    sortBy: byRating ? "vote_average.desc" : undefined,
-    ratingSort: byRating,
+    sortBy: random ? "popularity.desc" : undefined,
+    shuffle: random,
     sort: "-1",
     limit,
-    page: 1,
+    // случайная страница: при каждом заходе окно выдачи другое
+    page: random ? 1 + Math.floor(Math.random() * 5) : 1,
     excludeAsianByDefault: true,
     countryMode: "all",
     requirePoster: true,
