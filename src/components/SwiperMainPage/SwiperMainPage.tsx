@@ -50,7 +50,6 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   }, []);
   
   useEffect(() => {
-    dispatch(getFilmsTop10())
     dispatch(getFilmsThunk())
     dispatch(getSeries())
     dispatch(getThriller())
@@ -64,7 +63,6 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   // случайные, так что выдача обновится целиком.
   useEffect(() => {
     const onRefresh = () => {
-    dispatch(getFilmsTop10())
     dispatch(getFilmsThunk())
     dispatch(getSeries())
     dispatch(getThriller())
@@ -112,7 +110,6 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   </SwiperWrapper>
   
   <SwiperWrapper>
-  <SwiperFilms cards={top10} title="Топ 10"/>
 
   {/* тренды: живой список, меняется сам */}
   <TrendingRow title="Тренды недели" window="week" />
