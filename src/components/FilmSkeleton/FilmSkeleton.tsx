@@ -74,12 +74,10 @@ const Hero = styled.div`
   align-items: stretch;
   justify-content: space-between;
   gap: 48px;
-  padding-top: 104px;
+  // ровно как в FilmPage.styles: Hero — иначе контент стоит не там,
+  // где окажется после загрузки, и при подмене происходит рывок
+  padding-top: 40px;
   margin-bottom: 36px;
-
-  @media (max-width: 1150px) {
-    padding-top: 72px;
-  }
 `;
 
 const HeroText = styled.div`
@@ -163,9 +161,8 @@ const PlayerBlock = styled.div`
   width: 100%;
   height: 533px;
   border-radius: 12px;
-  // в реальной вёрстке отступ отрицательный, но там герой ниже обложки;
-  // в скелетоне опускаем блок ниже серой границы фона — туда, где начинается чёрный фон
-  margin-top: 96px;
+  // как в WrapperIframe: отрицательный отступ подтягивает плеер к герою
+  margin-top: -15px;
 
   @media (max-width: 1150px) {
     height: 420px;
