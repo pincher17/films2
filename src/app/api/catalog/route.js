@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { SLIDER_IDS, buildList, buildSlider, buildTop, buildTrending } from "@/server/catalog";
+import { SLIDER_IDS, buildList, buildMovieShelf, buildSlider, buildTop, buildTrending } from "@/server/catalog";
 import { platformIds, resolveCompanyId } from "@/server/tmdb";
 import { COLLECTION_RECIPES } from "@/data/collectionRecipes";
 import { cacheStats } from "@/server/kpMap";
@@ -167,6 +167,11 @@ export async function GET(request) {
     const limit = numberOrUndefined(searchParams.get("limit")) ?? 25;
     const types = searchParams.get("types") || "1,2";
     const data = await buildTrending(window, limit, types);
+    return NextResponse.json(data);
+  }
+
+  if (task === "now_playing" || task === "upcoming") {
+    const data = await buildMovieShelf(task, limit);
     return NextResponse.json(data);
   }
 

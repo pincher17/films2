@@ -436,6 +436,37 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2") 
   return { docs, total: docs.length, page: 1, pages: 1, limit };
 }
 
+/**
+ * Готовые подборки TMDB без фильтров по годам: «сейчас в кино» и «скоро».
+ * Порядок перемешиваем — главная должна выглядеть как лента находок, а не
+ * как список по ранжиру.
+ */
+export async function buildMovieShelf(kind, limit = 25) {
+  const path = kind === "upcoming" ? "/movie/upcoming" : "/movie/now_playing";
+  const response = await tmdbGet(path);
+  const items = response?.results || [];
+
+  const resolved = await resolveRecords("movie", items, {
+    preFilter: buildPreFilter({ excludeAsianByDefault: false }),
+  });
+
+  const records = [];
+  const seen = new Set();
+  items.forEach((item) => {
+    const record = resolved.get(item.id);
+    if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
+    seen.add(record.kinopoiskId);
+    records.push(record);
+  });
+
+  const docs = shuffleArray(records.filter((record) => passesLocalFilters(record, { requirePoster: true })))
+    .slice(0, limit)
+    .map(toCard)
+    .filter((card) => card.id);
+
+  return { docs, total: docs.length, page: 1, pages: 1, limit };
+}
+
 export function buildSlider(slider, limit = 25, voteCountMin) {
   const preset = SLIDERS[slider] || SLIDERS.films;
   const random = preset.sortBy === "random";

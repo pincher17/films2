@@ -8,15 +8,25 @@
 import React from "react";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 
-type Props = { title: string; window?: "day" | "week" };
+type Props = {
+  title: string;
+  window?: "day" | "week";
+  /** какой список запрашивать: тренды, сейчас в кино или скоро */
+  task?: "trending" | "now_playing" | "upcoming";
+};
 
-const TrendingRow: React.FC<Props> = ({ title, window = "week" }) => {
+const TrendingRow: React.FC<Props> = ({ title, window = "week", task = "trending" }) => {
   const [docs, setDocs] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     let cancelled = false;
 
-    fetch(`/api/catalog?task=trending&window=${window}&limit=25`, { cache: "no-store" })
+    const url =
+      task === "trending"
+        ? `/api/catalog?task=trending&window=${window}&limit=25`
+        : `/api/catalog?task=${task}&limit=25`;
+
+    fetch(url, { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : { docs: [] }))
       .then((data) => {
         if (!cancelled) setDocs(Array.isArray(data?.docs) ? data.docs : []);
@@ -26,7 +36,7 @@ const TrendingRow: React.FC<Props> = ({ title, window = "week" }) => {
     return () => {
       cancelled = true;
     };
-  }, [window]);
+  }, [window, task]);
 
   if (!docs.length) return null;
 
