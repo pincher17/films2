@@ -146,9 +146,8 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
   <SwiperWrapper>
   <SwiperFilms cards={boevik} title="Боевики"/>
 
-  {/* самые низкие ряды: что идёт в кино и что выйдет скоро */}
+  {/* самый низкий ряд: что идёт в кино сейчас */}
   <TrendingRow title="Сейчас в кино" task="now_playing" />
-  <TrendingRow title="Скоро" task="upcoming" />
   </SwiperWrapper>
   </>
 
