@@ -586,6 +586,35 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             referrerPolicy="origin"
           />
+          {/* YouTube может показать проверку «подтвердите, что вы не бот» —
+              встроенное видео тогда не играет. Даём прямой путь посмотреть. */}
+          <a
+            href={
+              (filmInfoId.videos.trailers[0] as any).watchUrl ||
+              `https://www.youtube.com/watch?v=${
+                String(filmInfoId.videos.trailers[0].url).split("/embed/")[1]?.split("?")[0] || ""
+              }`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              position: "absolute",
+              bottom: "26px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 12,
+              padding: "10px 18px",
+              borderRadius: "8px",
+              background: "rgba(255, 255, 255, 0.12)",
+              color: "#fff",
+              fontSize: "14px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Трейлер не играет? Открыть на YouTube →
+          </a>
         </Overlay>
       ) : null}
     </Wrapper>
