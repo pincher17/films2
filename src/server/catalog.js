@@ -371,7 +371,7 @@ export async function buildList(options) {
 const CURRENT_YEAR = new Date().getFullYear();
 
 const SLIDERS = {
-  films: { types: "1", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating", voteCountMin: 4000 },
+  films: { types: "1", years: [1970, CURRENT_YEAR], ratings: [7.5, 10], sortBy: "rating", voteCountMin: 8000 },
   series: { types: "2", years: [2000, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating", voteCountMin: 2000 },
   thriller: { types: "1", genres: ["триллер"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
   comedy: { types: "1", genres: ["комедия"], years: [1990, CURRENT_YEAR], ratings: [7, 10], sortBy: "rating" },
