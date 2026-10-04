@@ -6,5 +6,7 @@ export interface SwiperFilmsProps {
     cards?: Array<FilmsType> | Array<SequelsAndPrequelsType>
     title?: string
     collections?: Array<CollectionType>
+    /** если передан — на карточке появляется крестик «убрать из ряда» */
+    onRemove?: (card: any) => void
 }
 

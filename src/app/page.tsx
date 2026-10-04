@@ -12,7 +12,6 @@ import AllBlur from '@/components/AllBlur/AllBlur';
 import { H1 } from './Main.styles';
 import SwiperGenres from '@/components/SwiperGenres/SwiperGenres';
 import Turnstile from '@/components/Turnstile/Turnstile';
-import ContinueWatching from '@/components/ContinueWatching/ContinueWatching';
 
 export default function Home() {
 
@@ -57,8 +56,6 @@ export default function Home() {
       <Header />
       <MainTag>
         <div className={s.wrapper}>
-          {/* то, что пользователь уже начал смотреть — первым рядом */}
-          <ContinueWatching />
           {/*         <div className={s.wrapper_name_block}>
                 <div>
                     <Link href="/films" className={s.btn}>

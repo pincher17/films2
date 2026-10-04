@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from "react";
+import styled from "styled-components";
 
 // import required modules
 
@@ -24,7 +25,42 @@ import { Mousewheel, Navigation } from "swiper/modules";
 import { Spinner } from "../spinner/Spinner";
 import CardCollection from "../CardCollection/CardCollection";
 
-const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title, collections }) => {
+/** Крестик «убрать из ряда». Показывается только там, где передан onRemove */
+const RemoveButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(15, 15, 15, 0.78);
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    background: #b81616;
+  }
+
+  /* показываем при наведении на карточку, на тач-устройствах — всегда */
+  .fh-card-holder:hover > & {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+`;
+
+const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title, collections, onRemove }) => {
   const arraySkeletonCards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   /* const onSwiper = (swiper: SwiperClass) => {
@@ -76,8 +112,25 @@ const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title, collections }) 
         cards.map((item) => (
           <SwiperSlide key={item.id}>
             <WrapperSlide>
-                <Card card={item} key={item.id}/>
-                
+                {onRemove ? (
+                  <div className="fh-card-holder" style={{ position: "relative" }}>
+                    <RemoveButton
+                      type="button"
+                      title="Убрать из «Продолжить просмотр»"
+                      aria-label="Убрать из «Продолжить просмотр»"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        onRemove(item);
+                      }}
+                    >
+                      ✕
+                    </RemoveButton>
+                    <Card card={item} key={item.id}/>
+                  </div>
+                ) : (
+                  <Card card={item} key={item.id}/>
+                )}
             </WrapperSlide>
           </SwiperSlide>
         ))

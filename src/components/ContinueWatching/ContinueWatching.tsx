@@ -33,9 +33,15 @@ const ContinueWatching: React.FC = () => {
     };
   }, []);
 
+  const remove = (card: any) => {
+    // сразу убираем с экрана, чтобы не ждать ответа сервера
+    setDocs((prev) => prev.filter((item) => item.id !== card.id));
+    fetch(`/api/continue?filmId=${card.id}`, { method: "DELETE" }).catch(() => undefined);
+  };
+
   if (!docs.length) return null;
 
-  return <SwiperFilms cards={docs} title="Продолжить просмотр" />;
+  return <SwiperFilms cards={docs} title="Продолжить просмотр" onRemove={remove} />;
 };
 
 export default ContinueWatching;

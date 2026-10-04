@@ -7,6 +7,7 @@ import { getBoevik, getComedy, getDrama, getFilmsThunk, getFilmsTop10, getSeries
 import { CollectionType } from "@/types/CollectionType";
 import { allStudios } from "@/data/AllStudios";
 import SwiperStudios from "../SwiperStudios/SwiperStudios";
+import ContinueWatching from "../ContinueWatching/ContinueWatching";
 
 
 
@@ -87,6 +88,9 @@ const SwiperMainPage: React.FC<SwiperMainPageProps> = () => {
 
   <SwiperWrapper>
   <SwiperFilms collections={collections} title="Коллекции"/>
+
+  {/* то, что пользователь начал смотреть — сразу после коллекций */}
+  <ContinueWatching />
   </SwiperWrapper>
   
   <SwiperWrapper>
