@@ -9,7 +9,7 @@
  * «короткометражек» по хронометражу и точная сверка года/рейтинга по данным КП.
  */
 
-import { discover, posterUrl, resolveGenre, resolveKeywordId } from "./tmdb.js";
+import { discover, posterUrl, resolveGenre, resolveKeywordId, tmdbGet } from "./tmdb.js";
 import { resolveRecords } from "./kpMap.js";
 
 /**
@@ -433,14 +433,7 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2") 
 
   const docs = kept.slice(0, limit).map(toCard).filter((card) => card.id);
 
-  return {
-    docs,
-    total: docs.length,
-    page: 1,
-    pages: 1,
-    limit,
-    debug: { media, пришло: responses.map((r) => r?.results?.length ?? 0), записей: records.length, прошло: kept.length },
-  };
+  return { docs, total: docs.length, page: 1, pages: 1, limit };
 }
 
 export function buildSlider(slider, limit = 25, voteCountMin) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { SLIDER_IDS, buildList, buildSlider, buildTop } from "@/server/catalog";
+import { SLIDER_IDS, buildList, buildSlider, buildTop, buildTrending } from "@/server/catalog";
 import { platformIds, resolveCompanyId } from "@/server/tmdb";
 import { COLLECTION_RECIPES } from "@/data/collectionRecipes";
 import { cacheStats } from "@/server/kpMap";
