@@ -78,6 +78,7 @@ import { getFilmStreams } from "@/data/streams";
 import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
 import PlayerBridge from "../PlayerBridge/PlayerBridge";
 import WatchTracker from "../WatchTracker/WatchTracker";
+import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
@@ -439,6 +440,14 @@ export default function FilmPage({ params }: { params: { id: number } }) {
           </WrapperWatchFilm>
         </WrapperInfo>
 
+
+    {/* музыка из фильма: альбом из Wikidata, треклист из MusicBrainz */}
+    <SoundtrackSection
+      kpId={id}
+      title={filmInfoId?.name || ""}
+      originalTitle={filmInfoId?.enName || filmInfoId?.alternativeName || ""}
+      year={filmInfoId?.year || ""}
+    />
 
     <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
