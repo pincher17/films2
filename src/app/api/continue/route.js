@@ -17,6 +17,9 @@ export async function GET() {
   const userId = await currentProfile(false);
   if (!userId) return NextResponse.json({ docs: [] }, { headers: noStore });
 
+  // старше 90 дней в ряд не показываем: иначе он копит брошенное навсегда
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
   const rows = await prisma.watchPosition.findMany({
     where: {
       userId,
@@ -24,6 +27,7 @@ export async function GET() {
       // либо настоящая позиция из нашего плеера, либо накопленное время
       // у встроенного плеера (fallback): порог — минута
       OR: [{ seconds: { gt: 15 } }, { watchedSeconds: { gte: 60 } }],
+      updatedAt: { gte: ninetyDaysAgo },
     },
     orderBy: { updatedAt: "desc" },
     take: 20,
