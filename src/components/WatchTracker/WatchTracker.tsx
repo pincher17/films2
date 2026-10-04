@@ -77,11 +77,22 @@ const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
     const onOurButton = () => start("кнопка «Смотреть»");
     window.addEventListener("fh:watch-start", onOurButton);
 
-    // сигнал 2: клик внутрь плеера
+    // сигнал 2: клик внутрь НАШЕГО плеера. Проверка на вложенность обязательна:
+    // на странице есть и другие iframe (трейлер), и клик по ним не должен
+    // засчитываться как просмотр фильма.
+    const inOurPlayer = (node: Element | null) => {
+      const player = document.querySelector(PLAYER_SELECTOR);
+      return Boolean(node && player && player.contains(node));
+    };
+
+    const trailerOpen = () => Boolean(document.querySelector('[data-trailer-open="true"]'));
+
     const onBlur = () =>
       window.setTimeout(() => {
         if (stopped || document.visibilityState !== "visible") return;
-        if (document.activeElement?.tagName === "IFRAME") start("клик по плееру");
+        if (trailerOpen()) return;
+        const active = document.activeElement;
+        if (active?.tagName === "IFRAME" && inOurPlayer(active)) start("клик по плееру");
       }, 0);
     window.addEventListener("blur", onBlur);
 
@@ -95,6 +106,8 @@ const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
     const tick = window.setInterval(() => {
       if (stopped || !started.current) return;
       if (document.visibilityState !== "visible") return;
+      // пока открыт трейлер, время фильма не идёт
+      if (trailerOpen()) return;
       if (!playerOnScreen()) return;
       if (total.current >= MAX_TOTAL) return;
 

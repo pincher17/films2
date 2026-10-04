@@ -570,7 +570,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       ) : null}
 
       {trailerOpen && filmInfoId?.videos?.trailers?.[0] ? (
-        <Overlay onClick={() => setTrailerOpen(false)}>
+        <Overlay data-trailer-open="true" onClick={() => setTrailerOpen(false)}>
           <CloseIconTrailer
             sidebar={+true}
             onClick={() => setTrailerOpen(false)}
