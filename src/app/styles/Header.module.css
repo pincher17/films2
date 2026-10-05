@@ -102,14 +102,6 @@ align-items: center;
   width: 100%;
 }
 
-@media (max-width: 1500px){
-
-  .header_wrapper{
-    padding-left: 70px;
-    padding-right: 70px;
-    max-width: 1350px;
-  }
-}
 
 @media (max-width: 850px){
   .nav{
