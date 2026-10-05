@@ -24,6 +24,11 @@
 
 import React from "react";
 import { saveWatchPosition } from "@/api/watchPosition";
+import {
+  clearCurrentEpisode,
+  markPlayerReporting,
+  setCurrentEpisode,
+} from "@/data/currentEpisode";
 
 type Props = {
   filmId: string | number;
@@ -151,6 +156,8 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
         if (parsed.episode !== null && parsed.episode >= 0) episodeRef.current = parsed.episode;
         secondsRef.current = 0;
         lastSavedRef.current = 0;
+        // сообщаем трекеру, какая серия играет: он должен писать в тот же ключ
+        setCurrentEpisode(seasonRef.current, episodeRef.current);
         console.info(
           `[bridge] серия: сезон ${seasonRef.current}, серия ${episodeRef.current} — позиция пишется отдельно`
         );
@@ -167,6 +174,8 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
 
       if (!readyRef.current && secondsRef.current > 0) {
         readyRef.current = true;
+        // с этого момента точный прогресс ведёт мост, оценка по времени не нужна
+        markPlayerReporting();
         console.info("[bridge] плеер отдаёт прогресс — позиция сохраняется на сервер");
       }
     };
@@ -203,6 +212,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       window.removeEventListener("message", onMessage);
       window.removeEventListener("pagehide", onHide);
       save(true);
+      clearCurrentEpisode();
     };
   }, [filmId, season, episode, saveEvery]);
 

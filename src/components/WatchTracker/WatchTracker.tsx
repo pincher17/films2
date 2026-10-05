@@ -18,6 +18,8 @@
  */
 
 import React from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { getCurrentEpisode, isPlayerReporting } from "@/data/currentEpisode";
 
 type Props = {
   filmId: string | number;
@@ -33,6 +35,13 @@ const BEAT_EVERY = 60;
 const PLAYER_SELECTOR = "#fh-player";
 
 const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
+  // Тип контента берём из уже загруженных данных страницы: селекторы серий
+  // находятся внутри iframe, оттуда их не прочитать.
+  const filmType = useAppSelector((state) =>
+    String((state.filmInfo?.info as { type?: string } | undefined)?.type || "")
+  );
+  const isSeries = /series/i.test(filmType);
+
   const started = React.useRef(false);
   const sinceLastBeat = React.useRef(0);
   const total = React.useRef(0);
@@ -40,6 +49,20 @@ const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
   React.useEffect(() => {
     if (!filmId) return;
     let stopped = false;
+
+    /**
+     * Ключ записи. Сериал без известной серии не пишем вовсе: иначе появляется
+     * ложная строка (season=0, episode=0). Для фильма ключ остаётся (0, 0).
+     */
+    const episodeKey = (): { season: number; episode: number } | null => {
+      const known = getCurrentEpisode();
+      if (known) return known;
+      if (isSeries) return null;
+      return { season: 0, episode: 0 };
+    };
+
+    /** Плеер отдаёт точный прогресс — трекер молчит, чтобы не дублировать запись */
+    const bridgeOwnsProgress = () => isPlayerReporting();
 
     const post = (path: string, body: unknown, beacon = false) => {
       const payload = JSON.stringify(body);
@@ -61,16 +84,27 @@ const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
 
     const start = (reason: string) => {
       if (started.current || stopped) return;
+      if (bridgeOwnsProgress()) return;
+
+      const key = episodeKey();
+      // сериал, серия которого неизвестна — запись не создаём
+      if (!key) return;
+
       started.current = true;
       console.info("[watch] отсчёт начат:", reason);
-      post("/api/watch/start", { filmId: Number(filmId), season, episode });
+      post("/api/watch/start", { filmId: Number(filmId), ...key });
     };
 
     const beat = (beacon = false) => {
       const seconds = Math.floor(sinceLastBeat.current);
       if (!started.current || seconds < 5) return;
+      if (bridgeOwnsProgress()) return;
+
+      const key = episodeKey();
+      if (!key) return;
+
       sinceLastBeat.current -= seconds;
-      post("/api/watch/beat", { filmId: Number(filmId), season, episode, seconds }, beacon);
+      post("/api/watch/beat", { filmId: Number(filmId), ...key, seconds }, beacon);
     };
 
     // сигнал 1: наша кнопка «Смотреть»
@@ -106,6 +140,8 @@ const WatchTracker: React.FC<Props> = ({ filmId, season = 0, episode = 0 }) => {
     const tick = window.setInterval(() => {
       if (stopped || !started.current) return;
       if (document.visibilityState !== "visible") return;
+      // точный прогресс ведёт мост — оценка по времени не нужна
+      if (bridgeOwnsProgress()) return;
       // пока открыт трейлер, время фильма не идёт
       if (trailerOpen()) return;
       if (!playerOnScreen()) return;
