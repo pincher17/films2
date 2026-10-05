@@ -44,21 +44,40 @@ const number = (value: unknown): number | null => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
-/** Ищем секунду и длительность в сообщении, не привязываясь к одному формату */
-function readProgress(data: any): { seconds: number; duration: number | null } | null {
+/**
+ * Разбор сообщения плеера. Формы событий разные, поэтому возвращаем
+ * размеченный результат: либо прогресс, либо сведения о серии.
+ */
+type ParsedEvent =
+  | { kind: "progress"; seconds: number; duration: number | null }
+  | { kind: "duration"; duration: number }
+  | { kind: "episode"; season: number | null; episode: number | null };
+
+function readEvent(data: any): ParsedEvent | null {
   const event = String(data?.event || data?.name || "");
 
-  // playerjs-подобные события: { event: 'timeupdate', value: 12.5 }
+  // Смена серии: плеер сообщает, что дальше играет другая серия.
+  // Идентификатор из сообщения не используем — только сезон и серию.
+  if (event === "changeEpisode" || event === "episodechange" || event === "playlistItem") {
+    return {
+      kind: "episode",
+      season: number(data?.season),
+      episode: number(data?.episode),
+    };
+  }
+
+  // Прогресс просмотра: имена полей у разных плееров отличаются
   if (event === "timeupdate" || event === "progress" || event === "viewProgress") {
     const seconds = number(data.value ?? data.seconds ?? data.time ?? data.timeSeconds);
     const duration = number(data.duration ?? data.total ?? data.length);
-    return seconds === null ? null : { seconds, duration };
+    if (seconds === null) return null;
+    return { kind: "progress", seconds, duration };
   }
 
-  // отдельное событие длительности
+  // Отдельное событие длительности
   if (event === "duration") {
     const duration = number(data.value ?? data.seconds ?? data.duration);
-    return duration === null ? null : { seconds: 0, duration };
+    return duration === null ? null : { kind: "duration", duration };
   }
 
   return null;
@@ -69,6 +88,13 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
   const durationRef = React.useRef<number | null>(null);
   const readyRef = React.useRef(false);
   const lastSavedRef = React.useRef(0);
+
+  // Текущая серия, о которой сообщил плеер. Ключ записи для сериала —
+  // (filmId, season, episode), поэтому её нужно запомнить и использовать во
+  // всех последующих сохранениях. Начальные значения — из props страницы
+  // (для фильма там нули, и если плеер о серии не сообщает, всё остаётся 0/0).
+  const seasonRef = React.useRef(season);
+  const episodeRef = React.useRef(episode);
 
   React.useEffect(() => {
     if (!filmId) return;
@@ -99,8 +125,8 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       lastSavedRef.current = Date.now();
       saveWatchPosition({
         filmId: Number(filmId),
-        season,
-        episode,
+        season: seasonRef.current,
+        episode: episodeRef.current,
         seconds,
         duration,
         source: "player",
@@ -115,11 +141,29 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       const origin = allowedOrigin();
       if (!origin || event.origin !== origin) return;
 
-      const progress = readProgress(event.data);
-      if (!progress) return;
+      const parsed = readEvent(event.data);
+      if (!parsed) return;
 
-      if (progress.duration && progress.duration > 0) durationRef.current = progress.duration;
-      if (progress.seconds > 0) secondsRef.current = progress.seconds;
+      if (parsed.kind === "episode") {
+        // Плеер переключил серию: запоминаем её и обнуляем позицию, иначе
+        // секунды от предыдущей серии уедут в запись новой
+        if (parsed.season !== null && parsed.season >= 0) seasonRef.current = parsed.season;
+        if (parsed.episode !== null && parsed.episode >= 0) episodeRef.current = parsed.episode;
+        secondsRef.current = 0;
+        lastSavedRef.current = 0;
+        console.info(
+          `[bridge] серия: сезон ${seasonRef.current}, серия ${episodeRef.current} — позиция пишется отдельно`
+        );
+        return;
+      }
+
+      if (parsed.kind === "duration") {
+        if (parsed.duration > 0) durationRef.current = parsed.duration;
+        return;
+      }
+
+      if (parsed.duration && parsed.duration > 0) durationRef.current = parsed.duration;
+      if (parsed.seconds > 0) secondsRef.current = parsed.seconds;
 
       if (!readyRef.current && secondsRef.current > 0) {
         readyRef.current = true;
