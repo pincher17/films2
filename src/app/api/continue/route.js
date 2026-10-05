@@ -30,15 +30,26 @@ export async function GET() {
       updatedAt: { gte: ninetyDaysAgo },
     },
     orderBy: { updatedAt: "desc" },
-    take: 20,
+    // берём с запасом: после объединения по фильму останется нужное число
+    take: 60,
   });
+
+  // Один фильм — одна карточка. У сериала записей много (по одной на серию),
+  // и без этого «Доктор Хаус» появлялся бы в ряду несколько раз. Список уже
+  // отсортирован по updatedAt DESC, поэтому первая запись фильма — самая свежая.
+  // Старые серии в базе не трогаем: они нужны для продолжения конкретной серии.
+  const latestByFilm = new Map();
+  for (const row of rows) {
+    if (!latestByFilm.has(row.filmId)) latestByFilm.set(row.filmId, row);
+  }
+  const uniqueRows = [...latestByFilm.values()].slice(0, 20);
 
   if (!rows.length) return NextResponse.json({ docs: [] }, { headers: noStore });
 
   const errors = [];
-  const cards = await buildCardsByKinopoiskIds(rows.map((row) => row.filmId), errors);
+  const cards = await buildCardsByKinopoiskIds(uniqueRows.map((row) => row.filmId), errors);
   // id карточки — строка, filmId в базе — число: приводим к строке
-  const byFilmId = new Map(rows.map((row) => [String(row.filmId), row]));
+  const byFilmId = new Map(uniqueRows.map((row) => [String(row.filmId), row]));
 
   const docs = cards.map((card) => {
     const row = byFilmId.get(String(card.id));
@@ -60,6 +71,8 @@ export async function GET() {
       },
     };
   });
+
+  if (!uniqueRows.length) return NextResponse.json({ docs: [] }, { headers: noStore });
 
   if (!cards.length && errors.length) {
     console.warn("[continue] карточки не собрались:", errors.join("; "));

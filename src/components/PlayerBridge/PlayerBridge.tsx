@@ -24,6 +24,7 @@
 
 import React from "react";
 import { saveWatchPosition } from "@/api/watchPosition";
+import { useAppSelector } from "@/redux/hooks";
 import {
   clearCurrentEpisode,
   markPlayerReporting,
@@ -100,6 +101,15 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
   // (для фильма там нули, и если плеер о серии не сообщает, всё остаётся 0/0).
   const seasonRef = React.useRef(season);
   const episodeRef = React.useRef(episode);
+  // Сообщил ли плеер серию за эту загрузку страницы
+  const episodeKnownRef = React.useRef(false);
+
+  // Тип контента — из уже загруженных данных страницы (селекторы серий внутри
+  // iframe, оттуда их не прочитать)
+  const filmType = useAppSelector((state) =>
+    String((state.filmInfo?.info as { type?: string } | undefined)?.type || "")
+  );
+  const isSeries = /series/i.test(filmType);
 
   React.useEffect(() => {
     if (!filmId) return;
@@ -124,6 +134,11 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
 
       if (!readyRef.current) return;
       if (seconds < MIN_SECONDS) return;
+
+      // Сериал: пока плеер не сообщил серию, не пишем вовсе — иначе появится
+      // ложная запись (season=0, episode=0) и фильм задвоится в ряду.
+      // Для обычного фильма ключ (0,0) остаётся рабочим.
+      if (isSeries && !episodeKnownRef.current) return;
       if (duration && seconds > duration + 5) return;
       if (Date.now() - lastSavedRef.current < 5000 && !beacon) return;
 
@@ -158,6 +173,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
         lastSavedRef.current = 0;
         // сообщаем трекеру, какая серия играет: он должен писать в тот же ключ
         setCurrentEpisode(seasonRef.current, episodeRef.current);
+        episodeKnownRef.current = true;
         console.info(
           `[bridge] серия: сезон ${seasonRef.current}, серия ${episodeRef.current} — позиция пишется отдельно`
         );
@@ -214,7 +230,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       save(true);
       clearCurrentEpisode();
     };
-  }, [filmId, season, episode, saveEvery]);
+  }, [filmId, season, episode, saveEvery, isSeries]);
 
   return null;
 };
