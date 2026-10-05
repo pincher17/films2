@@ -95,11 +95,14 @@ export async function POST(request) {
       ? body.completed
       : duration !== null && duration - seconds <= 120;
 
+  // player — позиция пришла от плеера (точная), fallback — оценка по времени
+  const source = body.source === "player" ? "player" : "fallback";
+
   const userId = await currentProfile(true);
   const row = await prisma.watchPosition.upsert({
     where: { userId_filmId_season_episode: { userId, ...ids } },
-    create: { userId, ...ids, seconds, duration, completed },
-    update: { seconds, duration, completed },
+    create: { userId, ...ids, seconds, duration, completed, source },
+    update: { seconds, duration, completed, source },
   });
 
   return NextResponse.json({ position: shape(row) }, { headers: noStore });

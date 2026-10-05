@@ -26,11 +26,12 @@ export function saveWatchPosition({
   duration,
   season = 0,
   episode = 0,
+  source = "fallback",
   beacon = false,
 }) {
   if (!filmId || !Number.isFinite(seconds)) return;
 
-  const body = JSON.stringify({ filmId, season, episode, seconds, duration });
+  const body = JSON.stringify({ filmId, season, episode, seconds, duration, source });
 
   // при закрытии вкладки обычный запрос может не успеть уйти — sendBeacon надёжнее
   if (beacon && typeof navigator !== "undefined" && navigator.sendBeacon) {

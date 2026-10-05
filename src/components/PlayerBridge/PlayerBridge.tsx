@@ -1,17 +1,25 @@
 "use client";
 
 /**
- * Мост к встроенному (iframe) плееру.
+ * Универсальный адаптер событий прогресса от встроенного (iframe) плеера.
  *
- * Позицию просмотра нельзя прочитать из чужого iframe напрямую — браузер это
- * запрещает. Но многие плееры умеют протокол playerjs: обмен сообщениями через
- * postMessage. Этот компонент подписывается на события такого плеера и пишет
- * текущую секунду в нашу базу — тогда «Продолжить просмотр» работает и со
- * встроенным плеером.
+ * Задача: получить от плеера текущую секунду и длительность и отдать их в
+ * существующий /api/position. Ничего своего: ни таблиц, ни авторизации, ни
+ * эндпоинтов — только перевод событий плеера в наш формат.
  *
- * Компонент универсальный: он не знает, какой именно плеер вставлен, и не
- * зависит от источника видео. Если плеер не поддерживает playerjs, сообщений
- * просто не придёт — и мы это увидим в консоли.
+ * Как это работает и почему безопасно:
+ *   • прямое чтение из чужого iframe запрещено браузером, поэтому остаётся
+ *     обмен сообщениями (postMessage);
+ *   • доверенным считается ТОЛЬКО origin того iframe, который мы сами вставили
+ *     на страницу — он вычисляется из его src. Никаких адресов провайдеров в
+ *     коде нет: что вставили, тому и доверяем;
+ *   • поддерживаются документированные формы событий разных плееров —
+ *     playerjs-подобные (timeupdate/duration) и «прогресс» (progress/viewProgress
+ *     с полями time/timeSeconds и duration);
+ *   • сообщения посторонних фреймов и скриптов отбрасываются.
+ *
+ * Если плеер событий не отправляет, ничего не происходит: остаётся WatchTracker,
+ * который считает время по действию пользователя.
  */
 
 import React from "react";
@@ -22,108 +30,123 @@ type Props = {
   /** сезон и серия для сериалов; 0 для фильмов */
   season?: number;
   episode?: number;
-  /** интервал сохранения, мс */
+  /** как часто писать позицию на сервер, мс */
   saveEvery?: number;
 };
 
-const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEvery = 20000 }) => {
-  const timeRef = React.useRef(0);
-  const durationRef = React.useRef(0);
+/** Минимальная позиция, которую имеет смысл запоминать */
+const MIN_SECONDS = 10;
+/** Сохраняем позицию как «досмотрено», если до конца меньше этого числа секунд */
+const NEAR_END = 120;
+
+const number = (value: unknown): number | null => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+/** Ищем секунду и длительность в сообщении, не привязываясь к одному формату */
+function readProgress(data: any): { seconds: number; duration: number | null } | null {
+  const event = String(data?.event || data?.name || "");
+
+  // playerjs-подобные события: { event: 'timeupdate', value: 12.5 }
+  if (event === "timeupdate" || event === "progress" || event === "viewProgress") {
+    const seconds = number(data.value ?? data.seconds ?? data.time ?? data.timeSeconds);
+    const duration = number(data.duration ?? data.total ?? data.length);
+    return seconds === null ? null : { seconds, duration };
+  }
+
+  // отдельное событие длительности
+  if (event === "duration") {
+    const duration = number(data.value ?? data.seconds ?? data.duration);
+    return duration === null ? null : { seconds: 0, duration };
+  }
+
+  return null;
+}
+
+const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEvery = 15000 }) => {
+  const secondsRef = React.useRef(0);
+  const durationRef = React.useRef<number | null>(null);
   const readyRef = React.useRef(false);
-  const seenRef = React.useRef(0);
+  const lastSavedRef = React.useRef(0);
 
   React.useEffect(() => {
     if (!filmId) return;
     let stopped = false;
 
-    const findFrame = (): HTMLIFrameElement | null =>
+    const frame = () =>
       document.querySelector<HTMLIFrameElement>("#fh-player iframe");
 
-    // плеер может создаваться позже — пробуем несколько раз
-    const registrations: number[] = [];
-    const subscribe = (frame: HTMLIFrameElement) => {
-      if (!frame.contentWindow) return;
-      const ask = (method: string, value?: unknown) => {
-        try {
-          frame.contentWindow?.postMessage(JSON.stringify({ method, value }), "*");
-        } catch {
-          undefined;
-        }
-      };
-      ask("addEventListener", "ready");
-      ask("addEventListener", "timeupdate");
-      ask("addEventListener", "duration");
-      ask("addEventListener", "play");
-      ask("getDuration");
-    };
-
-    const timers = [0, 1500, 4000, 8000].map((delay) =>
-      window.setTimeout(() => {
-        if (stopped) return;
-        const frame = findFrame();
-        if (frame) subscribe(frame);
-      }, delay)
-    );
-    registrations.push(...timers);
-
-    const onMessage = (event: MessageEvent) => {
-      let data: any = event.data;
-      if (typeof data === "string") {
-        try {
-          data = JSON.parse(data);
-        } catch {
-          return;
-        }
-      }
-      if (!data || typeof data !== "object") return;
-
-      // некоторые плееры шлют объект вида { event, value }
-      const name = data.event;
-      if (!name) return;
-
-      // События плеера показываем всегда (первое — точно), а посторонние
-      // сообщения только первыми десятью: их шлют метрика, dev-сервер и реклама,
-      // и раньше они вытесняли из лога настоящие события плеера.
-      if (name !== "timeupdate" && name !== "duration") {
-        if (seenRef.current < 10) {
-          seenRef.current += 1;
-          console.debug("[bridge] постороннее сообщение:", name);
-        }
-        return;
-      }
-
-      if (!readyRef.current) {
-        console.info("[bridge] событие плеера:", name, data.value ?? "");
-      }
-
-      if (!readyRef.current) {
-        readyRef.current = true;
-        console.info("[bridge] плеер отвечает по playerjs — синхронизация позиции включена");
-      }
-
-      if (name === "timeupdate") {
-        const value = Number(data.value ?? data.seconds ?? 0);
-        if (Number.isFinite(value) && value > 0) timeRef.current = value;
-      } else if (name === "duration") {
-        const value = Number(data.value ?? data.seconds ?? 0);
-        if (Number.isFinite(value) && value > 0) durationRef.current = value;
+    /** Разрешённый origin — тот, что у нашего же iframe */
+    const allowedOrigin = (): string | null => {
+      const src = frame()?.getAttribute("src") || "";
+      try {
+        return src ? new URL(src, window.location.href).origin : null;
+      } catch {
+        return null;
       }
     };
-
-    window.addEventListener("message", onMessage);
 
     const save = (beacon: boolean) => {
-      const seconds = Math.floor(timeRef.current);
-      if (!readyRef.current || seconds <= 15) return;
+      const seconds = Math.floor(secondsRef.current);
+      const duration = durationRef.current ? Math.floor(durationRef.current) : undefined;
+
+      if (!readyRef.current) return;
+      if (seconds < MIN_SECONDS) return;
+      if (duration && seconds > duration + 5) return;
+      if (Date.now() - lastSavedRef.current < 5000 && !beacon) return;
+
+      lastSavedRef.current = Date.now();
       saveWatchPosition({
         filmId: Number(filmId),
         season,
         episode,
         seconds,
-        duration: durationRef.current ? Math.floor(durationRef.current) : undefined,
+        duration,
+        source: "player",
         beacon,
       });
     };
+
+    const onMessage = (event: MessageEvent) => {
+      if (stopped) return;
+
+      // доверяем только своему iframe
+      const origin = allowedOrigin();
+      if (!origin || event.origin !== origin) return;
+
+      const progress = readProgress(event.data);
+      if (!progress) return;
+
+      if (progress.duration && progress.duration > 0) durationRef.current = progress.duration;
+      if (progress.seconds > 0) secondsRef.current = progress.seconds;
+
+      if (!readyRef.current && secondsRef.current > 0) {
+        readyRef.current = true;
+        console.info("[bridge] плеер отдаёт прогресс — позиция сохраняется на сервер");
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+
+    // Вежливая подписка для плееров, поддерживающих playerjs-протокол:
+    // просим присылать события, если плеер их знает
+    const ask = (method: string, value?: string) => {
+      const node = frame();
+      if (!node?.contentWindow) return;
+      try {
+        node.contentWindow.postMessage(JSON.stringify({ method, value }), "*");
+      } catch {
+        undefined;
+      }
+    };
+    const timers = [0, 1500, 4000, 8000].map((delay) =>
+      window.setTimeout(() => {
+        if (stopped) return;
+        ask("addEventListener", "timeupdate");
+        ask("addEventListener", "duration");
+      }, delay)
+    );
 
     const interval = window.setInterval(() => save(false), saveEvery);
     const onHide = () => save(true);

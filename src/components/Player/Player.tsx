@@ -433,6 +433,8 @@ const Player: React.FC<Props> = ({ source }) => {
         filmId,
         seconds: Math.floor(video.currentTime),
         duration: Number.isFinite(video.duration) ? Math.floor(video.duration) : undefined,
+        // позиция из нашего плеера точная — помечаем как player
+        source: "player",
         beacon,
       });
     };
