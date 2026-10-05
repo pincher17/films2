@@ -14,11 +14,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1440px;
+  /* Ширина и брейкпоинты те же, что у .layout страницы фильма
+     (src/app/styles/LayoutFilm.module.css): иначе контент и шапка
+     расходятся на 20px с каждой стороны. Внутренние отступы убраны —
+     они и создавали этот сдвиг; на узких экранах остаются. */
+  width: 1440px;
+  max-width: 100%;
   margin: 0 auto;
   height: 100%;
-  padding-left: 20px;
-  padding-right: 20px;
+}
+
+@media (max-width: 1500px){
+  .header_wrapper{
+    width: 1250px;
+  }
+}
+
+@media (max-width: 1300px){
+  .header_wrapper{
+    width: 1050px;
+  }
+}
+
+@media (max-width: 1150px){
+  .header_wrapper{
+    width: 800px;
+  }
+}
+
+@media (max-width: 850px){
+  .header_wrapper{
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 /* .logo{
