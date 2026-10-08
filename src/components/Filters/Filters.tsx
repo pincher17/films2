@@ -75,26 +75,14 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
         return query ? `/films?${query}` : '/films';
     };
 
-    /** Сброс: возвращаем значения по умолчанию и очищаем адрес */
+    /**
+     * Сброс фильтров: очищаем адрес и перезагружаем страницу. Полная
+     * перезагрузка надёжнее ручного сброса состояния: сбрасываются и ползунки,
+     * и плитки типов, и все поля — состояние берётся из чистого адреса.
+     */
     const resetFilters = () => {
         router.replace('/films');
-        setValueGenre([]);
-        setValueCountry([]);
-        setValueYear([1960, 2026]);
-        setValueRating([1, 10]);
-        setValueSort('date-desc');
-        const fresh = {
-            ...filters,
-            genre: [],
-            country: [],
-            year: [1960, 2026],
-            rating: [1, 10],
-            sortBy: 'date-desc',
-            sortByRelease: '-1',
-        };
-        dispatch(setFilters(fresh as initialStateFiltersType));
-        dispatch(setPage(1));
-        dispatch(getAllFilmsFiltersThunk(fresh as initialStateFiltersType, 1));
+        window.location.href = '/films';
     };
 
     const changeFilters = () => {
