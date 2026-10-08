@@ -31,18 +31,20 @@ const {
   } = props.card
 
   /**
-   * Сколько осталось смотреть. Приём, который используют Netflix и Apple:
-   * без остатка подпись «Сезон 1, серия 8» читается как описание сериала,
-   * а с остатком однозначно говорит «ты остановился здесь».
+   * Время, на котором остановился просмотр, в виде таймкода:
+   * для фильма «1:31:44», для серии «12:34».
    */
-  const remainingText = (() => {
-    const p = (props.card as { progress?: { seconds?: number; duration?: number | null } }).progress;
-    if (!p?.duration || typeof p.seconds !== "number") return null;
-    const left = Math.max(0, p.duration - p.seconds);
-    if (left < 60) return "меньше минуты";
-    const hours = Math.floor(left / 3600);
-    const minutes = Math.round((left % 3600) / 60);
-    return hours ? `${hours} ч ${minutes} мин` : `${minutes} мин`;
+  const positionText = (() => {
+    const seconds = (props.card as { progress?: { seconds?: number } }).progress?.seconds;
+    if (typeof seconds !== "number" || seconds <= 0) return null;
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const rest = Math.floor(seconds % 60);
+    const mm = String(minutes).padStart(hours ? 2 : 1, "0");
+    const ss = String(rest).padStart(2, "0");
+
+    return hours ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
   })();
 
   // Прогресс приходит только из ряда «Продолжить просмотр»: у остальных карточек
@@ -50,12 +52,12 @@ const {
   const progress = (props.card as { progress?: { percent?: number | null; season?: number; episode?: number } })
     .progress;
 
-  /** Подпись на постере: серия и остаток времени (без слова «осталось») */
+  /** Подпись на постере: серия и время, на котором остановился просмотр */
   const overlayText = [
     progress && progress.season && progress.episode
       ? `Сезон ${progress.season}, серия ${progress.episode}`
       : null,
-    remainingText,
+    positionText,
   ]
     .filter(Boolean)
     .join(" · ");
