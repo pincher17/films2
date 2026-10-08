@@ -70,6 +70,9 @@ const Page = styled.div`
 
   @media (max-width: 850px) {
     width: 100%;
+    /* как в FilmPageMobile: Wrapper с отступами 20px */
+    padding: 0 20px;
+    margin-top: 90px;
   }
 `;
 
@@ -216,6 +219,9 @@ const Cards = styled.div`
   @media (max-width: 1150px) {
     grid-template-columns: repeat(4, 1fr);
   }
+  @media (max-width: 850px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 `;
 
 const CardPoster = styled.div`
@@ -225,8 +231,39 @@ const CardPoster = styled.div`
   border-radius: 12px;
 `;
 
+/** Обёртки: на телефоне реальная страница другая, значит и скелетон другой */
+const DesktopOnly = styled.div`
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;
+
+const MobileOnly = styled.div`
+  display: none;
+
+  @media (max-width: 850px) {
+    display: block;
+  }
+`;
+
+/** Обложка во всю ширину — так начинается мобильная страница */
+const MobileCover = styled.div`
+  ${block};
+  width: 100%;
+  height: 52vh;
+  border-radius: 16px;
+`;
+
+const MobileTitle = styled.div`
+  ${block};
+  height: 30px;
+  width: 78%;
+  margin-top: 22px;
+`;
+
 const FilmSkeleton: React.FC = () => (
   <Page aria-busy="true" aria-label="Загрузка страницы фильма">
+    <DesktopOnly>
     <Backdrop />
     <Hero>
       <HeroText>
@@ -251,6 +288,25 @@ const FilmSkeleton: React.FC = () => (
       </HeroText>
       <Poster />
     </Hero>
+    </DesktopOnly>
+    <MobileOnly>
+      <MobileCover />
+      <MobileTitle />
+      <Meta>
+        <Chip $w={72} />
+        <Chip $w={96} />
+        <Chip $w={64} />
+      </Meta>
+      <Buttons>
+        <Button $w={150} />
+        <Button $w={120} />
+      </Buttons>
+      <Description>
+        <Line />
+        <Line $w="92%" />
+        <Line $w="70%" />
+      </Description>
+    </MobileOnly>
     <PlayerBlock />
     <Section>
       <SectionTitle />
