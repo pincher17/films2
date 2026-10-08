@@ -9,6 +9,7 @@ import {
   ProgressTrack,
   Rating,
   RatingNum,
+  ResumeBadge,
   Wrapper,
   Year,
 } from '../../app/styles/Card.styles';
@@ -81,9 +82,18 @@ const {
             quality={80} */
              />}
             {progress && typeof progress.percent === "number" ? (
-              <ProgressTrack>
-                <ProgressFill $percent={progress.percent} />
-              </ProgressTrack>
+              <>
+                <ProgressTrack>
+                  <ProgressFill $percent={progress.percent} />
+                </ProgressTrack>
+                {/* значок паузы: «ты остановился здесь» */}
+                <ResumeBadge title="Вы остановились здесь">
+                  <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
+                    <rect x="0" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
+                    <rect x="6.8" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
+                  </svg>
+                </ResumeBadge>
+              </>
             ) : null}
             </ImgWrap>
             {ratingKp &&

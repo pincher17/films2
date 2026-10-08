@@ -145,3 +145,23 @@ export const EpisodeLabel = styled.div`
   font-size: 13px;
   margin-bottom: 4px;
 `
+
+/**
+ * Значок паузы на постере: показывает, что просмотр остановлен здесь.
+ * Ставится над полоской прогресса, чтобы не мешать ей.
+ */
+export const ResumeBadge = styled.div`
+  position: absolute;
+  left: 8px;
+  bottom: 13px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 12, 12, 0.74);
+  color: #fff;
+  backdrop-filter: blur(2px);
+`
