@@ -20,6 +20,16 @@ export const Wrapper = styled.div`
   @media (max-width: 850px) {
     width: 100%;
     height: 100%;
+    /*
+     * Плеер с плашкой ставим по центру экрана, а не к верхнему краю.
+     * padding оставлен, чтобы при нехватке высоты содержимое не прилипало
+     * к краям, а overflow-y позволял прокрутить.
+     */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px 0;
+    box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -47,8 +57,8 @@ export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
 
   /* на телефоне попап занимает экран целиком, без сдвигов */
   @media (max-width: 850px) {
-    /* было 0 — плеер прилипал к верхнему краю под самый крестик */
-    margin-top: 64px;
+    /* отступ не нужен: содержимое попапа центрируется по вертикали */
+    margin-top: 0;
     margin-left: 0;
     width: 100%;
     padding: 0 12px;
