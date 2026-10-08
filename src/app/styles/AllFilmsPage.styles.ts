@@ -7,7 +7,8 @@ export const Wrapper = styled.div`
 export const WrapperNameBlock = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40px;
+  /* было 40px — блок фильтров стоял низко под заголовком */
+  margin-bottom: 20px;
   align-items: center;
 
   /* на телефоне заголовок слева — в одну линию с фильтрами и карточками */

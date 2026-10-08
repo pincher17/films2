@@ -5,7 +5,8 @@ export const Wrapper = styled.div<FiltersWrapperProps>`
  margin-bottom: 50px;
 `
 export const WrapperInput = styled.div`
-  padding-bottom: 55px;
+  /* было 55px — под колонками фильтров оставалась пустота перед кнопками */
+  padding-bottom: 28px;
   @media (max-width: 850px){
     margin-top: -20px;
     padding-bottom: 40px;
