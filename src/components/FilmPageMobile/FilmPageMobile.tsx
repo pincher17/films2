@@ -145,6 +145,17 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           </MobileMore>
         ) : null}
 
+        <SwiperWrapperSimilar>
+          {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
+            <>
+              <TitleDescription>Похожие</TitleDescription>
+              <SwiperFilms cards={filmInfoId?.similarMovies} />
+            </>
+          ) : (
+            ""
+          )}
+        </SwiperWrapperSimilar>
+
         {detailRows.length ? (
           <>
             <MobileSectionTitle>Детали</MobileSectionTitle>
@@ -186,16 +197,6 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           )}
         </SwiperWrapperSimilar>
 
-        <SwiperWrapperSimilar>
-          {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
-            <>
-              <TitleDescription>Похожие</TitleDescription>
-              <SwiperFilms cards={filmInfoId?.similarMovies} />
-            </>
-          ) : (
-            ""
-          )}
-        </SwiperWrapperSimilar>
         <SoundtrackSection
           kpId={id}
           title={filmInfoId?.name}
