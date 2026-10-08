@@ -1,5 +1,5 @@
 
 export interface SearchWrapperProps {
-    active: number
+    $active: number
 }
 

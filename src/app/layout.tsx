@@ -40,6 +40,9 @@ export default function RootLayout({
           crossOrigin="use-credentials"
           href="/manifest.json"
         />
+        {/* Метрика подключается только в продакшене: в разработке она
+            только сыпет ошибками в консоль */}
+        {process.env.NODE_ENV === "production" ? (
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -58,6 +61,7 @@ export default function RootLayout({
               `
             }}
           />
+        ) : null}
         </head>
       <body className={inter.className}>
       <noscript><div><img src="https://mc.yandex.ru/watch/95416777" style={{position:"absolute", left:"-9999px"}} alt="" /></div></noscript>

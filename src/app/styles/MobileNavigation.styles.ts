@@ -52,7 +52,7 @@ export const HomeIcon = styled(Homeicon)<NavigationItemProps>`
   width: 25px;
   height: 25px;
   margin-bottom: 5px;
-  stroke: ${({active}) => (active ? '#fff' : '#b3b3b3')};
+  stroke: ${({$active}) => ($active ? '#fff' : '#b3b3b3')};
   fill: none;
 `
 

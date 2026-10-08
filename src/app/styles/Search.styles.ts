@@ -10,7 +10,7 @@ export const SearchWrapper = styled.div<SearchWrapperProps>`
     width: 460px;
   }
   @media (max-width: 850px){
-    display: ${({active}) => (active ? 'flex' : 'none')};
+    display: ${({$active}) => ($active ? 'flex' : 'none')};
     position: absolute;
     top: 80px;
     left: 50%;
@@ -139,7 +139,7 @@ export const RatingNumer = styled.div`
 `;
 
 export const AllBlur = styled.div<SearchWrapperProps>`
-  display: ${({active}) => (active ? 'block' : 'none')};
+  display: ${({$active}) => ($active ? 'block' : 'none')};
   position: fixed;
   z-index: 5;
   top: 0;

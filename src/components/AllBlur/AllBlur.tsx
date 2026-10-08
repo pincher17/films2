@@ -7,7 +7,7 @@ const AllBlur: React.FC = () => {
 
 
   return (
-    <AllBlurDiv active={(+mobileSearch)} />
+    <AllBlurDiv $active={(+mobileSearch)} />
   )
 };
 

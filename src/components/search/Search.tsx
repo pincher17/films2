@@ -110,7 +110,7 @@ const Search: React.FC = () => {
   }, [mobileSearch]);
 
   return (
-    <SearchWrapper active={(+mobileSearch)}>
+    <SearchWrapper $active={(+mobileSearch)}>
       <SearchInput
         placeholder="Поиск"
         type="search"

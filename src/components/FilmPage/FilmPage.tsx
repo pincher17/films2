@@ -425,7 +425,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   </Box>
                   {value === "two" ? <KinoboxPlayer kpId={id} />
                   : <Iframe
-                  src={`https://api.ortified.ws/embed/kp/${id}`}
+                  src={`https://api.ortified.ws/embed/kp/${id}?season=1&episode=11&t=420`}
                   frameBorder="0"
                   scrolling="no"
                   allowFullScreen

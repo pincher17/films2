@@ -15,13 +15,13 @@ const MobileNavigation = () => {
     <NavigationContainer>
       <NavigationItem $active={(+(pathname === '/'))}>
         <StyledLink href="/">
-        <HomeIcon active={(+(pathname === '/'))} />
+        <HomeIcon $active={(+(pathname === '/'))} />
         <span>Главная</span>
         </StyledLink>
       </NavigationItem>
       <NavigationItem $active={(+(pathname === '/films'))}>
         <StyledLink href="/films">
-        <AllFilmsIcon active={(+(pathname === '/films'))} />
+        <AllFilmsIcon $active={(+(pathname === '/films'))} />
         <span>Все фильмы</span>
         </StyledLink>
       </NavigationItem>
