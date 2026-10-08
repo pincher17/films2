@@ -120,3 +120,19 @@ align-items: center;
     background: rgba(0, 0, 0, 0.91);
   }
 }
+
+/* Вход для телефона: на компьютере он живёт внутри nav и здесь не нужен */
+.auth_mobile{
+  display: none;
+}
+
+@media (max-width: 850px){
+  .auth_mobile{
+    display: block;
+    margin-left: auto;
+  }
+  .header_wrapper{
+    /* логотип слева, вход справа */
+    justify-content: space-between;
+  }
+}

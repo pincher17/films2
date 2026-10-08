@@ -31,14 +31,18 @@ const Header: React.FC = () =>{
         <Search />
         <nav className={s.nav}>
         <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Все фильмы</Link>
+        {/* вход внутри nav — так шапка на компьютере стоит как раньше */}
+        <HeaderAuth />
         <NavigationItem $active={(+(pathname === '/films'))}>
 {/*         <StyledLink href="https://t.me/filmhub_lol">
         <TelegramIcon />
         </StyledLink> */}
       </NavigationItem>
         </nav>
-        {/* Вход вынесен из nav: на телефоне nav скрыт целиком */}
-        <HeaderAuth />
+        {/* На телефоне nav скрыт целиком, поэтому вход дублируется рядом */}
+        <div className={s.auth_mobile}>
+          <HeaderAuth />
+        </div>
         </div>
       </header>
     )
