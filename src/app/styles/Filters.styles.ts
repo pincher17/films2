@@ -79,8 +79,9 @@ export const FilterPill = styled.label<{ $active?: boolean }>`
   user-select: none;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
-  background: ${(props) => (props.$active ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)")};
-  border: 1px solid ${(props) => (props.$active ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.1)")};
+  /* те же цвета, что у селектов «Жанры» и «Страны»: фон #0e0e0e, рамка #343434 */
+  background: ${(props) => (props.$active ? "#161616" : "#0e0e0e")};
+  border: 1px solid ${(props) => (props.$active ? "#747474" : "#343434")};
   color: ${(props) => (props.$active ? "#fff" : "rgba(248,248,248,0.6)")};
 
   input {
@@ -88,7 +89,7 @@ export const FilterPill = styled.label<{ $active?: boolean }>`
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    border-color: #5c5c5c;
   }
 
   svg {
