@@ -80,8 +80,10 @@ export const FilterPill = styled.label<{ $active?: boolean }>`
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
   /* те же цвета, что у селектов «Жанры» и «Страны»: фон #0e0e0e, рамка #343434 */
-  background: ${(props) => (props.$active ? "#161616" : "#0e0e0e")};
-  border: 1px solid ${(props) => (props.$active ? "#747474" : "#343434")};
+  /* фон и рамка одинаковые в обоих состояниях — как у селектов «Жанры» и «Страны».
+     Активность показывают квадрат-галочка и цвет текста, а не рамка. */
+  background: #0e0e0e;
+  border: 1px solid #343434;
   color: ${(props) => (props.$active ? "#fff" : "rgba(248,248,248,0.6)")};
 
   input {
@@ -89,7 +91,7 @@ export const FilterPill = styled.label<{ $active?: boolean }>`
   }
 
   &:hover {
-    border-color: #5c5c5c;
+    border-color: #4a4a4a;
   }
 
   svg {
