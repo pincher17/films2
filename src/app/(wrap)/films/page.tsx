@@ -102,15 +102,26 @@ export default function Films() {
         "2": "Сериалы",
         "3": "Мультфильмы",
       };
-      restored.selectedTypeOfMovies = typesParam
+      const chosen = typesParam
         .split(",")
         .map((value) => value.trim())
-        .filter((value) => TYPE_NAMES[value])
-        .map((typeNumber) => ({
-          name: TYPE_NAMES[typeNumber],
-          included: true,
-          typeNumber,
-        }));
+        .filter((value) => TYPE_NAMES[value]);
+
+      restored.selectedTypeOfMovies = chosen.map((typeNumber) => ({
+        name: TYPE_NAMES[typeNumber],
+        included: true,
+        typeNumber,
+      }));
+
+      /*
+       * Плитки «Фильмы / Сериалы / Мультфильмы» читают typeOfMovies, а не
+       * selectedTypeOfMovies — без этого галочки оставались в прежнем виде.
+       */
+      restored.typeOfMovies = Object.keys(TYPE_NAMES).map((typeNumber) => ({
+        name: TYPE_NAMES[typeNumber],
+        included: chosen.includes(typeNumber),
+        typeNumber,
+      }));
     }
 
     if (Object.keys(restored).length) {
