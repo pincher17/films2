@@ -27,6 +27,52 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
+    /**
+     * Фильтры в адресной строке: тогда ссылку можно сохранить, а обновление
+     * страницы не сбрасывает выбор. Раньше здесь стоял router.replace('/films'),
+     * который параметры стирал.
+     */
+    const buildQuery = (f: initialStateFiltersType) => {
+        const params = new URLSearchParams();
+        const genre = (f.genre || []).map((item: any) => item?.value || item).filter(Boolean);
+        const country = (f.country || []).map((item: any) => item?.value || item).filter(Boolean);
+        const types = (f.selectedTypeOfMovies || [])
+            .map((item: any) => item?.typeNumber)
+            .filter(Boolean);
+
+        if (genre.length) params.set('genre', genre.join(','));
+        if (country.length) params.set('country', country.join(','));
+        if (types.length) params.set('types', types.join(','));
+        if (f.year?.length) params.set('year', f.year.join('-'));
+        if (f.rating?.length) params.set('rating', f.rating.join('-'));
+        if (f.sortBy) params.set('sort', f.sortBy);
+
+        const query = params.toString();
+        return query ? `/films?${query}` : '/films';
+    };
+
+    /** Сброс: возвращаем значения по умолчанию и очищаем адрес */
+    const resetFilters = () => {
+        router.replace('/films');
+        setValueGenre([]);
+        setValueCountry([]);
+        setValueYear([1960, 2026]);
+        setValueRating([1, 10]);
+        setValueSort('date-desc');
+        const fresh = {
+            ...filters,
+            genre: [],
+            country: [],
+            year: [1960, 2026],
+            rating: [1, 10],
+            sortBy: 'date-desc',
+            sortByRelease: '-1',
+        };
+        dispatch(setFilters(fresh as initialStateFiltersType));
+        dispatch(setPage(1));
+        dispatch(getAllFilmsFiltersThunk(fresh as initialStateFiltersType, 1));
+    };
+
     const changeFilters = () => {
         const createfilters: initialStateFiltersType ={
             genre: valueGenre,
@@ -39,7 +85,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             updateGenre: false,
             country: valueCountry,
         }
-        router.replace('/films');
+        router.replace(buildQuery(createfilters));
         dispatch(setFilters(createfilters))
         dispatch(setPage(1))
         dispatch(getAllFilmsFiltersThunk(createfilters, 1));
@@ -118,6 +164,18 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
          </WrapperAllInputs>
          <ButtonWrapper>
             <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
+            <div
+                style={{
+                    display: 'inline-block',
+                    marginLeft: 12,
+                    border: '1px solid rgba(255,255,255,0.25)',
+                    borderRadius: 8,
+                }}
+            >
+                <Button onClick={resetFilters}>
+                    Сбросить
+                </Button>
+            </div>
          </ButtonWrapper>
          
     </Wrapper>
