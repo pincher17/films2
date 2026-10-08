@@ -154,7 +154,13 @@ export const WrapperDescription = styled.p`
 `;
 
 export const SwiperWrapperSimilar = styled.div`
-
+  /*
+   * Слайдер добавляет собственное пустое место сверху, из-за которого
+   * заголовок секции оказывался далеко от карточек. На телефоне убираем.
+   */
+  @media (max-width: 850px) {
+    margin-top: -24px;
+  }
 `;
 
 
