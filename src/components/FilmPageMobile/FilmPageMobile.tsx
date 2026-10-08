@@ -158,10 +158,12 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           </MobileMore>
         ) : null}
 
+        {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
+          <MobileSectionTitle>Похожие</MobileSectionTitle>
+        ) : null}
         <SwiperWrapperSimilar>
           {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
             <>
-              <MobileSectionTitle>Похожие</MobileSectionTitle>
               <SwiperFilms cards={filmInfoId?.similarMovies} />
             </>
           ) : (
@@ -199,10 +201,12 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
             </ActorsRow>
           </>
         ) : null}
+        {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
+          <MobileSectionTitle>Сиквелы и приквелы</MobileSectionTitle>
+        ) : null}
         <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
             <>
-              <MobileSectionTitle>Сиквелы и приквелы</MobileSectionTitle>
               <SwiperFilms cards={filmInfoId?.sequelsAndPrequels} />
             </>
           ) : (
