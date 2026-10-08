@@ -140,8 +140,21 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         <MobileSectionTitle>Описание</MobileSectionTitle>
         <MobileDescription $open={descOpen}>{filmInfoId?.description}</MobileDescription>
         {filmInfoId?.description && filmInfoId.description.length > 260 ? (
-          <MobileMore onClick={() => setDescOpen((prev) => !prev)}>
+          <MobileMore
+            $open={descOpen}
+            onClick={() => setDescOpen((prev) => !prev)}
+          >
             {descOpen ? "Свернуть" : "Читать полностью"}
+            <svg width="12" height="7" viewBox="0 0 12 7" aria-hidden="true">
+              <path
+                d="M1 1l5 5 5-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </MobileMore>
         ) : null}
 

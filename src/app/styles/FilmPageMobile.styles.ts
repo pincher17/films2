@@ -220,19 +220,33 @@ export const MobileDescription = styled.p<{ $open?: boolean }>`
 `;
 
 /** Кнопка «Читать полностью» под описанием */
-export const MobileMore = styled.button`
+export const MobileMore = styled.button<{ $open?: boolean }>`
   margin-top: 10px;
   padding: 0;
   border: 0;
   background: none;
-  /* не красный: красный — цвет главного действия («Смотреть»), а это ссылка */
-  color: rgba(248, 248, 248, 0.68);
+  /*
+   * Не красный (красный — цвет главного действия) и не серый как текст:
+   * белым со стрелкой-шевроном — так это читается как действие, а не как
+   * продолжение описания. Приём Кинопоиска и Apple TV.
+   */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: #fff;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
 
+  svg {
+    display: block;
+    transition: transform 0.2s ease;
+    transform: rotate(${(props) => (props.$open ? 180 : 0)}deg);
+  }
+
   &:active {
-    color: #fff;
+    opacity: 0.75;
   }
 `;
 
