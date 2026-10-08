@@ -26,6 +26,13 @@ export const CrossIconFilm = styled(CrossIcon)`
 export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
   margin-top: 90px;
   margin-left: 7px;
+
+  /* на телефоне попап занимает экран целиком, без сдвигов */
+  @media (max-width: 850px) {
+    margin-top: 0;
+    margin-left: 0;
+    width: 100%;
+  }
 `
 
 export const Iframe = styled.iframe<IframeProps>`
@@ -33,4 +40,18 @@ export const Iframe = styled.iframe<IframeProps>`
     height: 62vh !important;
     top: 7%;
     left: 5px;
+
+    /*
+     * На телефоне плеер должен занимать всю ширину и держать пропорцию 16:9.
+     * Раньше оставались 70% ширины и 62vh — на экране 393px это узкая полоса
+     * со сдвигом вправо, из-за чего вёрстка не совпадала с макетом.
+     */
+    @media (max-width: 850px) {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9;
+      top: 0;
+      left: 0;
+    }
 `
