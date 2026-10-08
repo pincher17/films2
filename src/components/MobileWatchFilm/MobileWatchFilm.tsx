@@ -71,7 +71,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
              ) : (
                <>
                  {value === "two" ? <KinoboxPlayer kpId={id} />
-                 : <Iframe
+                 : <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
                      src={`https://api.ortified.ws/embed/kp/${id}`}
                      frameBorder="0"
                      scrolling="no"

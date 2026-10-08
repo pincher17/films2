@@ -435,7 +435,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                     </Tabs>
                   </Box>
                   {value === "two" ? <KinoboxPlayer kpId={id} />
-                  : <Iframe
+                  : <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
                   src={`https://api.ortified.ws/embed/kp/${id}`}
                   frameBorder="0"
                   scrolling="no"
