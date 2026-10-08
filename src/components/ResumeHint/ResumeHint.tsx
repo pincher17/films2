@@ -45,11 +45,15 @@ const ResumeHint: React.FC<{ filmId: string | number }> = ({ filmId }) => {
     let alive = true;
 
     fetch(`/api/position?filmId=${filmId}&latest=1`, { cache: "no-store" })
-      .then((response) => (response.ok ? response.json() : null))
+      .then((response) => {
+        console.info("[hint] запрос позиции:", filmId, "код", response.status);
+        return response.ok ? response.json() : null;
+      })
       .then((data) => {
+        console.info("[hint] ответ:", data?.position || "пусто");
         if (alive) setPosition(data?.position || null);
       })
-      .catch(() => undefined);
+      .catch((error) => console.warn("[hint] запрос не удался:", error?.message));
 
     return () => {
       alive = false;
