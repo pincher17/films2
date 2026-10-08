@@ -326,3 +326,10 @@ export const MetaMobileOnly = styled.div`
     display: block;
   }
 `;
+
+/** Год в заголовке: на телефоне он уже есть в строке метаданных */
+export const TitleYear = styled.span`
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;

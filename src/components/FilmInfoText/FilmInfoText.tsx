@@ -18,6 +18,7 @@ import {
   MobileMetaDot,
   MobileMetaRow,
   MobileRating,
+  TitleYear,
 } from "../../app/styles/FilmPageMobile.styles";
 import { FilmInfoTextProps } from "./FilmInfoText.types";
 import roundNumber from "../helpers/rounding";
@@ -62,7 +63,9 @@ const FilmInfoText: React.FC<FilmInfoTextProps> = (props) => {
         {filmInfoId?.name && (
           <>
             {filmInfoId.name}{" "}
-            {filmInfoId.year ? `(${filmInfoId.year}\u00A0г.)` : ""}
+            {filmInfoId.year ? (
+              <TitleYear>({filmInfoId.year}\u00A0г.)</TitleYear>
+            ) : null}
           </>
         )}
       </Name>

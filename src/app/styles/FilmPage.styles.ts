@@ -279,11 +279,11 @@ export const Name = styled.h1`
   margin: 0;
   margin-bottom: 20px;
   @media (max-width: 850px){
-    /* background: linear-gradient(0deg, rgb(0 0 0 / 85%) 25%, rgb(0 0 0 / 0%) 100%); */
-    /* background-color: black; */
-    /* position: relative;
-    z-index: 5; */
-    /* width: 100vw; */
+    /* плотный заголовок: крупный кегль, но две строки вместо трёх */
+    font-size: 26px;
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
   }
 `;
 export const Flex = styled.div`
