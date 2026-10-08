@@ -47,6 +47,8 @@ export const FiltersActions = styled.div`
   display: flex;
   align-items: stretch;
   gap: 12px;
+  /* флекс-контейнер убрал отступ, который давала кнопка — возвращаем вручную */
+  margin-top: 56px;
 
   & > *:first-child {
     display: flex;
