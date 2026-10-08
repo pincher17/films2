@@ -27,26 +27,9 @@ export const WrapperAllInputs = styled.div`
 `
 
 export const WrapperCheckbox = styled.div`
- display: flex;
- display: flex;
- flex-direction: column;
- gap: 20px;
- /*
-  * Колонка чекбоксов визуально стояла выше остальных: у соседних колонок
-  * сверху подпись («Рейтинг», «Год»), а здесь сразу пункты. Опускаем,
-  * чтобы центр совпал с их полями и ползунками.
-  */
- /*
-  * Сдвигаем колонку визуально, а НЕ отступом: контейнер выравнивает колонки
-  * по базовой линии (align-items: baseline), поэтому margin-top у одного
-  * элемента тянул вниз и «Рейтинг», «Год», «Жанры» вместе с ним.
-  */
- /*
-  * Небольшой сдвиг вниз: ровно по подписи «Рейтинг» чекбоксы читаются
-  * слишком высоко, опускаем к уровню полей с цифрами.
-  */
- position: relative;
- top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `
 
 export const ButtonWrapper = styled.div`
@@ -72,4 +55,54 @@ export const FiltersActions = styled.div`
     padding-right: 22px;
     font-size: 16px;
   }
+`
+
+/**
+ * Строка выбора типа: не красная заливка, а плитка с квадратом-галочкой.
+ * Активная — ярче рамка и галочка, неактивная — приглушённая.
+ */
+export const FilterPill = styled.label<{ $active?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  background: ${(props) => (props.$active ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)")};
+  border: 1px solid ${(props) => (props.$active ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.1)")};
+  color: ${(props) => (props.$active ? "#fff" : "rgba(248,248,248,0.6)")};
+
+  input {
+    display: none;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+`
+
+/** Квадрат слева: показывает, что элемент можно нажать */
+export const PillBox = styled.span<{ $active?: boolean }>`
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  background: ${(props) => (props.$active ? "#d41515" : "transparent")};
+  border: 1.5px solid ${(props) => (props.$active ? "#d41515" : "rgba(255,255,255,0.28)")};
+  color: #fff;
 `

@@ -5,7 +5,7 @@ import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, FiltersActions, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
@@ -123,15 +123,23 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     <Wrapper mobile={(+mobile)}>
         <WrapperAllInputs>
         <WrapperCheckbox>
-        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
-        <CheckBox
-            checked={item.included}
-            id={item.typeNumber}
-            label={item.name}
-            name={item.name}
-            onChange={(e: any) => changeIncludedTypeOfMovies(item.typeNumber)}
-            key={item.typeNumber}
-        />
+        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (
+        <FilterPill $active={item.included} key={item.typeNumber} htmlFor={`type-${item.typeNumber}`}>
+            <input
+                id={`type-${item.typeNumber}`}
+                type="checkbox"
+                checked={item.included}
+                onChange={() => changeIncludedTypeOfMovies(item.typeNumber)}
+            />
+            <PillBox $active={item.included}>
+                {item.included ? (
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                        <path d="M1 4.4l3 3L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                ) : null}
+            </PillBox>
+            {item.name}
+        </FilterPill>
         ))}
         </WrapperCheckbox>
             <SliderValue
