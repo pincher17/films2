@@ -9,6 +9,12 @@ export const Wrapper = styled.div`
 `;
 
 export const Gradient = styled.div`
+  /*
+   * Фон — отдельный absolute-слой. Без отрицательного z-index он рисуется
+   * ПОВЕРХ обычных (непозиционированных) блоков и накрывал кнопки, плашку
+   * и текст. Так как слой чисто декоративный, уводим его под содержимое.
+   */
+  z-index: -1;
   width: 100%;
     margin-top: -80px;
     position: absolute;
