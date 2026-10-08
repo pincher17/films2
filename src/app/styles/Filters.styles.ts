@@ -30,6 +30,16 @@ export const WrapperCheckbox = styled.div`
  display: flex;
  flex-direction: column;
  gap: 20px;
+ /*
+  * Колонка чекбоксов визуально стояла выше остальных: у соседних колонок
+  * сверху подпись («Рейтинг», «Год»), а здесь сразу пункты. Опускаем,
+  * чтобы центр совпал с их полями и ползунками.
+  */
+ margin-top: 38px;
+
+ @media (max-width: 850px) {
+   margin-top: 0;
+ }
 `
 
 export const ButtonWrapper = styled.div`
