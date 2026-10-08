@@ -98,17 +98,20 @@ export const MarginTopValue = styled(TextValue)`
   margin-top: -8px;
 `;
 export const ImgWrapperFilmMobile = styled(ImgWrapper)`
-  width: 280px;
+  /* было 280px — постер выглядел мелким на фоне пустых полей */
+  width: 320px;
+  max-width: 100%;
   margin: 0 auto;
 `;
 export const ImgWrapFilmMobile = styled(ImgWrap)`
-  height: 414.77px;
-  border-radius: 14px;
+  /* та же пропорция 2:3, что у постера: 320 × 474 */
+  height: 474px;
+  border-radius: 16px;
   overflow: hidden;
 `;
 export const ImgMainMobile = styled(Img)`
-  border-radius: 14px;
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
 `;
 
 export const PositionAbsolute = styled.div`
