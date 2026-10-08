@@ -225,10 +225,15 @@ export const MobileMore = styled.button`
   padding: 0;
   border: 0;
   background: none;
-  color: #d41515;
+  /* не красный: красный — цвет главного действия («Смотреть»), а это ссылка */
+  color: rgba(248, 248, 248, 0.68);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+
+  &:active {
+    color: #fff;
+  }
 `;
 
 /** Детали: подпись слева, значение справа — вместо сплошных строк */
