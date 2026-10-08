@@ -148,42 +148,32 @@ export const ButtonWatch = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 54px;
+  /* во всю ширину — той же, что у плашки и остальных блоков */
+  width: 100%;
+  height: 58px;
   margin-top: 22px;
   border-radius: 12px;
   background-color: #d41515;
   color: #fff;
   font-weight: 600;
   font-size: 17px;
+  text-decoration: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   &:active {
     background-color: #b31212;
   }
-  cursor: pointer;
-  text-decoration: none;
-  border: 1px solid rgb(184, 22, 22);
-  border-radius: 5px;
-  width: 80%;
-  height: 30px;
-  margin: 0 auto;
-  margin-bottom: 45px;
-  z-index: 3;
-  position: relative;
-  &:active {
-          background: rgb(147 14 14);
-          border: 1px solid rgb(147 14 14);
-        }
 `;
 
 export const TrailerButtonWatch = styled(ButtonWatch)`
-  background-color: rgb(184 22 22 / 0%);
-  border: 2px solid rgb(184, 22, 22);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-weight: 500;
+
   &:active {
-          background: rgb(184 22 22);
-          border: 2px solid rgb(147 14 14);
-        }
+    background: rgba(255, 255, 255, 0.08);
+  }
 `;
 
 export const Bottom = styled.div`
