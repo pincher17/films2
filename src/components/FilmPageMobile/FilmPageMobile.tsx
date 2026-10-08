@@ -43,8 +43,16 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   const [watchTrailer, setWatchTrailer] = React.useState<boolean>(false);
 
   useEffect(() => {
-    dispatch(getFilmById(id));
-  }, [id]);
+    /*
+     * Данные запрашивает родитель (FilmPage). Повторный запрос отсюда вызывал
+     * бесконечный цикл: дочерний компонент монтируется → ставит loading → в
+     * FilmPage срабатывает ранний возврат со скелетоном → дочерний компонент
+     * размонтируется → загрузка завершается → он монтируется снова.
+     * Запрашиваем только если данных действительно нет — на случай, если
+     * компонент когда-нибудь откроют отдельно от FilmPage.
+     */
+    if (!filmInfoId?.name) dispatch(getFilmById(id));
+  }, [id, filmInfoId?.name]);
 
   const watchFilmStart = () => setWatchFilm(true);
   const watchTrailerStart = () => setWatchTrailer(true);
