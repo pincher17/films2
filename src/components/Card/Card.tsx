@@ -65,16 +65,16 @@ const {
             fill
             quality={80} */
              />}
-            </ImgWrap>
-            {ratingKp &&
-            <Rating $tier={ratingTier}>
-                <RatingNum>{ratingKp}</RatingNum>
-            </Rating>}
             {progress && typeof progress.percent === "number" ? (
               <ProgressTrack>
                 <ProgressFill $percent={progress.percent} />
               </ProgressTrack>
             ) : null}
+            </ImgWrap>
+            {ratingKp &&
+            <Rating $tier={ratingTier}>
+                <RatingNum>{ratingKp}</RatingNum>
+            </Rating>}
             <NameFilm title={name}>{name}</NameFilm>
             <Year>{year}</Year>
             {progress && progress.season && progress.episode ? (

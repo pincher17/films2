@@ -124,12 +124,11 @@ export const NameFilm = styled.p`
  */
 export const ProgressTrack = styled.div`
   position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.22);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.55);
   overflow: hidden;
   z-index: 2;
 `
@@ -137,7 +136,6 @@ export const ProgressTrack = styled.div`
 export const ProgressFill = styled.div<{ $percent: number }>`
   height: 100%;
   width: ${(props) => Math.max(3, Math.min(100, props.$percent))}%;
-  border-radius: 2px;
   background: #d41515;
 `
 
