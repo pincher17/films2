@@ -5,14 +5,21 @@ import styled from "styled-components";
  * она подсказывает, но не спорит с кнопкой «Смотреть» и не мешает постеру.
  */
 export const HintWrapper = styled.div`
+  /*
+   * position + z-index обязательны: фоновый градиент страницы — это
+   * absolute-слой, а позиционированные элементы рисуются поверх обычных,
+   * поэтому без этого плашка оказывалась под фоном (в DOM есть, на экране нет).
+   */
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   flex-direction: column;
   gap: 8px;
   margin-top: 18px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(22, 22, 22, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   cursor: default;
   max-width: 420px;
 
@@ -49,7 +56,7 @@ export const HintIcon = styled.span`
 `;
 
 export const HintText = styled.span`
-  color: rgba(248, 248, 248, 0.72);
+  color: rgba(248, 248, 248, 0.8);
   font-size: 14px;
   line-height: 1.3;
 
