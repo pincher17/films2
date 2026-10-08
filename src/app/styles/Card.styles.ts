@@ -150,13 +150,10 @@ export const EpisodeLabel = styled.div`
  * Значок паузы на постере: показывает, что просмотр остановлен здесь.
  * Ставится над полоской прогресса, чтобы не мешать ей.
  */
-export const ResumeBadge = styled.div`
-  position: absolute;
-  left: 8px;
-  bottom: 13px;
-  z-index: 3;
-  width: 26px;
-  height: 26px;
+export const ResumeBadge = styled.span`
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -164,4 +161,33 @@ export const ResumeBadge = styled.div`
   background: rgba(12, 12, 12, 0.74);
   color: #fff;
   backdrop-filter: blur(2px);
+`
+
+/**
+ * Накладка внизу постера: значок паузы и подпись с серией и остатком.
+ * Тёмный градиент снизу — чтобы текст читался на любом artwork.
+ * Полоска прогресса остаётся ниже, по самому краю.
+ */
+export const PosterOverlay = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 10px 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+  pointer-events: none;
+`
+
+export const OverlayText = styled.span`
+  min-width: 0;
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `

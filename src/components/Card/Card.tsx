@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  EpisodeLabel,
   Img,
   ImgWrap,
   ImgWrapper,
   NameFilm,
   ProgressFill,
+  OverlayText,
+  PosterOverlay,
   ProgressTrack,
   Rating,
   RatingNum,
@@ -49,6 +50,17 @@ const {
   const progress = (props.card as { progress?: { percent?: number | null; season?: number; episode?: number } })
     .progress;
 
+  /** Подпись на постере: серия и остаток времени (без слова «осталось») */
+  const overlayText = [
+    progress && progress.season && progress.episode
+      ? `Сезон ${progress.season}, серия ${progress.episode}`
+      : null,
+    remainingText,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+
   let ratingKp
 
   if(rating){
@@ -86,13 +98,17 @@ const {
                 <ProgressTrack>
                   <ProgressFill $percent={progress.percent} />
                 </ProgressTrack>
-                {/* значок паузы: «ты остановился здесь» */}
-                <ResumeBadge title="Вы остановились здесь">
-                  <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
-                    <rect x="0" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
-                    <rect x="6.8" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
-                  </svg>
-                </ResumeBadge>
+                {overlayText ? (
+                  <PosterOverlay>
+                    <ResumeBadge title="Вы остановились здесь">
+                      <svg width="9" height="11" viewBox="0 0 10 12" aria-hidden="true">
+                        <rect x="0" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
+                        <rect x="6.8" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
+                      </svg>
+                    </ResumeBadge>
+                    <OverlayText>{overlayText}</OverlayText>
+                  </PosterOverlay>
+                ) : null}
               </>
             ) : null}
             </ImgWrap>
@@ -102,18 +118,7 @@ const {
             </Rating>}
             <NameFilm title={name}>{name}</NameFilm>
             <Year>{year}</Year>
-            {progress && (progress.season || remainingText) ? (
-              <EpisodeLabel>
-                {[
-                  progress.season && progress.episode
-                    ? `Сезон ${progress.season}, серия ${progress.episode}`
-                    : null,
-                  remainingText ? `осталось ${remainingText}` : null,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </EpisodeLabel>
-            ) : null}
+
             </ImgWrapper>
             </Link>
     </Wrapper>
