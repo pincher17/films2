@@ -118,3 +118,32 @@ export const NameFilm = styled.p`
     margin-bottom: 6px;
 `
 
+/**
+ * Полоска прогресса просмотра. Показывается только там, где он известен —
+ * то есть в ряду «Продолжить просмотр»; в каталоге и подборках её нет.
+ */
+export const ProgressTrack = styled.div`
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  z-index: 2;
+`
+
+export const ProgressFill = styled.div<{ $percent: number }>`
+  height: 100%;
+  width: ${(props) => Math.max(3, Math.min(100, props.$percent))}%;
+  border-radius: 2px;
+  background: #d41515;
+`
+
+/** «Сезон 2 · Серия 7» — только для сериалов, где серия известна */
+export const EpisodeLabel = styled.div`
+  color: rgba(248, 248, 248, 0.55);
+  font-size: 13px;
+  margin-bottom: 4px;
+`

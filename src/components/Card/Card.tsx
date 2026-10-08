@@ -1,5 +1,17 @@
 import React from 'react';
-import { Img, ImgWrap, ImgWrapper, NameFilm, Rating, RatingNum, Wrapper, Year } from '../../app/styles/Card.styles';
+import {
+  EpisodeLabel,
+  Img,
+  ImgWrap,
+  ImgWrapper,
+  NameFilm,
+  ProgressFill,
+  ProgressTrack,
+  Rating,
+  RatingNum,
+  Wrapper,
+  Year,
+} from '../../app/styles/Card.styles';
 import { CardProps } from './Card.types';
 import roundNumber from '../helpers/rounding';
 import textTransform from '../helpers/textTransform';
@@ -15,6 +27,11 @@ const {
     year,
     rating
   } = props.card
+
+  // Прогресс приходит только из ряда «Продолжить просмотр»: у остальных карточек
+  // этого поля нет, поэтому полоска нигде больше не появляется
+  const progress = (props.card as { progress?: { percent?: number | null; season?: number; episode?: number } })
+    .progress;
 
   let ratingKp
 
@@ -53,8 +70,18 @@ const {
             <Rating $tier={ratingTier}>
                 <RatingNum>{ratingKp}</RatingNum>
             </Rating>}
+            {progress && typeof progress.percent === "number" ? (
+              <ProgressTrack>
+                <ProgressFill $percent={progress.percent} />
+              </ProgressTrack>
+            ) : null}
             <NameFilm title={name}>{name}</NameFilm>
             <Year>{year}</Year>
+            {progress && progress.season && progress.episode ? (
+              <EpisodeLabel>
+                Сезон {progress.season} · Серия {progress.episode}
+              </EpisodeLabel>
+            ) : null}
             </ImgWrapper>
             </Link>
     </Wrapper>
