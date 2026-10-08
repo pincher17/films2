@@ -171,9 +171,6 @@ export const ResumeBadge = styled.span`
   align-items: center;
   justify-content: center;
   background: rgba(12, 12, 12, 0.74);
-  /* Обводка даёт глазу границу кружка — без неё центр оценивать не по чему,
-     и даже точная центровка кажется смещённой */
-  border: 1px solid rgba(255, 255, 255, 0.28);
   color: #fff;
   backdrop-filter: blur(2px);
 `
