@@ -9,10 +9,21 @@ export const WrapperNameBlock = styled.div`
   justify-content: space-between;
   margin-bottom: 40px;
   align-items: center;
+
+  /* на телефоне заголовок слева — в одну линию с фильтрами и карточками */
+  @media (max-width: 850px) {
+    justify-content: flex-start;
+    margin-bottom: 24px;
+  }
 `
 export const NameBlock = styled.p`
   font-size: 20px;
   font-weight: bold;
+
+  @media (max-width: 850px) {
+    text-align: left;
+    margin: 0;
+  }
 `
 export const FilterIcon = styled.div`
  /*  background-image: url('Filtericon.svg'); */
