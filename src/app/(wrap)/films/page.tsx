@@ -25,7 +25,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import Filters from "@/components/Filters/Filters";
 import { MainTag } from "@/app/Main.styles";
 import { useSearchParams } from "next/navigation";
-import { setFilterGenre, setUpdateGenre } from "@/redux/filtersSlice";
+import { setFilterGenre, setFilters, setUpdateGenre } from "@/redux/filtersSlice";
 import { allGenres } from "@/data/allGenres";
 import FilterIcon7 from "/public/Filtericon.svg";
 import InfiniteScroll from '@/components/InfiniteScroll';
@@ -60,10 +60,42 @@ export default function Films() {
   );
 
   useEffect(() => {
+    /*
+     * Фильтры из адресной строки. Раньше читался только жанр, поэтому после
+     * обновления страницы год, рейтинг, страна, сортировка и типы терялись.
+     */
+    const range = (value: string | null) => {
+      const parts = String(value || "").split("-").map(Number);
+      return parts.length === 2 && parts.every(Number.isFinite) ? parts : null;
+    };
+
     if (isGenreValid) {
       dispatch(setFilterGenre([{ value: searchGenre, label: searchGenre }]));
-    } else {
-      return;
+    }
+
+    const countryParam = searchParams.get("country");
+    const typesParam = searchParams.get("types");
+    const yearParam = range(searchParams.get("year"));
+    const ratingParam = range(searchParams.get("rating"));
+    const sortParam = searchParams.get("sort");
+
+    const restored: Record<string, unknown> = {};
+    if (countryParam) {
+      restored.country = countryParam
+        .split(",")
+        .map((value) => ({ value, label: value }));
+    }
+    if (yearParam) restored.year = yearParam;
+    if (ratingParam) restored.rating = ratingParam;
+    if (sortParam) restored.sortBy = sortParam;
+    if (typesParam) {
+      restored.selectedTypeOfMovies = typesParam
+        .split(",")
+        .map((typeNumber) => ({ name: typeNumber, included: true, typeNumber }));
+    }
+
+    if (Object.keys(restored).length) {
+      dispatch(setFilters({ ...filtres, ...restored }));
     }
   }, []);
 
