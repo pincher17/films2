@@ -10,6 +10,13 @@ import {
   ImgMainMobile,
   ImgWrapFilmMobile,
   ImgWrapperFilmMobile,
+  MobileDescription,
+  MobileDetailsLabel,
+  MobileDetailsRow,
+  MobileDetailsValue,
+  MobileMore,
+  MobileSectionTitle,
+  MobileSeo,
   SwiperWrapperSimilar,
   TitleDescription,
   TrailerButtonWatch,
@@ -58,6 +65,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
 
   const watchFilmStart = () => setWatchFilm(true);
   const watchTrailerStart = () => setWatchTrailer(true);
+  const [descOpen, setDescOpen] = React.useState(false);
 
   // Детали, которых на телефоне не было: их показывает только десктопная
   // версия, поэтому страница выглядела неполной
@@ -74,12 +82,14 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
     .map((person) => person.name)
     .slice(0, 4)
     .join(", ");
-  const details = [
-    director ? `Режиссёр: ${director}` : null,
-    cast ? `В ролях: ${cast}` : null,
-    filmInfoId?.year ? `Год: ${filmInfoId.year}` : null,
-    filmInfoId?.movieLength ? `Длительность: ${filmInfoId.movieLength} мин` : null,
-  ].filter(Boolean) as string[];
+  const detailRows = [
+    director ? { label: "Режиссёр", value: director } : null,
+    cast ? { label: "В ролях", value: cast } : null,
+    filmInfoId?.year ? { label: "Год", value: String(filmInfoId.year) } : null,
+    filmInfoId?.movieLength
+      ? { label: "Длительность", value: `${filmInfoId.movieLength} мин` }
+      : null,
+  ].filter(Boolean) as { label: string; value: string }[];
 
   return (
     <Wrapper>
@@ -113,25 +123,26 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         <ResumeHint filmId={id} />
         <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
-        <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
-        <TitleDescription>Описание:</TitleDescription>
-        <Description>{filmInfoId?.description}</Description>
+        <MobileSeo>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</MobileSeo>
+        <MobileSectionTitle>Описание</MobileSectionTitle>
+        <MobileDescription $open={descOpen}>{filmInfoId?.description}</MobileDescription>
+        {filmInfoId?.description && filmInfoId.description.length > 260 ? (
+          <MobileMore onClick={() => setDescOpen((prev) => !prev)}>
+            {descOpen ? "Свернуть" : "Читать полностью"}
+          </MobileMore>
+        ) : null}
 
-        {details.length ? (
+        {detailRows.length ? (
           <>
-            <TitleDescription>Детали:</TitleDescription>
-            {details.map((line) => (
-              <Description key={line}>{line}</Description>
+            <MobileSectionTitle>Детали</MobileSectionTitle>
+            {detailRows.map((row) => (
+              <MobileDetailsRow key={row.label}>
+                <MobileDetailsLabel>{row.label}</MobileDetailsLabel>
+                <MobileDetailsValue>{row.value}</MobileDetailsValue>
+              </MobileDetailsRow>
             ))}
           </>
         ) : null}
-
-        <SoundtrackSection
-          kpId={id}
-          title={filmInfoId?.name}
-          originalTitle={filmInfoId?.enName || filmInfoId?.alternativeName}
-          year={filmInfoId?.year}
-        />
         <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
             <>
@@ -153,6 +164,12 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
             ""
           )}
         </SwiperWrapperSimilar>
+        <SoundtrackSection
+          kpId={id}
+          title={filmInfoId?.name}
+          originalTitle={filmInfoId?.enName || filmInfoId?.alternativeName}
+          year={filmInfoId?.year}
+        />
         <Bottom />
       </LayoutFilm>
     </Wrapper>

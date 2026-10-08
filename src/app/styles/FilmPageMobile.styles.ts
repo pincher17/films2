@@ -178,3 +178,72 @@ export const TrailerButtonWatch = styled(ButtonWatch)`
 export const Bottom = styled.div`
 margin-top: 85px;
 `;
+/* ===== Мобильный дизайн: заголовки, описание, детали ===== */
+
+/** Заголовок раздела: один размер и один отступ по всей странице */
+export const MobileSectionTitle = styled.h2`
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 34px 0 14px;
+  color: #fff;
+`;
+
+/** Описание: приглушённый цвет, читаемый межстрочный интервал, обрезка */
+export const MobileDescription = styled.p<{ $open?: boolean }>`
+  font-size: 15px;
+  line-height: 1.65;
+  color: rgba(248, 248, 248, 0.72);
+
+  ${(props) =>
+    props.$open
+      ? ""
+      : `display: -webkit-box;
+         -webkit-line-clamp: 5;
+         -webkit-box-orient: vertical;
+         overflow: hidden;`}
+`;
+
+/** Кнопка «Читать полностью» под описанием */
+export const MobileMore = styled.button`
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #d41515;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+/** Детали: подпись слева, значение справа — вместо сплошных строк */
+export const MobileDetailsRow = styled.div`
+  display: flex;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 15px;
+  line-height: 1.45;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+`;
+
+export const MobileDetailsLabel = styled.span`
+  flex: 0 0 108px;
+  color: rgba(248, 248, 248, 0.45);
+`;
+
+export const MobileDetailsValue = styled.span`
+  flex: 1;
+  color: #fff;
+`;
+
+/** SEO-строка: мелкая и приглушённая, чтобы не спорила с содержанием */
+export const MobileSeo = styled.p`
+  margin-top: 26px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(248, 248, 248, 0.38);
+`;
