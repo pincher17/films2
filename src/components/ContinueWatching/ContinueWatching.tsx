@@ -21,15 +21,37 @@ const ContinueWatching: React.FC = () => {
   React.useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/continue", { cache: "no-store" })
-      .then((response) => (response.ok ? response.json() : { docs: [] }))
-      .then((data) => {
-        if (!cancelled) setDocs(Array.isArray(data?.docs) ? data.docs : []);
-      })
-      .catch(() => undefined);
+    const load = () => {
+      fetch("/api/continue", { cache: "no-store" })
+        .then((response) => (response.ok ? response.json() : { docs: [] }))
+        .then((data) => {
+          if (!cancelled) setDocs(Array.isArray(data?.docs) ? data.docs : []);
+        })
+        .catch(() => undefined);
+    };
+
+    load();
+
+    /*
+     * Ряд запрашивался один раз при открытии главной, поэтому после просмотра
+     * фильма на главной оставались старые данные. Обновляем, когда:
+     *   • вкладка снова стала видимой (вернулись с страницы фильма);
+     *   • окно получило фокус;
+     *   • нажали на логотип — он шлёт fh:refresh-home.
+     */
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+
+    window.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", load);
+    window.addEventListener("fh:refresh-home", load);
 
     return () => {
       cancelled = true;
+      window.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", load);
+      window.removeEventListener("fh:refresh-home", load);
     };
   }, []);
 
