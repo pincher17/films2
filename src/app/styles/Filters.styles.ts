@@ -39,3 +39,20 @@ export const ButtonWrapper = styled.div`
     margin-bottom: 250px;
   }
 `
+/**
+ * Кнопки действий под фильтрами: одинаковая высота у обеих (align-items
+ * stretch) и воздух по бокам у основной — иначе текст упирается в края.
+ */
+export const FiltersActions = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+
+  & > *:first-child {
+    display: flex;
+    align-items: center;
+    padding-left: 22px;
+    padding-right: 22px;
+    font-size: 16px;
+  }
+`

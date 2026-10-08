@@ -54,11 +54,14 @@ export const Button = styled.div`
  * приглушённый текст. Не должно выглядеть как основная кнопка.
  */
 export const ResetButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
   color: rgba(248, 248, 248, 0.72);
   font-weight: 500;
   font-size: 16px;
-  padding: 8px 15px;
+  padding: 0 18px;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 5px;

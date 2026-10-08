@@ -5,7 +5,7 @@ import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, FiltersActions, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
@@ -164,10 +164,10 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <FiltersActions>
                 <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
                 <ResetButton onClick={resetFilters}>Сбросить</ResetButton>
-            </div>
+            </FiltersActions>
          </ButtonWrapper>
          
     </Wrapper>
