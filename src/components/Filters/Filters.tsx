@@ -132,11 +132,11 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
                 onChange={() => changeIncludedTypeOfMovies(item.typeNumber)}
             />
             <PillBox $active={item.included}>
-                {item.included ? (
-                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-                        <path d="M1 4.4l3 3L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                ) : null}
+                {/* галочка всегда в разметке: если её монтировать и размонтировать,
+                    вёрстка дёргается на несколько пикселей */}
+                <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                    <path d="M1 4.4l3 3L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
             </PillBox>
             {item.name}
         </FilterPill>

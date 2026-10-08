@@ -72,6 +72,8 @@ export const FilterPill = styled.label<{ $active?: boolean }>`
   align-items: center;
   gap: 10px;
   width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 15px;
@@ -114,4 +116,10 @@ export const PillBox = styled.span<{ $active?: boolean }>`
   background: ${(props) => (props.$active ? "#d41515" : "transparent")};
   border: 1.5px solid ${(props) => (props.$active ? "#d41515" : "rgba(255,255,255,0.28)")};
   color: #fff;
+
+  /* галочка всегда на месте, меняется только прозрачность */
+  svg {
+    opacity: ${(props) => (props.$active ? 1 : 0)};
+    transition: opacity 0.15s ease;
+  }
 `
