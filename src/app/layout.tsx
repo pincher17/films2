@@ -38,7 +38,7 @@ export default function RootLayout({
               <link
           rel="manifest"
           crossOrigin="use-credentials"
-          href="%PUBLIC_URL%/manifest.json"
+          href="/manifest.json"
         />
           <script
             dangerouslySetInnerHTML={{

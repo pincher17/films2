@@ -4,6 +4,10 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
+  // В разработке service worker только мешает: он кэширует бандлы и стили,
+  // из-за чего правки не видны без жёсткого обновления, и засоряет консоль
+  // отладочными сообщениями Workbox. В продакшене PWA остаётся включённым.
+  disable: process.env.NODE_ENV === 'development',
 });
 
 module.exports = withPWA({
