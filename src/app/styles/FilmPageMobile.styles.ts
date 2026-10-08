@@ -97,9 +97,12 @@ export const ImgWrapperFilmMobile = styled(ImgWrapper)`
 `;
 export const ImgWrapFilmMobile = styled(ImgWrap)`
   height: 414.77px;
+  border-radius: 14px;
+  overflow: hidden;
 `;
 export const ImgMainMobile = styled(Img)`
-  border-radius: 0;
+  border-radius: 14px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
 `;
 
 export const PositionAbsolute = styled.div`
@@ -142,14 +145,22 @@ export const SwiperWrapperSimilar = styled.div`
 
 
 export const ButtonWatch = styled.div`
-display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 25px 0;
-    background-color: rgb(184, 22, 22);
-  color:rgb(235, 235, 235);
-  font-weight:500;
-  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 54px;
+  margin-top: 22px;
+  border-radius: 12px;
+  background-color: #d41515;
+  color: #fff;
+  font-weight: 600;
+  font-size: 17px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:active {
+    background-color: #b31212;
+  }
   cursor: pointer;
   text-decoration: none;
   border: 1px solid rgb(184, 22, 22);
