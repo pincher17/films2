@@ -31,13 +31,14 @@ const Header: React.FC = () =>{
         <Search />
         <nav className={s.nav}>
         <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Все фильмы</Link>
-        <HeaderAuth />
         <NavigationItem $active={(+(pathname === '/films'))}>
 {/*         <StyledLink href="https://t.me/filmhub_lol">
         <TelegramIcon />
         </StyledLink> */}
       </NavigationItem>
         </nav>
+        {/* Вход вынесен из nav: на телефоне nav скрыт целиком */}
+        <HeaderAuth />
         </div>
       </header>
     )

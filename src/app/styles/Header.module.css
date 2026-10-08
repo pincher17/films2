@@ -108,8 +108,9 @@ align-items: center;
  display: none;
   }
   .logo{
-    margin-left: auto;
-    margin-right: auto;
+    /* на телефоне вход стоит справа, поэтому логотип прижимаем влево */
+    margin-left: 0;
+    margin-right: 0;
   }
   .header_wrapper{
     width: auto;
