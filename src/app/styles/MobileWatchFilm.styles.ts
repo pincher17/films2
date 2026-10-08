@@ -47,7 +47,8 @@ export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
 
   /* на телефоне попап занимает экран целиком, без сдвигов */
   @media (max-width: 850px) {
-    margin-top: 0;
+    /* было 0 — плеер прилипал к верхнему краю под самый крестик */
+    margin-top: 64px;
     margin-left: 0;
     width: 100%;
     padding: 0 12px;

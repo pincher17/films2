@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import PlayerBridge from "../PlayerBridge/PlayerBridge";
 import WatchTracker from "../WatchTracker/WatchTracker";
+import ResumeHint from "../ResumeHint/ResumeHint";
 import { getFilmStreams } from "@/data/streams";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
@@ -69,6 +70,10 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                     </div>
         <PlayerBridge filmId={id} />
         <WatchTracker filmId={id} />
+        {/* та же плашка, что на странице: под плеером, чтобы не искать позицию */}
+        <div style={{ marginTop: 14 }}>
+          <ResumeHint filmId={id} />
+        </div>
       </WrapperIframeMobile>
     </Wrapper>
   )
