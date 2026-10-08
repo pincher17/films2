@@ -155,7 +155,7 @@ export const ResumeBadge = styled.span`
   width: 24px;
   height: 24px;
   /* треугольник оптически смещён влево, если центрировать его точно */
-  padding-left: 2px;
+  padding-left: 3px;
   border-radius: 50%;
   display: flex;
   align-items: center;
