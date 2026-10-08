@@ -13,6 +13,20 @@ import styled from "styled-components";
 
 type Track = { number: number; title: string; artist?: string; length: number | null };
 
+/**
+ * В подборках iTunes и Deezer названия идут с хвостом вида
+ * «Web Letter Days (from "Spider-Man: Brand New Day")». Для списка это шум:
+ * строка обрезается многоточием, а полезной информации хвост не несёт.
+ * Полное название остаётся в подсказке при наведении.
+ */
+const cleanTrackTitle = (title: string) => {
+  const cleaned = title
+    .replace(/\s*\((?:from|из|feat\.?)\s[^)]*\)\s*$/i, "")
+    .replace(/\s*[-–—]\s*(?:from|из)\s.*$/i, "")
+    .trim();
+  return cleaned || title;
+};
+
 type Soundtrack = {
   album?: string;
   artist?: string;
@@ -33,6 +47,10 @@ const VISIBLE = 8;
 
 const Section = styled.section`
   margin: 46px 0 10px;
+
+  @media (max-width: 850px) {
+    margin: 34px 0 6px;
+  }
 `;
 
 const Heading = styled.h2`
@@ -40,6 +58,12 @@ const Heading = styled.h2`
   font-weight: 700;
   color: #fff;
   margin: 0 0 18px;
+
+  /* как остальные заголовки секций на телефоне */
+  @media (max-width: 850px) {
+    font-size: 21px;
+    margin-bottom: 14px;
+  }
 `;
 
 const AlbumRow = styled.div`
@@ -47,6 +71,10 @@ const AlbumRow = styled.div`
   gap: 20px;
   align-items: center;
   margin-bottom: 14px;
+
+  @media (max-width: 850px) {
+    gap: 12px;
+  }
 `;
 
 const Cover = styled.div`
@@ -64,12 +92,26 @@ const Cover = styled.div`
     object-fit: cover;
     display: block;
   }
+
+  @media (max-width: 850px) {
+    width: 72px;
+    height: 72px;
+  }
 `;
 
 const AlbumName = styled.div`
   font-size: 19px;
   font-weight: 600;
   color: #fff;
+
+  /* длинное название альбома — максимум две строки */
+  @media (max-width: 850px) {
+    font-size: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 `;
 
 const AlbumMeta = styled.div`
@@ -135,6 +177,12 @@ const Length = styled.span`
 `;
 
 const Toggle = styled.button`
+  @media (max-width: 850px) {
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+  }
+
   margin-top: 16px;
   padding: 9px 18px;
   border-radius: 8px;
@@ -219,7 +267,7 @@ const SoundtrackSection: React.FC<Props> = ({ kpId, title, originalTitle, year }
         {tracks.map((track) => (
           <Row key={`${track.number}-${track.title}`}>
             <Number>{track.number}</Number>
-            <TrackName title={track.title}>{track.title}</TrackName>
+            <TrackName title={track.title}>{cleanTrackTitle(track.title)}</TrackName>
             {track.artist && track.artist !== data.artist ? (
               <TrackArtist title={track.artist}>{track.artist}</TrackArtist>
             ) : null}
