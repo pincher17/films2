@@ -60,7 +60,12 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
         const types = toList(f.selectedTypeOfMovies).map(toText).filter(Boolean);
 
         if (genre.length) params.set('genre', genre.join(','));
-        if (country.length) params.set('country', country.join(','));
+        /*
+         * Страну в адрес НЕ пишем: в состоянии фильтров она хранится как готовый
+         * фрагмент запроса («&countries.name=Беларусь&countries.name=Казахстан…»),
+         * и в адресной строке это превращалось в мусор, а после восстановления
+         * ломало выборку — каталог отдавал пустой результат.
+         */
         if (types.length) params.set('types', types.join(','));
         if (f.year?.length) params.set('year', f.year.join('-'));
         if (f.rating?.length) params.set('rating', f.rating.join('-'));

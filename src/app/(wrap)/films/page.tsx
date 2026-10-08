@@ -80,16 +80,7 @@ export default function Films() {
     const sortParam = searchParams.get("sort");
 
     const restored: Record<string, unknown> = {};
-    if (countryParam) {
-      // отбрасываем мусорные значения вида "[object Object]"
-      const list = countryParam
-        .split(",")
-        .map((value) => value.trim())
-        .filter((value) => value && !value.includes("[object"));
-      if (list.length) {
-        restored.country = list.map((value) => ({ value, label: value }));
-      }
-    }
+    // страну из адреса не восстанавливаем: см. комментарий в Filters.tsx
     if (yearParam) restored.year = yearParam;
     if (ratingParam) restored.rating = ratingParam;
     if (sortParam) restored.sortBy = sortParam;
