@@ -34,11 +34,6 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
     if (!filmInfo?.name) dispatch(getFilmById(id));
   }, [id, filmInfo?.name]);
 
-  // Диагностика: видно, какой источник выбран и что он ответил
-  useEffect(() => {
-    console.info("[player] источник:", streams ? "свой StreamPlayer" : "встроенный iframe");
-    console.info("[player] ссылки на потоки:", streams ? Object.keys(streams) : "нет");
-  }, [streams]);
   
     useEffect(() => {
       refDataFilm.current?.setAttribute("data-kinopoisk", `${id}`);
@@ -68,8 +63,6 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                      referrerPolicy="origin"
                      width="500"
                      height="352"
-                     onLoad={() => console.info("[player] iframe ответил (load)")}
-                     onError={() => console.warn("[player] iframe не загрузился")}
                    ></Iframe>
                </>
              )}

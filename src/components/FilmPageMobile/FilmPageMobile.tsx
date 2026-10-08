@@ -1,5 +1,12 @@
 import React, { useEffect } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
+import {
+  ActorCard,
+  ActorName,
+  ActorPhoto,
+  ActorRole,
+  ActorsRow,
+} from "../../app/styles/FilmPage.styles";
 import SwiperFilms from "../SwiperFilms/SwiperFilms";
 import {
   BackgroundImage,
@@ -82,6 +89,12 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
     .map((person) => person.name)
     .slice(0, 4)
     .join(", ");
+  // Актёры с фотографиями: на десктопе это лента, на телефоне она же,
+  // но без swiper — горизонтальная прокрутка пальцем
+  const actors = persons
+    .filter((person: any) => person?.enProfession === "actor" && person?.photo)
+    .slice(0, 20);
+
   const detailRows = [
     director ? { label: "Режиссёр", value: director } : null,
     cast ? { label: "В ролях", value: cast } : null,
@@ -141,6 +154,25 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
                 <MobileDetailsValue>{row.value}</MobileDetailsValue>
               </MobileDetailsRow>
             ))}
+          </>
+        ) : null}
+
+        {actors.length ? (
+          <>
+            <MobileSectionTitle>В ролях</MobileSectionTitle>
+            <ActorsRow>
+              {actors.map((person: any) => (
+                <ActorCard key={`${person.id}-${person.name}`}>
+                  <ActorPhoto>
+                    <img src={person.photo} alt={person.name} loading="lazy" />
+                  </ActorPhoto>
+                  <ActorName>{person.name}</ActorName>
+                  {person.description ? (
+                    <ActorRole>{person.description}</ActorRole>
+                  ) : null}
+                </ActorCard>
+              ))}
+            </ActorsRow>
           </>
         ) : null}
         <SwiperWrapperSimilar>
