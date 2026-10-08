@@ -246,19 +246,63 @@ const MobileOnly = styled.div`
   }
 `;
 
-/** Обложка во всю ширину — так начинается мобильная страница */
-const MobileCover = styled.div`
-  ${block};
+/** Фон-градиент: в мобильной вёрстке это absolute-слой высотой 750px */
+const MobileBackdrop = styled.div`
+  position: absolute;
+  top: -80px;
+  left: 0;
   width: 100%;
-  height: 52vh;
-  border-radius: 16px;
+  height: 750px;
+  z-index: -1;
+  background: linear-gradient(0deg, #0a0a0a 25%, rgba(10, 10, 10, 0) 100%);
+`;
+
+/** Постер: ImgWrapperFilmMobile — 280px по центру, ImgWrapFilmMobile — 414.77px */
+const MobilePoster = styled.div`
+  ${block};
+  width: 280px;
+  height: 414.77px;
+  margin: 0 auto;
 `;
 
 const MobileTitle = styled.div`
   ${block};
-  height: 30px;
-  width: 78%;
-  margin-top: 22px;
+  height: 34px;
+  width: 72%;
+  margin: 20px auto 0;
+`;
+
+/** ButtonWatch: красная кнопка с отступами 25px сверху и снизу */
+const MobileButton = styled.div`
+  ${block};
+  height: 72px;
+  width: 100%;
+  margin-top: 24px;
+  border-radius: 6px;
+`;
+
+const MobileTrailer = styled.div`
+  ${block};
+  height: 52px;
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 6px;
+`;
+
+/** Плашка «вы остановились здесь» */
+const MobileHint = styled.div`
+  ${block};
+  height: 70px;
+  width: 100%;
+  margin-top: 18px;
+  border-radius: 10px;
+`;
+
+const MobileSectionTitle = styled.div`
+  ${block};
+  height: 20px;
+  width: 34%;
+  margin-top: 26px;
 `;
 
 const FilmSkeleton: React.FC = () => (
@@ -288,26 +332,31 @@ const FilmSkeleton: React.FC = () => (
       </HeroText>
       <Poster />
     </Hero>
+    <PlayerBlock />
     </DesktopOnly>
     <MobileOnly>
-      <MobileCover />
+      <MobileBackdrop />
+      <MobilePoster />
       <MobileTitle />
+      {/* FilmInfoText: метаданные под постером */}
       <Meta>
-        <Chip $w={72} />
-        <Chip $w={96} />
-        <Chip $w={64} />
+        <Chip $w={56} />
+        <Chip $w={48} />
+        <Chip $w={110} />
+        <Chip $w={92} />
       </Meta>
-      <Buttons>
-        <Button $w={150} />
-        <Button $w={120} />
-      </Buttons>
+      <MobileButton />
+      <MobileTrailer />
+      <MobileHint />
+      <Line $w="86%" />
+      <MobileSectionTitle />
       <Description>
         <Line />
-        <Line $w="92%" />
-        <Line $w="70%" />
+        <Line $w="94%" />
+        <Line $w="88%" />
+        <Line $w="46%" />
       </Description>
     </MobileOnly>
-    <PlayerBlock />
     <Section>
       <SectionTitle />
       <Cards>
