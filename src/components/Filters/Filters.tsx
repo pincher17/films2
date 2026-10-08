@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { allGenres } from '../../data/allGenres';
 import Button from '../Button';
+import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
