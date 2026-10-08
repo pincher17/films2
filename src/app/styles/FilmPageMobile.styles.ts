@@ -248,3 +248,56 @@ export const MobileSeo = styled.p`
   line-height: 1.5;
   color: rgba(248, 248, 248, 0.38);
 `;
+
+/** Компактный мета-блок на телефоне: бейдж рейтинга и строки через точку */
+export const MobileMetaRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 15px;
+  color: rgba(248, 248, 248, 0.6);
+`;
+
+/** Рейтинг — цветным бейджем, как на карточках: сразу видно, хороший он или нет */
+export const MobileRating = styled.span<{ $tier: string }>`
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  background: ${(props) =>
+    props.$tier === "top"
+      ? "#219653"
+      : props.$tier === "good"
+      ? "#6f9c1b"
+      : props.$tier === "mid"
+      ? "#d98324"
+      : props.$tier === "weak"
+      ? "#6b6b6b"
+      : props.$tier === "low"
+      ? "#c0392b"
+      : "rgba(30, 30, 30, 0.85)"};
+`;
+
+export const MobileMetaDot = styled.span`
+  color: rgba(248, 248, 248, 0.3);
+`;
+
+/** Жанры — чипами, вместо строки «Жанр: триллер, криминал, комедия» */
+export const MobileGenres = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+`;
+
+export const MobileGenre = styled.span`
+  padding: 5px 11px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13.5px;
+  color: rgba(248, 248, 248, 0.78);
+`;
