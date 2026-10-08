@@ -301,3 +301,22 @@ export const MobileGenre = styled.span`
   font-size: 13.5px;
   color: rgba(248, 248, 248, 0.78);
 `;
+
+/*
+ * Переключение мета-блока по ширине экрана средствами CSS, а не по JS:
+ * ширина измеряется в useEffect и на первом рендере равна нулю, из-за чего
+ * компактный вариант не включался.
+ */
+export const MetaDesktopOnly = styled.div`
+  @media (max-width: 850px) {
+    display: none;
+  }
+`;
+
+export const MetaMobileOnly = styled.div`
+  display: none;
+
+  @media (max-width: 850px) {
+    display: block;
+  }
+`;
