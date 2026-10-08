@@ -47,7 +47,10 @@ async function currentProfile(create) {
 const shape = (row) =>
   row
     ? {
+        season: row.season,
+        episode: row.episode,
         seconds: row.seconds,
+        percent: row.duration ? Math.round((row.seconds / row.duration) * 100) : null,
         duration: row.duration,
         completed: row.completed,
         updatedAt: row.updatedAt,
@@ -63,6 +66,16 @@ export async function GET(request) {
 
   const userId = await currentProfile(false);
   if (!userId) return NextResponse.json({ position: null }, { headers: noStore });
+
+  // latest=1 — последняя позиция по этому фильму, какая бы серия ни была:
+  // нужно для плашки «вы остановились здесь» на странице фильма
+  if (searchParams.get("latest") === "1") {
+    const latest = await prisma.watchPosition.findFirst({
+      where: { userId, filmId: ids.filmId },
+      orderBy: { updatedAt: "desc" },
+    });
+    return NextResponse.json({ position: shape(latest) }, { headers: noStore });
+  }
 
   const row = await prisma.watchPosition.findUnique({
     where: { userId_filmId_season_episode: { userId, ...ids } },

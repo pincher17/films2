@@ -77,6 +77,7 @@ import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
 import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
 import PlayerBridge from "../PlayerBridge/PlayerBridge";
+import ResumeHint from "../ResumeHint/ResumeHint";
 import WatchTracker from "../WatchTracker/WatchTracker";
 import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 
@@ -338,6 +339,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 </HeroButton>
               ) : null}
             </HeroButtons>
+            <ResumeHint filmId={id} />
             {filmInfoId?.description ? (
               <>
                 <HeroDescription
