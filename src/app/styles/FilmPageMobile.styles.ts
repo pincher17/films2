@@ -5,7 +5,12 @@ import { Img, ImgWrap, ImgWrapper } from "./Card.styles";
 export const Wrapper = styled.div`
   z-index: 1;
   padding-right: 20px;
-    padding-left: 20px;
+  padding-left: 20px;
+  /*
+   * Нижняя навигация закреплена и перекрывала содержимое: плашка и начало
+   * описания уходили под неё. Оставляем место под панель.
+   */
+  padding-bottom: 96px;
 `;
 
 export const Gradient = styled.div`
