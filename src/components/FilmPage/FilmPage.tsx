@@ -72,7 +72,6 @@ import {
   Wrapper as ActorsWrapper,
   WrapperSlide as ActorsSlide,
 } from "../../app/styles/SwiperFilms.styles";
-import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import { getFilmStreams } from "@/data/streams";
 import FilmSkeleton from "../FilmSkeleton/FilmSkeleton";
@@ -418,24 +417,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 />
               ) : (
                 <>
-                  <Box sx={{ width: "100%" }}>
-                    <Tabs
-                      value={value}
-                      onChange={handleChange}
-                      textColor="inherit"
-                      aria-label="secondary tabs example"
-                      TabIndicatorProps={{
-                        style: {
-                          backgroundColor: "#d41515"
-                        }
-                      }}
-                    >
-                      <Tab value="one" label="Плеер 1" />
-                      <Tab value="two" label="Плеер 2" />
-                    </Tabs>
-                  </Box>
-                  {value === "two" ? <KinoboxPlayer kpId={id} />
-                  : <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+                  <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
                   src={`https://api.ortified.ws/embed/kp/${id}`}
                   frameBorder="0"
                   scrolling="no"
@@ -444,7 +426,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   width="500"
                   height="352"
                 ></Iframe>
-                }
                 </>
               )}
             </WrapperIframe>

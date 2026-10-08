@@ -7,7 +7,6 @@ import { Line1, Line2 } from "@/app/styles/AllFilmsPage.styles";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import PlayerBridge from "../PlayerBridge/PlayerBridge";
 import WatchTracker from "../WatchTracker/WatchTracker";
@@ -70,8 +69,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                <StreamPlayer filmId={id} streams={streams} />
              ) : (
                <>
-                 {value === "two" ? <KinoboxPlayer kpId={id} />
-                 : <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+                 <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
                      src={`https://api.ortified.ws/embed/kp/${id}`}
                      frameBorder="0"
                      scrolling="no"
@@ -82,23 +80,6 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                      onLoad={() => console.info("[player] iframe ответил (load)")}
                      onError={() => console.warn("[player] iframe не загрузился")}
                    ></Iframe>
-                 }
-                 <Box sx={{ width: "100%" }}>
-                   <Tabs
-                     value={value}
-                     onChange={handleChange}
-                     textColor="inherit"
-                     aria-label="secondary tabs example"
-                     TabIndicatorProps={{
-                       style: {
-                         backgroundColor: "#d41515"
-                       }
-                     }}
-                   >
-                     <Tab value="one" label="Плеер 1" />
-                     <Tab value="two" label="Плеер 2" />
-                   </Tabs>
-                 </Box>
                </>
              )}
                     </div>
