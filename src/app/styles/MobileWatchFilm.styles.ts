@@ -8,12 +8,22 @@ export const Wrapper = styled.div`
   z-index: 25;
   top: 0;
   left: 0;
+  /* 140vw/140vh — задумка для размытого фона на компьютере; на телефоне
+     это вылезало за экран, поэтому там размер строго по экрану */
   width: 140vw;
   height: 140vh;
   background-color: rgb(0 0 0 / 80%);
   -webkit-backdrop-filter: blur(35px);
   backdrop-filter: blur(35px);
   background: rgb(21 21 21 / 83%);
+
+  @media (max-width: 850px) {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 `;
 
 export const CrossIconFilm = styled(CrossIcon)`
@@ -21,6 +31,14 @@ export const CrossIconFilm = styled(CrossIcon)`
  margin-left: 0;
  top: 3%;
     left: 62%;
+
+  /* на телефоне крестик — в правом верхнем углу самого экрана */
+  @media (max-width: 850px) {
+    top: 14px;
+    left: auto;
+    right: 14px;
+    z-index: 30;
+  }
 `;
 
 export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
@@ -32,6 +50,8 @@ export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
     margin-top: 0;
     margin-left: 0;
     width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
   }
 `
 
