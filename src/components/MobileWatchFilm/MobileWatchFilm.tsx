@@ -11,6 +11,7 @@ import StreamPlayer from "../StreamPlayer/StreamPlayer";
 import PlayerBridge from "../PlayerBridge/PlayerBridge";
 import WatchTracker from "../WatchTracker/WatchTracker";
 import ResumeHint from "../ResumeHint/ResumeHint";
+import { PopupHint } from "@/app/styles/MobileWatchFilm.styles";
 import { getFilmStreams } from "@/data/streams";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
@@ -71,9 +72,9 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
         <PlayerBridge filmId={id} />
         <WatchTracker filmId={id} />
         {/* та же плашка, что на странице: под плеером, чтобы не искать позицию */}
-        <div style={{ marginTop: 14 }}>
+        <PopupHint>
           <ResumeHint filmId={id} />
-        </div>
+        </PopupHint>
       </WrapperIframeMobile>
     </Wrapper>
   )

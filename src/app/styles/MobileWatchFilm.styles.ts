@@ -96,9 +96,23 @@ export const Iframe = styled.iframe<IframeProps>`
     /* ландшафт: размер от высоты экрана, а не от ширины */
     ${landscape} {
       width: auto !important;
-      height: 58vh !important;
+      /* почти вся высота: в ландшафте она и даёт ширину */
+      height: 78vh !important;
       max-width: 100%;
       aspect-ratio: 16 / 9;
       margin: 0 auto;
     }
 `
+
+/** Плашка с позицией внутри попапа плеера */
+export const PopupHint = styled.div`
+  margin-top: 14px;
+
+  /*
+   * В ландшафте высота экрана — дефицит: плеер занимает почти всё, а плашку
+   * тут всё равно не читают, поэтому убираем её из потока.
+   */
+  ${landscape} {
+    display: none;
+  }
+`;
