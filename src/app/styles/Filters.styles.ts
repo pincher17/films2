@@ -36,7 +36,7 @@ export const WrapperCheckbox = styled.div`
   * сверху подпись («Рейтинг», «Год»), а здесь сразу пункты. Опускаем,
   * чтобы центр совпал с их полями и ползунками.
   */
- margin-top: 38px;
+ margin-top: 70px;
 
  @media (max-width: 850px) {
    margin-top: 0;
