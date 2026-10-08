@@ -200,7 +200,11 @@ export const MobileSectionTitle = styled.h2`
   font-size: 21px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin: 34px 0 14px;
+  /*
+   * Отступ сверху больше, снизу меньше: заголовок должен относиться к своему
+   * блоку, а не висеть между предыдущим текстом и карточками.
+   */
+  margin: 36px 0 6px;
   color: #fff;
 `;
 

@@ -161,7 +161,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         <SwiperWrapperSimilar>
           {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (
             <>
-              <TitleDescription>Похожие</TitleDescription>
+              <MobileSectionTitle>Похожие</MobileSectionTitle>
               <SwiperFilms cards={filmInfoId?.similarMovies} />
             </>
           ) : (
@@ -202,7 +202,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         <SwiperWrapperSimilar>
           {filmInfoId?.sequelsAndPrequels && filmInfoId?.sequelsAndPrequels.length ? (
             <>
-              <TitleDescription>Сиквелы и приквелы</TitleDescription>
+              <MobileSectionTitle>Сиквелы и приквелы</MobileSectionTitle>
               <SwiperFilms cards={filmInfoId?.sequelsAndPrequels} />
             </>
           ) : (
