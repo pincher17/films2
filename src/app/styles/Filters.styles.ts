@@ -41,12 +41,9 @@ export const WrapperCheckbox = styled.div`
   * по базовой линии (align-items: baseline), поэтому margin-top у одного
   * элемента тянул вниз и «Рейтинг», «Год», «Жанры» вместе с ним.
   */
+ /* первый пункт «Фильмы» начинается на уровне подписи «Рейтинг» */
  position: relative;
- top: 70px;
-
- @media (max-width: 850px) {
-   top: 0;
- }
+ top: 0;
 `
 
 export const ButtonWrapper = styled.div`
