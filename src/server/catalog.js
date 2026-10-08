@@ -201,7 +201,12 @@ async function buildServerParams(media, options) {
     }
   }
   if (genreIds.length) {
-    params.with_genres = [params.with_genres, ...genreIds].filter(Boolean).join(",");
+    /*
+     * Жанры объединяем через «|» (ИЛИ), а не через «,» (И). С запятой TMDB
+     * искал фильмы, у которых ОДНОВРЕМЕННО все выбранные жанры — например
+     * «триллер И комедия И драма», и выдача почти всегда оказывалась пустой.
+     */
+    params.with_genres = [params.with_genres, ...genreIds].filter(Boolean).join("|");
   }
 
   const withoutGenres = [];
