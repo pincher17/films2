@@ -10,7 +10,8 @@ const TrailerMobileWatch: React.FC<MobileWatchFilmProps> = ({id, setWatchTrailer
 
 
   return (
-    <Wrapper>
+    // метка для WatchTracker: пока открыт трейлер, время фильма не идёт
+    <Wrapper data-trailer-open="true">
     <CrossIconFilm sidebar={(+true)} onClick={toggleWatchFilm}>
           <Line1 />
           <Line2 />

@@ -19,6 +19,7 @@ import {
 } from "../../app/styles/FilmPageMobile.styles";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import MobileWatchFilm from "../MobileWatchFilm/MobileWatchFilm";
+import ResumeHint from "../ResumeHint/ResumeHint";
 import TrailerMobileWatch from "../TrailerMobileWatch/TrailerMobileWatch";
 import SkeletonImage from "../SkeletonImage/SkeletonImage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -88,6 +89,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         </WrapperInfo>
         <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
+        <ResumeHint filmId={id} />
         <Strong>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</Strong>
         <TitleDescription>Описание:</TitleDescription>
         <Description>{filmInfoId?.description}</Description>

@@ -15,6 +15,12 @@ export const HintWrapper = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: default;
   max-width: 420px;
+
+  @media (max-width: 850px) {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 export const HintRow = styled.div`

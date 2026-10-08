@@ -9,6 +9,8 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import KinoboxPlayer from "../KinoboxPlayer/KinoboxPlayer";
 import StreamPlayer from "../StreamPlayer/StreamPlayer";
+import PlayerBridge from "../PlayerBridge/PlayerBridge";
+import WatchTracker from "../WatchTracker/WatchTracker";
 import { getFilmStreams } from "@/data/streams";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
@@ -54,13 +56,16 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
           <Line2 />
         </CrossIconFilm>
       <WrapperIframeMobile key={id.toString()}>
+        {/* Контейнер, внутри которого PlayerBridge ищет встроенный плеер.
+            Без него события прогресса на телефоне не читались вовсе. */}
+        <div id="fh-player">
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
              {streams ? (
                <StreamPlayer filmId={id} streams={streams} />
              ) : (
                <>
                  {value === "two" ? <KinoboxPlayer kpId={id} />
-                 : <Iframe src={`https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
+                 : <Iframe src={`https://api.ortified.ws/embed/kp/${id}`} frameBorder="0" scrolling="no" allowFullScreen referrerPolicy="origin" width="500" height="352"></Iframe>
                  }
                  <Box sx={{ width: "100%" }}>
                    <Tabs
@@ -80,7 +85,10 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                  </Box>
                </>
              )}
-            </WrapperIframeMobile>
+                    </div>
+        <PlayerBridge filmId={id} />
+        <WatchTracker filmId={id} />
+      </WrapperIframeMobile>
     </Wrapper>
   )
 };
