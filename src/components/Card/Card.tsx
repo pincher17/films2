@@ -100,10 +100,13 @@ const {
                 </ProgressTrack>
                 {overlayText ? (
                   <PosterOverlay>
-                    <ResumeBadge title="Вы остановились здесь">
-                      <svg width="9" height="11" viewBox="0 0 10 12" aria-hidden="true">
-                        <rect x="0" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
-                        <rect x="6.8" y="0" width="3.2" height="12" rx="1.2" fill="currentColor" />
+                    <ResumeBadge title="Продолжить просмотр">
+                      {/* треугольник воспроизведения: читается как «продолжить» */}
+                      <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
+                        <path
+                          d="M1 1.1c0-.8.86-1.28 1.54-.87l6.4 3.9c.66.4.66 1.34 0 1.74l-6.4 3.9C1.86 10.18 1 9.7 1 8.9V1.1z"
+                          fill="currentColor"
+                        />
                       </svg>
                     </ResumeBadge>
                     <OverlayText>{overlayText}</OverlayText>
