@@ -254,6 +254,15 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
   // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
   // версия (старая раскладка с рейтингом 0) даже на компьютере.
+  // Диагностика загрузки: помогает понять на устройстве, чего именно не хватает
+  React.useEffect(() => {
+    console.info("[film] загрузка:", {
+      loading,
+      name: filmInfoId?.name,
+      width: resolution.width,
+    });
+  }, [loading, filmInfoId?.name, resolution.width]);
+
   if (loading || !filmInfoId?.name) return <FilmSkeleton />;
 
   if (resolution.width < 850) {
