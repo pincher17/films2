@@ -30,6 +30,12 @@ export const WrapperCheckbox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /*
+   * Сдвигаем визуально, а не отступом: контейнер выравнивает колонки по
+   * базовой линии, и margin-top потянул бы вниз «Рейтинг», «Год», «Жанры».
+   */
+  position: relative;
+  top: 30px;
 `
 
 export const ButtonWrapper = styled.div`
