@@ -165,6 +165,9 @@ export const ResumeBadge = styled.span`
      блочный режим убирает этот зазор */
   svg {
     display: block;
+    /* чуть ниже центра: визуально треугольник читается ровнее */
+    position: relative;
+    top: 1px;
   }
   border-radius: 50%;
   display: flex;
