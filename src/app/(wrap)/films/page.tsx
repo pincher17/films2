@@ -81,9 +81,14 @@ export default function Films() {
 
     const restored: Record<string, unknown> = {};
     if (countryParam) {
-      restored.country = countryParam
+      // отбрасываем мусорные значения вида "[object Object]"
+      const list = countryParam
         .split(",")
-        .map((value) => ({ value, label: value }));
+        .map((value) => value.trim())
+        .filter((value) => value && !value.includes("[object"));
+      if (list.length) {
+        restored.country = list.map((value) => ({ value, label: value }));
+      }
     }
     if (yearParam) restored.year = yearParam;
     if (ratingParam) restored.rating = ratingParam;

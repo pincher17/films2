@@ -35,11 +35,29 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
      */
     const buildQuery = (f: initialStateFiltersType) => {
         const params = new URLSearchParams();
-        const genre = (f.genre || []).map((item: any) => item?.value || item).filter(Boolean);
-        const country = (f.country || []).map((item: any) => item?.value || item).filter(Boolean);
-        const types = (f.selectedTypeOfMovies || [])
-            .map((item: any) => item?.typeNumber)
-            .filter(Boolean);
+
+        /*
+         * Значения фильтров приходят в разном виде: строки, объекты {value,label},
+         * иногда вложенные объекты. Берём только то, что можно положить в адрес,
+         * и никогда не роняем страницу из-за неожиданного типа.
+         */
+        const toList = (value: unknown): any[] =>
+            Array.isArray(value) ? value : value ? [value] : [];
+
+        const toText = (item: any): string | null => {
+            if (typeof item === "string" && item.trim()) return item;
+            if (item && typeof item === "object") {
+                if (typeof item.value === "string" && item.value.trim()) return item.value;
+                if (typeof item.label === "string" && item.label.trim()) return item.label;
+                if (typeof item.name === "string" && item.name.trim()) return item.name;
+                if (typeof item.typeNumber === "string") return item.typeNumber;
+            }
+            return null;
+        };
+
+        const genre = toList(f.genre).map(toText).filter(Boolean);
+        const country = toList(f.country).map(toText).filter(Boolean);
+        const types = toList(f.selectedTypeOfMovies).map(toText).filter(Boolean);
 
         if (genre.length) params.set('genre', genre.join(','));
         if (country.length) params.set('country', country.join(','));
