@@ -69,8 +69,19 @@ export default function Films() {
       return parts.length === 2 && parts.every(Number.isFinite) ? parts : null;
     };
 
-    if (isGenreValid) {
-      dispatch(setFilterGenre([{ value: searchGenre, label: searchGenre }]));
+    /*
+     * Жанр в адресе — список через запятую. Раньше проверялось одно значение
+     * целиком, поэтому «фантастика,детектив,драма» не проходило проверку и
+     * жанры не подтягивались.
+     */
+    const genreList = String(searchParams.get("genre") || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter((value) => allGenres.some((genre) => genre.value === value))
+      .map((value) => ({ value, label: value }));
+
+    if (genreList.length) {
+      dispatch(setFilterGenre(genreList));
     }
 
     const countryParam = searchParams.get("country");
@@ -85,9 +96,21 @@ export default function Films() {
     if (ratingParam) restored.rating = ratingParam;
     if (sortParam) restored.sortBy = sortParam;
     if (typesParam) {
+      // названия типов: 1 — фильмы, 2 — сериалы, 3 — мультфильмы
+      const TYPE_NAMES: Record<string, string> = {
+        "1": "Фильмы",
+        "2": "Сериалы",
+        "3": "Мультфильмы",
+      };
       restored.selectedTypeOfMovies = typesParam
         .split(",")
-        .map((typeNumber) => ({ name: typeNumber, included: true, typeNumber }));
+        .map((value) => value.trim())
+        .filter((value) => TYPE_NAMES[value])
+        .map((typeNumber) => ({
+          name: TYPE_NAMES[typeNumber],
+          included: true,
+          typeNumber,
+        }));
     }
 
     if (Object.keys(restored).length) {
