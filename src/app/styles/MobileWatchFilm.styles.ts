@@ -66,6 +66,13 @@ export const WrapperIframeMobile = styled.div<WrapperIframeMobileProps>`
   }
 `
 
+/*
+ * Телефон повёрнут. Плеер задан пропорцией 16:9 от ширины, а в ландшафте
+ * ширина большая — видео получалось выше экрана и нижние элементы управления
+ * обрезались. Считаем размер от высоты: тогда плеер целиком влезает.
+ */
+const landscape = `@media (max-width: 950px) and (orientation: landscape)`;
+
 export const Iframe = styled.iframe<IframeProps>`
     width: 70% !important;
     height: 62vh !important;
@@ -84,5 +91,14 @@ export const Iframe = styled.iframe<IframeProps>`
       aspect-ratio: 16 / 9;
       top: 0;
       left: 0;
+    }
+
+    /* ландшафт: размер от высоты экрана, а не от ширины */
+    ${landscape} {
+      width: auto !important;
+      height: 58vh !important;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      margin: 0 auto;
     }
 `
