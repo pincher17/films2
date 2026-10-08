@@ -163,18 +163,9 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>
-            <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
-            <div
-                style={{
-                    display: 'inline-block',
-                    marginLeft: 12,
-                    border: '1px solid rgba(255,255,255,0.25)',
-                    borderRadius: 8,
-                }}
-            >
-                <Button onClick={resetFilters}>
-                    Сбросить
-                </Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
+                <ResetButton onClick={resetFilters}>Сбросить</ResetButton>
             </div>
          </ButtonWrapper>
          

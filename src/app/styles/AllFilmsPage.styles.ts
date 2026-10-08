@@ -49,6 +49,27 @@ export const Button = styled.div`
   border-radius: 5px;
  
 `
+/*
+ * «Сбросить» — второстепенное действие: без красного фона, тонкая рамка и
+ * приглушённый текст. Не должно выглядеть как основная кнопка.
+ */
+export const ResetButton = styled.div`
+  background-color: transparent;
+  color: rgba(248, 248, 248, 0.72);
+  font-weight: 500;
+  font-size: 16px;
+  padding: 8px 15px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 5px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #fff;
+  }
+`
+
 export const WrapperButtonShowMore = styled.div`
   margin: 0 auto;
   display: flex;
