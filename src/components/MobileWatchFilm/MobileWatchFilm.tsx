@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { CrossIconFilm, Iframe, Wrapper, WrapperIframeMobile } from "../../app/styles/MobileWatchFilm.styles";
 import { MobileWatchFilmProps } from "./MobileWatchFilm.types";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
 import { Line1, Line2 } from "@/app/styles/AllFilmsPage.styles";
 import Tabs from "@mui/material/Tabs";
@@ -24,9 +24,14 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
     setValue(newValue);
   };
 
+  // Данные уже загружены страницей фильма. Повторный запрос отсюда возвращал
+  // скелетон и закрывал плеер: попап монтируется → loading → скелетон →
+  // попап размонтируется → загрузка завершается → попап монтируется снова.
+  const filmInfo = useAppSelector((state) => state.filmInfo.info);
+
   useEffect(() => {
-    dispatch(getFilmById(id))
-    }, [id]);
+    if (!filmInfo?.name) dispatch(getFilmById(id));
+  }, [id, filmInfo?.name]);
   
     useEffect(() => {
       refDataFilm.current?.setAttribute("data-kinopoisk", `${id}`);
