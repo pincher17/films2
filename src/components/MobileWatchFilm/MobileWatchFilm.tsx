@@ -44,15 +44,6 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
       refDataFilm.current?.setAttribute("data-kinopoisk", `${id}`);
     }, [id]);
 
-    useEffect(() => {
-      const script = document.createElement("script");
-      script.src = "//yohoho.cc/yo.js";
-      document.body.appendChild(script);
-    
-      return () => {
-        script.remove();
-      };
-      }, [id]);
 
   return (
     <Wrapper>

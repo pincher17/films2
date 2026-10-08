@@ -240,16 +240,6 @@ export default function FilmPage({ params }: { params: { id: number } }) {
 ///////////////////////////////////////
   //////////////////////////////////////
 
-  /*   useEffect(() => {
-    const script = document.createElement("script");
-    //script.src = "//yohoho.cc/yo.js";
-    script.src = "https://v1687693103.bazon.site/js/bazon.js";
-    document.body.appendChild(script);
-    return () => {
-      script.remove();
-    };
-    }, [id]); */
-
   // Скелетон — раньше всех проверок. Ширина окна измеряется в useEffect и
   // сначала равна нулю, поэтому на старте успевала отрисоваться мобильная
   // версия (старая раскладка с рейтингом 0) даже на компьютере.
