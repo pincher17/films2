@@ -5,7 +5,7 @@ import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, FiltersActions, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, FilterPill, FiltersActions, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
@@ -15,6 +15,27 @@ import SelectCountry from '../SelectCountry/SelectCountry';
 import SortSelect from '../SortSelect/SortSelect';
 
 
+
+/**
+ * Иконки типов контента. Порядок совпадает с typeOfMovies:
+ * фильмы, сериалы, мультфильмы.
+ */
+const TYPE_ICONS = [
+    <svg key="movie" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M4 3v10M12 3v10" stroke="currentColor" strokeWidth="1.4" />
+    </svg>,
+    <svg key="series" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="2.5" width="14" height="9" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M6 14h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>,
+    <svg key="cartoon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="5.6" cy="6.6" r="1" fill="currentColor" />
+        <circle cx="10.4" cy="6.6" r="1" fill="currentColor" />
+        <path d="M5.4 10c.8 1 1.7 1.5 2.6 1.5s1.8-.5 2.6-1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>,
+];
 
 const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
 
@@ -123,15 +144,17 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     <Wrapper mobile={(+mobile)}>
         <WrapperAllInputs>
         <WrapperCheckbox>
-        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
-        <CheckBox
-            checked={item.included}
-            id={item.typeNumber}
-            label={item.name}
-            name={item.name}
-            onChange={(e: any) => changeIncludedTypeOfMovies(item.typeNumber)}
-            key={item.typeNumber}
-        />
+        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (
+        <FilterPill $active={item.included} key={item.typeNumber} htmlFor={`type-${item.typeNumber}`}>
+            <input
+                id={`type-${item.typeNumber}`}
+                type="checkbox"
+                checked={item.included}
+                onChange={() => changeIncludedTypeOfMovies(item.typeNumber)}
+            />
+            {TYPE_ICONS[index] || null}
+            {item.name}
+        </FilterPill>
         ))}
         </WrapperCheckbox>
             <SliderValue

@@ -27,26 +27,10 @@ export const WrapperAllInputs = styled.div`
 `
 
 export const WrapperCheckbox = styled.div`
- display: flex;
- display: flex;
- flex-direction: column;
- gap: 20px;
- /*
-  * Колонка чекбоксов визуально стояла выше остальных: у соседних колонок
-  * сверху подпись («Рейтинг», «Год»), а здесь сразу пункты. Опускаем,
-  * чтобы центр совпал с их полями и ползунками.
-  */
- /*
-  * Сдвигаем колонку визуально, а НЕ отступом: контейнер выравнивает колонки
-  * по базовой линии (align-items: baseline), поэтому margin-top у одного
-  * элемента тянул вниз и «Рейтинг», «Год», «Жанры» вместе с ним.
-  */
- /*
-  * Небольшой сдвиг вниз: ровно по подписи «Рейтинг» чекбоксы читаются
-  * слишком высоко, опускаем к уровню полей с цифрами.
-  */
- position: relative;
- top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 `
 
 export const ButtonWrapper = styled.div`
@@ -71,5 +55,41 @@ export const FiltersActions = styled.div`
     padding-left: 22px;
     padding-right: 22px;
     font-size: 16px;
+  }
+`
+
+/**
+ * Таблетка выбора типа: активная залита красным, неактивная — тёмная с рамкой.
+ * Заменила чекбоксы: столбик из галочек занимал три строки и читался как
+ * настройки, а не как выбор того, что смотреть.
+ */
+export const FilterPill = styled.label<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  background: ${(props) => (props.$active ? "#d41515" : "rgba(255, 255, 255, 0.06)")};
+  border: 1px solid ${(props) => (props.$active ? "#d41515" : "rgba(255, 255, 255, 0.14)")};
+  color: ${(props) => (props.$active ? "#fff" : "rgba(248, 248, 248, 0.72)")};
+
+  input {
+    display: none;
+  }
+
+  &:hover {
+    border-color: ${(props) => (props.$active ? "#d41515" : "rgba(255, 255, 255, 0.35)")};
+  }
+
+  svg {
+    display: block;
+    opacity: ${(props) => (props.$active ? 1 : 0.75)};
   }
 `
