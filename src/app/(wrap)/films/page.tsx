@@ -83,12 +83,18 @@ export default function Films() {
        * сравниваем и по value, и по label — в адресе может оказаться любое из
        * них, а селект ждёт объект именно в своём формате.
        */
-      .map((value) =>
-        allGenres.find(
-          (genre: any) => genre.value === value || genre.label === value
-        )
-      )
-      .filter(Boolean);
+      .map((value) => {
+        const needle = value.toLowerCase();
+        const found = allGenres.find(
+          (genre: any) =>
+            String(genre.value || "").toLowerCase() === needle ||
+            String(genre.label || "").toLowerCase() === needle ||
+            String(genre.name || "").toLowerCase() === needle
+        );
+        // если в справочнике не нашлось — всё равно показываем жанр,
+        // иначе выбор молча теряется
+        return found || { value, label: value };
+      });
 
     if (genreList.length) {
       dispatch(setFilterGenre(genreList));
