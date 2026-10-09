@@ -77,8 +77,18 @@ export default function Films() {
     const genreList = String(searchParams.get("genre") || "")
       .split(",")
       .map((value) => value.trim())
-      .filter((value) => allGenres.some((genre) => genre.value === value))
-      .map((value) => ({ value, label: value }));
+      .filter(Boolean)
+      /*
+       * Берём объекты прямо из справочника жанров, а не собираем вручную:
+       * сравниваем и по value, и по label — в адресе может оказаться любое из
+       * них, а селект ждёт объект именно в своём формате.
+       */
+      .map((value) =>
+        allGenres.find(
+          (genre: any) => genre.value === value || genre.label === value
+        )
+      )
+      .filter(Boolean);
 
     if (genreList.length) {
       dispatch(setFilterGenre(genreList));
