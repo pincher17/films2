@@ -91,6 +91,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
      * жанры и типы не подтягивались при обновлении страницы.
      */
     React.useEffect(() => {
+        console.info("[genres] панель получила из хранилища:", filters.genre);
         setValueGenre(filters.genre || []);
         setValueCountry(filters.country || []);
         setValueYear(filters.year || [1960, 2026]);

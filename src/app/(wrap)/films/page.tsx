@@ -96,6 +96,7 @@ export default function Films() {
         return found || { value, label: value };
       });
 
+    console.info("[genres] страница прочитала из адреса:", genreList);
     if (genreList.length) {
       dispatch(setFilterGenre(genreList));
     }
