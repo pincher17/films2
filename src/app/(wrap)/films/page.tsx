@@ -112,7 +112,12 @@ export default function Films() {
     // страну из адреса не восстанавливаем: см. комментарий в Filters.tsx
     if (yearParam) restored.year = yearParam;
     if (ratingParam) restored.rating = ratingParam;
-    if (sortParam) restored.sortBy = sortParam;
+    if (sortParam) {
+      // поле сортировки в проекте называется по-разному в разных местах,
+      // поэтому пишем в оба — иначе порядок мог оставаться прежним
+      restored.sortBy = sortParam;
+      restored.sortByRelease = sortParam === 'date-asc' ? '1' : '-1';
+    }
     if (typesParam) {
       // названия типов: 1 — фильмы, 2 — сериалы, 3 — мультфильмы
       const TYPE_NAMES: Record<string, string> = {
