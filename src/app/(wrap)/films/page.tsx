@@ -96,7 +96,8 @@ export default function Films() {
         return found || { value, label: value };
       });
 
-    console.info("[genres] страница прочитала из адреса:", genreList);
+    // Восстановленные фильтры — главные: следующий запрос каталога уже не
+    // должен перезаписывать их старым (пустым) состоянием из хранилища.
     if (genreList.length) {
       dispatch(setFilterGenre(genreList));
     }
@@ -141,8 +142,15 @@ export default function Films() {
       }));
     }
 
-    if (Object.keys(restored).length) {
-      dispatch(setFilters({ ...filtres, ...restored }));
+    if (Object.keys(restored).length || genreList.length) {
+      const merged = {
+        ...filtres,
+        ...restored,
+        genre: genreList.length ? genreList : filtres.genre,
+      };
+      dispatch(setFilters(merged as any));
+      dispatch(setPage(1));
+      dispatch(getAllFilmsFiltersThunk(merged as any, 1));
     }
   }, []);
 
