@@ -85,6 +85,23 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
         window.location.href = '/films';
     };
 
+    /*
+     * Синхронизация с хранилищем. Панель инициализирует свои поля один раз при
+     * монтировании, а фильтры из адреса приходят в хранилище позже — из-за этого
+     * жанры и типы не подтягивались при обновлении страницы.
+     */
+    React.useEffect(() => {
+        setValueGenre(filters.genre || []);
+        setValueCountry(filters.country || []);
+        setValueYear(filters.year || [1960, 2026]);
+        setValueRating(filters.rating || [1, 10]);
+        setValueSort(filters.sortBy || 'date-desc');
+        if (filters.typeOfMovies?.length) {
+            setTypeOfMovies(filters.typeOfMovies);
+        }
+        setSelectedTypeOfMovies(filters.selectedTypeOfMovies || []);
+    }, [filters]);
+
     const changeFilters = () => {
         const createfilters: initialStateFiltersType ={
             genre: valueGenre,
