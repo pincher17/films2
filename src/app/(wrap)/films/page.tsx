@@ -60,12 +60,40 @@ export default function Films() {
   );
 
   /*
-   * Фильтры из адресной строки убраны: синхронизация оказалась источником
-   * ошибок (жанры, сортировка, страна) и не стоила затраченного времени.
-   * Фильтры работают в текущей сессии, кнопка «Сбросить» возвращает значения
-   * по умолчанию.
+   * Из адреса читаем ТОЛЬКО жанр: с главной на жанры ведёт ссылка вида
+   * /films?genre=комедия, и фильтр должен примениться и показаться в панели.
+   * Запись фильтров в адрес убрана — она была источником ошибок, а пользы
+   * почти не давала.
    */
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const genreList = String(searchParams.get("genre") || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => {
+        const needle = value.toLowerCase();
+        return (
+          allGenres.find(
+            (genre) =>
+              String(genre.value || "").toLowerCase() === needle ||
+              String(genre.label || "").toLowerCase() === needle
+          ) || { value, label: value, id: 0 }
+        );
+      });
+
+    if (!genreList.length) return;
+
+    dispatch(setFilterGenre(genreList));
+
+    /*
+     * Сразу перезапрашиваем каталог с новым жанром: иначе запрос, запущенный
+     * со старым (пустым) состоянием, перезаписывает его и жанры теряются.
+     */
+    const merged = { ...filtres, genre: genreList };
+    dispatch(setFilters(merged as any));
+    dispatch(setPage(1));
+    dispatch(getAllFilmsFiltersThunk(merged as any, 1));
+  }, []);
 
   useEffect(() => {
     if (isOpenSidebar) {
