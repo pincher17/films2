@@ -54,8 +54,8 @@ const Section = styled.section`
 `;
 
 const Heading = styled.h2`
-  /* как у заголовка «Детали» на той же странице (визуально совпадает) */
-  font-size: 34px;
+  /* единый размер заголовков секций на странице */
+  font-size: 26px;
   font-weight: 700;
   color: #fff;
   margin: 0 0 18px;

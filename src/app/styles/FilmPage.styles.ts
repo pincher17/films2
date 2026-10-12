@@ -348,7 +348,8 @@ export const iframe = styled.div`
   height: 100% !important;
 `;
 export const TitleDescription = styled.div`
-  font-size: 28px;
+  /* единый размер заголовков секций на странице */
+  font-size: 26px;
   font-weight: bold;
   margin-top: 80px;
 `;
