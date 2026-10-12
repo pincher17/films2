@@ -143,7 +143,7 @@ const List = styled.ol`
 
 const Row = styled.li`
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   padding: 7px 0;
   font-size: 14px;
@@ -156,6 +156,15 @@ const Number = styled.span`
   text-align: right;
   color: rgba(255, 255, 255, 0.32);
   font-variant-numeric: tabular-nums;
+`;
+
+/** Колонка трека: исполнитель сверху, название снизу */
+const TrackInfo = styled.span`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 `;
 
 const TrackName = styled.span`
@@ -171,12 +180,16 @@ const TrackName = styled.span`
  * альбома: иначе в списке из 16 треков имя композитора повторялось бы 16 раз.
  */
 const TrackArtist = styled.span`
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 190px;
+
+  /* на телефоне мельче, чтобы влезало */
+  @media (max-width: 850px) {
+    font-size: 12px;
+  }
 `;
 
 const Length = styled.span`
@@ -278,10 +291,14 @@ const SoundtrackSection: React.FC<Props> = ({ kpId, title, originalTitle, year }
         {tracks.map((track) => (
           <Row key={`${track.number}-${track.title}`}>
             <Number>{track.number}</Number>
-            <TrackName title={track.title}>{cleanTrackTitle(track.title)}</TrackName>
-            {track.artist && track.artist !== data.artist ? (
-              <TrackArtist title={track.artist}>{track.artist}</TrackArtist>
-            ) : null}
+            <TrackInfo>
+              {(track.artist || data.artist) ? (
+                <TrackArtist title={track.artist || data.artist}>
+                  {track.artist || data.artist}
+                </TrackArtist>
+              ) : null}
+              <TrackName title={track.title}>{cleanTrackTitle(track.title)}</TrackName>
+            </TrackInfo>
             <Length>{format(track.length)}</Length>
           </Row>
         ))}
