@@ -11,7 +11,9 @@ export const WrapperSlide = styled('div')`
  
 `
 export const Title = styled('p')`
-  font-size: 24px;
+  /* единый размер заголовков секций: этим стилем отрисованы «Детали»,
+     «Актёры» и «Кадры из фильма» */
+  font-size: 26px;
   font-weight: bold;
   margin-bottom: 0px;
   margin-top: 24px;
