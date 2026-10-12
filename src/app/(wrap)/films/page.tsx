@@ -59,105 +59,13 @@ export default function Films() {
     (genre) => genre.value === searchGenre
   );
 
-  useEffect(() => {
-    /*
-     * Фильтры из адресной строки. Раньше читался только жанр, поэтому после
-     * обновления страницы год, рейтинг, страна, сортировка и типы терялись.
-     */
-    const range = (value: string | null) => {
-      const parts = String(value || "").split("-").map(Number);
-      return parts.length === 2 && parts.every(Number.isFinite) ? parts : null;
-    };
-
-    /*
-     * Жанр в адресе — список через запятую. Раньше проверялось одно значение
-     * целиком, поэтому «фантастика,детектив,драма» не проходило проверку и
-     * жанры не подтягивались.
-     */
-    const genreList = String(searchParams.get("genre") || "")
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean)
-      /*
-       * Берём объекты прямо из справочника жанров, а не собираем вручную:
-       * сравниваем и по value, и по label — в адресе может оказаться любое из
-       * них, а селект ждёт объект именно в своём формате.
-       */
-      .map((value) => {
-        const needle = value.toLowerCase();
-        const found = allGenres.find(
-          (genre: any) =>
-            String(genre.value || "").toLowerCase() === needle ||
-            String(genre.label || "").toLowerCase() === needle ||
-            String(genre.name || "").toLowerCase() === needle
-        );
-        // если в справочнике не нашлось — всё равно показываем жанр,
-        // иначе выбор молча теряется
-        return found || { value, label: value };
-      });
-
-    // Восстановленные фильтры — главные: следующий запрос каталога уже не
-    // должен перезаписывать их старым (пустым) состоянием из хранилища.
-    if (genreList.length) {
-      dispatch(setFilterGenre(genreList));
-    }
-
-    const countryParam = searchParams.get("country");
-    const typesParam = searchParams.get("types");
-    const yearParam = range(searchParams.get("year"));
-    const ratingParam = range(searchParams.get("rating"));
-    const sortParam = searchParams.get("sort");
-
-    const restored: Record<string, unknown> = {};
-    // страну из адреса не восстанавливаем: см. комментарий в Filters.tsx
-    if (yearParam) restored.year = yearParam;
-    if (ratingParam) restored.rating = ratingParam;
-    if (sortParam) {
-      // поле сортировки в проекте называется по-разному в разных местах,
-      // поэтому пишем в оба — иначе порядок мог оставаться прежним
-      restored.sortBy = sortParam;
-      restored.sortByRelease = sortParam === 'date-asc' ? '1' : '-1';
-    }
-    if (typesParam) {
-      // названия типов: 1 — фильмы, 2 — сериалы, 3 — мультфильмы
-      const TYPE_NAMES: Record<string, string> = {
-        "1": "Фильмы",
-        "2": "Сериалы",
-        "3": "Мультфильмы",
-      };
-      const chosen = typesParam
-        .split(",")
-        .map((value) => value.trim())
-        .filter((value) => TYPE_NAMES[value]);
-
-      restored.selectedTypeOfMovies = chosen.map((typeNumber) => ({
-        name: TYPE_NAMES[typeNumber],
-        included: true,
-        typeNumber,
-      }));
-
-      /*
-       * Плитки «Фильмы / Сериалы / Мультфильмы» читают typeOfMovies, а не
-       * selectedTypeOfMovies — без этого галочки оставались в прежнем виде.
-       */
-      restored.typeOfMovies = Object.keys(TYPE_NAMES).map((typeNumber) => ({
-        name: TYPE_NAMES[typeNumber],
-        included: chosen.includes(typeNumber),
-        typeNumber,
-      }));
-    }
-
-    if (Object.keys(restored).length || genreList.length) {
-      const merged = {
-        ...filtres,
-        ...restored,
-        genre: genreList.length ? genreList : filtres.genre,
-      };
-      dispatch(setFilters(merged as any));
-      dispatch(setPage(1));
-      dispatch(getAllFilmsFiltersThunk(merged as any, 1));
-    }
-  }, []);
+  /*
+   * Фильтры из адресной строки убраны: синхронизация оказалась источником
+   * ошибок (жанры, сортировка, страна) и не стоила затраченного времени.
+   * Фильтры работают в текущей сессии, кнопка «Сбросить» возвращает значения
+   * по умолчанию.
+   */
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (isOpenSidebar) {

@@ -114,7 +114,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             updateGenre: false,
             country: valueCountry,
         }
-        router.replace(buildQuery(createfilters));
+        router.replace('/films');
         dispatch(setFilters(createfilters))
         dispatch(setPage(1))
         dispatch(getAllFilmsFiltersThunk(createfilters, 1));
