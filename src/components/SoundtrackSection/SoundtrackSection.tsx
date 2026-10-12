@@ -100,6 +100,13 @@ const Cover = styled.div`
   }
 `;
 
+/** Автор — над названием альбома */
+const AlbumArtist = styled.div`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+`;
+
 const AlbumName = styled.div`
   font-size: 19px;
   font-weight: 600;
@@ -249,15 +256,18 @@ const SoundtrackSection: React.FC<Props> = ({ kpId, title, originalTitle, year }
           </Cover>
         ) : null}
         <div>
+          {/* Автор сверху, название альбома — под ним */}
+          {(() => {
+            const author = data.tracks.some(
+              (track) => track.artist && track.artist !== data.artist
+            )
+              ? "разные исполнители"
+              : data.artist;
+            return author ? <AlbumArtist>{author}</AlbumArtist> : null;
+          })()}
           <AlbumName>{data.album || "Саундтрек"}</AlbumName>
           <AlbumMeta>
-            {[
-              data.tracks.some((track) => track.artist && track.artist !== data.artist)
-                ? "разные исполнители"
-                : data.artist,
-              data.year,
-              data.tracks.length ? `${data.tracks.length} треков` : null,
-            ]
+            {[data.year, data.tracks.length ? `${data.tracks.length} треков` : null]
               .filter(Boolean)
               .join(" • ")}
           </AlbumMeta>
