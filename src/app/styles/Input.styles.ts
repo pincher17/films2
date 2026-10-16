@@ -34,6 +34,14 @@ export const InputWrapper = styled.div`
     &:focus-visible {
       outline: none;
     }
+
+    /* на телефоне поля выше: 33px было слишком мелко для пальца */
+    @media (max-width: 850px) {
+      height: 52px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
   }
   & > textarea {
     height: 406px;

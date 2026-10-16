@@ -196,10 +196,6 @@ export default function Films() {
           {resolution.width > 1150 ? <Filters mobile={false} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
-            <CrossIcon sidebar={+true} onClick={toggleSidebar}>
-              <Line1 />
-              <Line2 />
-            </CrossIcon>
             {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
           </Sidebar>
           <Cards cards={films} />

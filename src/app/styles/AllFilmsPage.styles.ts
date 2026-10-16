@@ -86,42 +86,53 @@ export const WrapperButtonShowMore = styled.div`
   }
 `
 export const CrossIcon = styled.div<CrossIconProps>`
-display: none;
-@media (max-width: 1150px){
-display: block;
+  display: none;
+  @media (max-width: 1150px) {
+    display: block;
   }
-  width: 25px;
-  height: 44px;
+
+  /* Кнопка закрытия в стиле Apple: круглая серая подложка и белый крестик
+     по центру. Так же выглядит закрытие в iOS. */
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(120, 120, 128, 0.36);
   position: relative;
-  margin-left: 20px;
   cursor: pointer;
-  ${(props) => (props.sidebar ? 
-   `margin-left: 0;
-    cursor: pointer;
-    right: 47px;
-    top: 26px;
-    position: absolute;` 
-    : '')};
+  margin-left: 20px;
+  transition: background 0.15s ease;
+
+  &:active {
+    background: rgba(120, 120, 128, 0.56);
+  }
+
+  ${(props) =>
+    props.sidebar
+      ? `margin-left: 0;
+    right: 16px;
+    top: 16px;
+    position: absolute;`
+      : ''};
 `;
 
 export const Line1 = styled.div`
-  height: 100%;
-  width: 3px;
-  margin-left: 12px;
-  background-color: #fff;
-  transform: rotate(45deg);
-  z-index: 1;
   position: absolute;
-  top: 0;
+  left: 50%;
+  top: 50%;
+  width: 15px;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
 `;
 
 export const Line2 = styled.div`
-  height: 100%;
-  width: 3px;
-  background-color: #fff;
-  transform: rotate(135deg);
-  z-index: 2;
   position: absolute;
-  top: 0;
   left: 50%;
+  top: 50%;
+  width: 15px;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #fff;
+  transform: translate(-50%, -50%) rotate(-45deg);
 `;

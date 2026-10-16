@@ -26,11 +26,18 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
       }, [genre])
 
   const colourStyles: StylesConfig = {
+  /* Портал меню должен быть выше шторки и затемнения, иначе меню уйдёт под них */
+  menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 1500 }) as never,
     control: (baseStyles: any, state: { isFocused: any; }) => ({
       ...baseStyles,
       color: 'white',
       background: '#0e0e0e',
-      width: '300px',
+      /* было 300px жёстко — на телефоне список вылезал за край экрана */
+      width: '100%',
+      maxWidth: '100%',
+      /* Без минимальной ширины список сжимался на средних экранах:
+         колонка фильтров там определяется содержимым, а не шириной. */
+      minWidth: '260px',
       borderColor: state.isFocused ? '#747474' : 'rgb(52 52 52)',
       boxShadow: 'none',
       flex: 1,
@@ -103,6 +110,11 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
   } 
   return (
     <Select
+      classNamePrefix="fh-select"
+      /* Меню рисуем в портале: иначе его обрезает граница прокручиваемой
+         области шторки, и нижние варианты недоступны на телефоне. */
+      menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
+      menuPlacement="auto"
       closeMenuOnSelect={false}
       isMulti
       options={options}

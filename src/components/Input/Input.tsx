@@ -23,6 +23,9 @@ const Input: React.FC<InputProps> = (props) => {
         <input
           id={id}
           type={type}
+          /* inputMode="numeric" — на телефоне открывается клавиатура только
+             с цифрами, а не полная с буквами */
+          inputMode={type === "number" ? "numeric" : undefined}
           name={name}
           value={value}
           placeholder={placeholder}
