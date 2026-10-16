@@ -87,6 +87,58 @@ function pickTrailer(videos = []) {
   )[0];
 }
 
+
+/**
+ * Резервный поиск в TMDB по названию.
+ *
+ * Нужен, когда точного соответствия Кинопоиск→TMDB нет: TMDB кинопоисковых id
+ * не знает вообще (проверено — /find с kinopoisk_id всегда пустой), поэтому
+ * единственный оставшийся путь — искать по названию и проверять результат.
+ */
+async function searchTmdbByTitle(title, year) {
+  const clean = String(title || "").trim();
+  if (!clean) return null;
+
+  const candidates = [];
+  for (const media of ["movie", "tv"]) {
+    try {
+      const query = new URLSearchParams({ query: clean, language: "ru-RU" });
+      if (year) query.set(media === "movie" ? "year" : "first_air_date_year", String(year));
+      const found = await tmdbGet(`/search/${media}?${query.toString()}`);
+      for (const item of found?.results?.slice(0, 5) || []) {
+        candidates.push({ media, item });
+      }
+    } catch {
+      undefined;
+    }
+  }
+  if (!candidates.length) return null;
+
+  // похожесть названия: сравниваем без регистра, пробелов и знаков
+  const normalize = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "");
+
+  const wanted = normalize(clean);
+  const score = ({ item }) => {
+    const names = [item.title, item.name, item.original_title, item.original_name]
+      .map(normalize)
+      .filter(Boolean);
+    if (names.includes(wanted)) return 2;
+    if (names.some((name) => name.startsWith(wanted) || wanted.startsWith(name))) return 1;
+    return 0;
+  };
+
+  const best = candidates
+    .map((candidate) => ({ ...candidate, score: score(candidate) }))
+    .sort((a, b) => b.score - a.score)[0];
+
+  // принимаем только уверенное совпадение, иначе лучше ничего, чем чужой фильм
+  if (!best || best.score < 1) return null;
+  return { tmdbId: best.item.id, media: best.media };
+}
+
 export async function resolveTmdbByKinopoisk(kinopoiskId) {
   const key = String(kinopoiskId ?? "").trim();
   if (!key) return null;
@@ -111,15 +163,40 @@ export async function resolveTmdbByKinopoisk(kinopoiskId) {
       : null;
 
   /*
+   * Резервный путь: точного соответствия нет — пробуем найти по названию.
+   * Название берём из Wikidata (там точно есть элемент с этим кинопоисковым id,
+   * раз мы его нашли), затем ищем в TMDB и проверяем похожесть.
+   */
+  let fallback = null;
+  if (!result) {
+    try {
+      const labels = await sparql(
+        `SELECT ?label ?year WHERE { ?f wdt:P2603 "${key}". OPTIONAL { ?f rdfs:label ?label FILTER(lang(?label) = "ru") } OPTIONAL { ?f wdt:P577 ?year } } LIMIT 3`
+      );
+      const label = labels.find((row) => row?.label?.value)?.label?.value;
+      const year = Number(String(labels.find((row) => row?.year?.value)?.year?.value || "").slice(0, 4)) || null;
+      if (label) {
+        fallback = await searchTmdbByTitle(label, year);
+        if (fallback) {
+          console.info("[tmdb] найдено по названию:", key, label, "→", fallback.tmdbId, fallback.media);
+        }
+      }
+    } catch (error) {
+      console.warn("[tmdb] резервный поиск не удался", key, error?.message);
+    }
+  }
+
+  /*
    * Кэшируем ТОЛЬКО успешное соответствие. Раньше сюда попадал и null: если
    * Wikidata в тот момент не ответила, фильм «залипал» как ненайденный
    * навсегда и больше не появлялся в «Продолжить просмотр».
    */
-  if (result) {
-    data.toTmdb[key] = result;
+  const final = result || fallback;
+  if (final) {
+    data.toTmdb[key] = final;
     saveStore();
   }
-  return result;
+  return final;
 }
 
 /** Список TMDB id -> kinopoisk_id (для «Похожих» и «Сиквелов») */
