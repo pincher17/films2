@@ -3,7 +3,8 @@
 import React from "react";
 import { MainTag } from "@/app/Main.styles";
 import Cards from "@/components/Cards/Cards";
-import { Chip, Chips, Empty, Header, Row, Sort, Wrapper } from "../../styles/SavedPage.styles";
+import { Chip, Chips, Empty, Header, Row, Wrapper } from "../../styles/SavedPage.styles";
+import SortSelect from "@/components/SortSelect/SortSelect";
 
 /**
  * Страница «Сохранённое».
@@ -28,17 +29,18 @@ const TYPES = [
   { key: "cartoon", label: "Мультфильмы" },
 ];
 
+// значения совпадают с ключами сортировки каталога, где это возможно
 const SORTS = [
-  { key: "date", label: "Сначала новые" },
-  { key: "rating", label: "По рейтингу" },
-  { key: "year", label: "По году" },
+  { value: "date-desc", label: "Сначала новые" },
+  { value: "rating", label: "По рейтингу" },
+  { value: "year", label: "По году" },
 ];
 
 export default function SavedPage() {
   const [docs, setDocs] = React.useState<SavedDoc[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [type, setType] = React.useState("all");
-  const [sort, setSort] = React.useState("date");
+  const [sort, setSort] = React.useState("date-desc");
 
   React.useEffect(() => {
     let alive = true;
@@ -97,13 +99,7 @@ export default function SavedPage() {
             ))}
           </Chips>
 
-          <Sort value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Сортировка">
-            {SORTS.map((item) => (
-              <option key={item.key} value={item.key}>
-                {item.label}
-              </option>
-            ))}
-          </Sort>
+          <SortSelect options={SORTS} onChange={(value: string) => setSort(value)} />
         </Row>
 
         {!loading && !shown.length ? (

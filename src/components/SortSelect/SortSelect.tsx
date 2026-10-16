@@ -8,15 +8,24 @@ export const SORT_OPTIONS = [
   { value: 'rating', label: 'По рейтингу' },
 ];
 
-type Props = { onChange: (value: any) => void; studio?: boolean };
+type SortOption = { value: string; label: string };
+
+type Props = {
+  onChange: (value: any) => void;
+  studio?: boolean;
+  /** Свои варианты сортировки: по умолчанию — сортировки каталога.
+      Нужно, чтобы поле переиспользовалось на других страницах. */
+  options?: SortOption[];
+};
 
 /** Выбор сортировки — тот же вид, что у выбора страны */
-const SortSelect: React.FC<Props> = ({ onChange, studio }) => {
+const SortSelect: React.FC<Props> = ({ onChange, studio, options }) => {
+  const list = options && options.length ? options : SORT_OPTIONS;
   const sortBy = useAppSelector((state: any) =>
     studio ? state.filtersStudios.sortBy : state.filters.sortBy
   );
   const [selected, setSelected] = React.useState<any>(
-    SORT_OPTIONS.find((option) => option.value === sortBy) || SORT_OPTIONS[0]
+    list.find((option) => option.value === sortBy) || list[0]
   );
 
   React.useEffect(() => {
@@ -62,7 +71,7 @@ const SortSelect: React.FC<Props> = ({ onChange, studio }) => {
       menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
       menuPlacement="auto"
       closeMenuOnSelect={true}
-      options={SORT_OPTIONS}
+      options={list}
       name="sort"
       onChange={setSelected}
       styles={colourStyles}
