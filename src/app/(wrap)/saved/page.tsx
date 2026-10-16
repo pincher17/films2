@@ -29,7 +29,7 @@ const TYPES = [
 ];
 
 const SORTS = [
-  { key: "date", label: "Сначала сохранённые" },
+  { key: "date", label: "Сначала новые" },
   { key: "rating", label: "По рейтингу" },
   { key: "year", label: "По году" },
 ];

@@ -64,6 +64,10 @@ export const Chip = styled.button<{ $active?: boolean }>`
 
 export const Sort = styled.select`
   height: 40px;
+  /* строка по центру: у select текст по умолчанию прижат к верху, из-за чего
+     подпись выглядела смещённой вверх */
+  line-height: 38px;
+  box-sizing: border-box;
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid #343434;
