@@ -12,14 +12,15 @@ datasource db {
 }
 
 model User {
-  id        String          @id @default(cuid())
-  name      String?
-  email     String?         @unique
-  image     String?
-  createdAt DateTime        @default(now())
-  telegramId String? @unique
-  accounts  Account[]
-  positions WatchPosition[]
+  id         String          @id @default(cuid())
+  name       String?
+  email      String?         @unique
+  image      String?
+  createdAt  DateTime        @default(now())
+  telegramId String?         @unique
+  accounts   Account[]
+  positions  WatchPosition[]
+  saved      SavedItem[]
 }
 
 /// Способы входа: google, позже telegram. Один пользователь — несколько входов.
@@ -40,22 +41,22 @@ model Account {
 /// в уникальном индексе считаются разными, и одна пара «фильм + серия» могла бы
 /// создать две строки.
 model WatchPosition {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   userId    String
   filmId    Int
-  season    Int      @default(0)
-  episode   Int      @default(0)
-  seconds   Int      @default(0)
+  season    Int     @default(0)
+  episode   Int     @default(0)
+  seconds   Int     @default(0)
   duration  Int?
-  completed Boolean  @default(false)
+  completed Boolean @default(false)
 
   /// Оценка времени у плеера (fallback, когда позиция недоступна).
   /// Ограничиваем двумя минутами сверху: точнее всё равно не узнать.
-  watchedSeconds Int  @default(0)
+  watchedSeconds Int       @default(0)
   /// Сколько раз пользователь запускал просмотр
-  opens          Int  @default(0)
+  opens          Int       @default(0)
   /// 'player' — настоящая позиция из нашего плеера, 'fallback' — только факт просмотра
-  source         String  @default("fallback")
+  source         String    @default("fallback")
   startedAt      DateTime?
   lastOpenedAt   DateTime?
 
@@ -64,4 +65,21 @@ model WatchPosition {
 
   @@unique([userId, filmId, season, episode])
   @@index([userId, updatedAt])
+}
+
+/// Сохранённое на потом. Привязано к профилю, а не только к аккаунту:
+/// сохранять можно без входа (как историю просмотра), а после входа через
+/// Telegram записи автоматически оказываются в аккаунте.
+model SavedItem {
+  id        String   @id @default(cuid())
+  userId    String
+  filmId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// один фильм — одна запись у профиля
+  @@unique([userId, filmId])
+  /// выборка «моё сохранённое» идёт по профилю с сортировкой по дате
+  @@index([userId, createdAt])
 }
