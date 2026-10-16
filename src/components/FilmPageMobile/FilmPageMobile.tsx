@@ -151,7 +151,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
             <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
           </BookmarkIcon>
-          {saved ? 'В сохранённом' : 'В закладки'}
+          {saved ? 'Сохранено' : 'Сохранить'}
         </SaveFilmButton>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
         <MobileSeo>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</MobileSeo>

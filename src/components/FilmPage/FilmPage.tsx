@@ -309,7 +309,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                 <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
                   <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
                 </BookmarkIcon>
-                {saved ? 'В сохранённом' : 'В закладки'}
+                {saved ? 'Сохранено' : 'Сохранить'}
               </SaveFilmButton>
             </HeroButtons>
             <ResumeHint filmId={id} />
