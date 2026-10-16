@@ -1,7 +1,14 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
+  /* как на странице каталога: без этого контент заезжает под шапку */
+  margin-top: 90px;
   padding-bottom: 40px;
+
+  @media (max-width: 850px) {
+    margin-top: 90px;
+    padding: 0 20px 96px;
+  }
 `
 
 export const Header = styled.div`
