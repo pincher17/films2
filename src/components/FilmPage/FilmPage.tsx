@@ -50,6 +50,9 @@ import {
 import { CloseIconTrailer, IframeTrailer, Overlay } from "../../app/styles/Trailer.styles";
 import { Line1, Line2 } from "../../app/styles/AllFilmsPage.styles";
 import SkeletonImage from "../SkeletonImage/SkeletonImage";
+import { SaveFilmButton } from '@/app/styles/SaveFilmButton.styles';
+import { BookmarkIcon } from '@/app/styles/Card.styles';
+import { useSaved } from '@/components/SavedProvider/SavedProvider';
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
 import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
@@ -169,6 +172,10 @@ export default function FilmPage({ params }: { params: { id: number } }) {
       window.removeEventListener("resize", updateScreenResolution);
     };
   }, []);
+
+  // закладка: состояние общее для всего сайта, без отдельного запроса
+  const { isSaved, toggle } = useSaved();
+  const saved = isSaved(id);
 
   useEffect(() => {
     dispatch(getFilmById(id));
@@ -293,6 +300,17 @@ export default function FilmPage({ params }: { params: { id: number } }) {
                   Трейлер
                 </HeroButton>
               ) : null}
+              <SaveFilmButton
+                type="button"
+                $active={saved}
+                title={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
+                onClick={() => toggle(id)}
+              >
+                <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
+                  <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+                </BookmarkIcon>
+                {saved ? 'В сохранённом' : 'В закладки'}
+              </SaveFilmButton>
             </HeroButtons>
             <ResumeHint filmId={id} />
             {filmInfoId?.description ? (

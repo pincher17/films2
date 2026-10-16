@@ -1,3 +1,6 @@
+import { SaveFilmButton } from '@/app/styles/SaveFilmButton.styles';
+import { BookmarkIcon } from '@/app/styles/Card.styles';
+import { useSaved } from '@/components/SavedProvider/SavedProvider';
 import React, { useEffect } from "react";
 import LayoutFilm from "../layoutFilm/LayoutFilm";
 import {
@@ -74,6 +77,10 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   const watchTrailerStart = () => setWatchTrailer(true);
   const [descOpen, setDescOpen] = React.useState(false);
 
+  // закладка: состояние общее для всего сайта, без отдельного запроса
+  const { isSaved, toggle } = useSaved();
+  const saved = isSaved(id);
+
   // Детали, которых на телефоне не было: их показывает только десктопная
   // версия, поэтому страница выглядела неполной
   const persons: any[] = ((filmInfoId as any)?.persons || []) as any[];
@@ -135,6 +142,17 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
         </WrapperInfo>
         <ResumeHint filmId={id} />
         <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
+
+        <SaveFilmButton
+          type="button"
+          $active={saved}
+          onClick={() => toggle(id)}
+        >
+          <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
+            <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+          </BookmarkIcon>
+          {saved ? 'В сохранённом' : 'В закладки'}
+        </SaveFilmButton>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
         <MobileSeo>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</MobileSeo>
         <MobileSectionTitle>Описание</MobileSectionTitle>
