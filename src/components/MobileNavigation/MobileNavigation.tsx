@@ -24,6 +24,10 @@ const MobileNavigation = () => {
         <AllFilmsIcon $active={(+(pathname === '/films'))} />
         <span>Все фильмы</span>
         </StyledLink>
+        <StyledLink href="/saved">
+        <AllFilmsIcon $active={(+(pathname === '/films'))} />
+        <span>Сохранённое</span>
+        </StyledLink>
       </NavigationItem>
       <NavigationItem
         $active={(+mobileSearch)}

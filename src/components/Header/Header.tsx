@@ -31,6 +31,7 @@ const Header: React.FC = () =>{
         <Search />
         <nav className={s.nav}>
         <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Все фильмы</Link>
+        <Link href={'/saved'} className={`${s.nav_item} ${pathname == "/saved" ? s.active : ""}`}>Сохранённое</Link>
         {/* вход внутри nav — так шапка на компьютере стоит как раньше */}
         <HeaderAuth />
         <NavigationItem $active={(+(pathname === '/films'))}>
