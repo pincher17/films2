@@ -545,7 +545,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             <Line2 />
           </CloseIconTrailer>
           <IframeTrailer
-            src={filmInfoId.videos.trailers[0].url}
+            src={filmInfoId?.videos?.trailers?.[0].url}
             frameBorder="0"
             scrolling="no"
             allowFullScreen
@@ -556,9 +556,9 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               встроенное видео тогда не играет. Даём прямой путь посмотреть. */}
           <a
             href={
-              (filmInfoId.videos.trailers[0] as any).watchUrl ||
+              (filmInfoId?.videos?.trailers?.[0] as any).watchUrl ||
               `https://www.youtube.com/watch?v=${
-                String(filmInfoId.videos.trailers[0].url).split("/embed/")[1]?.split("?")[0] || ""
+                String(filmInfoId?.videos?.trailers?.[0].url).split("/embed/")[1]?.split("?")[0] || ""
               }`
             }
             target="_blank"

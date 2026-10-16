@@ -148,7 +148,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   return (
     <Wrapper>
       {watchFilm && <MobileWatchFilm id={id} setWatchFilm={setWatchFilm} />}
-      {watchTrailer && <TrailerMobileWatch id={id} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos.trailers[0].url}`} />}
+      {watchTrailer && <TrailerMobileWatch id={id} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos?.trailers?.[0].url}`} />}
       <LayoutFilm>
         <Gradient>
         <BackgroundImage src={filmInfoId?.poster.previewUrl} />
@@ -191,7 +191,7 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
             <span className="label">{saved ? 'В сохранённом' : 'Сохранить'}</span>
           </IconAction>
 
-          {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? (
+          {filmInfoId?.videos && filmInfoId?.videos?.trailers?.[0] ? (
             <IconAction type="button" onClick={watchTrailerStart}>
               <span className="circle">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
