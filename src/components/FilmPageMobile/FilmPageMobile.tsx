@@ -20,8 +20,6 @@ import {
   ImgMainMobile,
   ImgWrapFilmMobile,
   ImgWrapperFilmMobile,
-  MobileActionRow,
-  PosterSaveButton,
   MobileDescription,
   MobileDetailsLabel,
   MobileDetailsRow,
@@ -130,15 +128,6 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
                   <ImgWrapFilmMobile>
                     <ImgMainMobile src={filmInfoId?.poster.previewUrl} alt={filmInfoId?.name} />
                   </ImgWrapFilmMobile>
-                <PosterSaveButton
-                  type="button"
-                  aria-label={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
-                  onClick={() => toggle(id)}
-                >
-                  <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
-                    <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
-                  </BookmarkIcon>
-                </PosterSaveButton>
                 </ImgWrapperFilmMobile>
           }
             </div>
@@ -152,11 +141,19 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           </WrapperWatchFilm>
         </WrapperInfo>
         <ResumeHint filmId={id} />
-        <MobileActionRow>
-          <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
+        <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
 
+        <SaveFilmButton
+          type="button"
+          $active={saved}
+          onClick={() => toggle(id)}
+        >
+          <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
+            <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+          </BookmarkIcon>
+          {saved ? 'Сохранено' : 'Сохранить'}
+        </SaveFilmButton>
         {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
-        </MobileActionRow>
         <MobileSeo>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</MobileSeo>
         <MobileSectionTitle>Описание</MobileSectionTitle>
         <MobileDescription $open={descOpen}>{filmInfoId?.description}</MobileDescription>
