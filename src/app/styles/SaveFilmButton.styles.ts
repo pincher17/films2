@@ -8,7 +8,7 @@ export const SaveFilmButton = styled.button<{ $active?: boolean }>`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 44px;
+  height: 46px;
   padding: 0 18px;
   border-radius: 8px;
   border: 1px solid

@@ -177,9 +177,10 @@ export const HeroMore = styled.button`
 `;
 
 export const HeroButton = styled.button<{ $primary?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  /* фиксированная высота: без неё «Смотреть» и «Трейлер» отличались
+     на пару пикселей из-за разного шрифта — на глаз это заметно */
+  height: 46px;
+  justify-content: center;
   padding: 12px 26px;
   font-size: 16px;
   font-weight: 600;
