@@ -1,5 +1,6 @@
 "use client";
 
+import TelegramLogin from "@/components/TelegramLogin/TelegramLogin";
 import React from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -101,6 +102,8 @@ export default function LoginPage() {
           </svg>
           Продолжить с Google
         </GoogleButton>
+
+        <TelegramLogin />
 
         <Note>
           Мы получаем только имя, фото профиля и адрес почты. Ничего не публикуем и не
