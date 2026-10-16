@@ -30,8 +30,9 @@ const TelegramLogin: React.FC = () => {
           body: JSON.stringify(user),
         });
         if (response.ok) {
-          // сессия выдана — перезагружаем, чтобы шапка показала аккаунт
-          window.location.reload();
+          // сессия выдана — уходим на главную, чтобы человек сразу видел
+          // подборки и «Продолжить просмотр», а не оставался на странице входа
+          window.location.href = "/";
         } else {
           const data = await response.json().catch(() => null);
           alert(data?.error || "Не удалось войти через Telegram");
