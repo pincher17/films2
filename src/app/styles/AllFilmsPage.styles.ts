@@ -11,9 +11,10 @@ export const WrapperNameBlock = styled.div`
   margin-bottom: 20px;
   align-items: center;
 
-  /* на телефоне заголовок слева — в одну линию с фильтрами и карточками */
+  /* на телефоне заголовок слева, а кнопка фильтров прижата к правому краю.
+     Было flex-start — и кнопка «присасывалась» к названию вместо правого края. */
   @media (max-width: 850px) {
-    justify-content: flex-start;
+    justify-content: space-between;
     margin-bottom: 24px;
   }
 `
