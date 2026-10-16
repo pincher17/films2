@@ -400,3 +400,40 @@ export const PosterSaveButton = styled.button`
     transform: scale(0.94);
   }
 `;
+
+/**
+ * Ряд действий: квадратная кнопка сохранения слева, «Смотреть» — справа.
+ * Главное действие остаётся широким и заметным, а сохранение — компактным.
+ */
+export const WatchRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 22px;
+
+  & > *:last-child {
+    flex: 1 1 auto;
+    width: auto;
+    margin-top: 0;
+  }
+`;
+
+/** Квадратная кнопка сохранения: та же высота, что у кнопки просмотра. */
+export const SaveSquareButton = styled.button`
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+`;
