@@ -354,8 +354,8 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               <WatchTracker filmId={id} />
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
-              {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.lol */}
-              {/* https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.lol */}
+              {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.one */}
+              {/* https://unsightly-lock.cdnmovies-stream.online/kinopoisk/${id}/iframe?domain=filmhub.one */}
               {streams ? (
                 <StreamPlayer
                   filmId={id}

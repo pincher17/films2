@@ -39,7 +39,7 @@ export async function generateMetadata(
       images: [`${slugInfo.cover.url}`],
     },
     alternates: {
-      canonical: `https://filmhub.lol/studio/${slugInfo.name}`,
+      canonical: `https://filmhub.one/studio/${slugInfo.name}`,
     } */
   }
 }

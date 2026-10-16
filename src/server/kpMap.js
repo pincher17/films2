@@ -117,7 +117,7 @@ async function mapWikidataToKinopoisk(qids) {
       const response = await fetch(url, {
         headers: {
           accept: "application/sparql-results+json",
-          "User-Agent": "filmhub-catalog/1.0 (+https://filmhub.lol)",
+          "User-Agent": "filmhub-catalog/1.0 (+https://filmhub.one)",
         },
         cache: "no-store",
       });

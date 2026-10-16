@@ -16,7 +16,7 @@ import path from "node:path";
  */
 
 const CACHE_FILE = path.join(process.cwd(), ".cache", "soundtracks.json");
-const UA = "Filmhub/1.0 (https://filmhub.lol)";
+const UA = "Filmhub/1.0 (https://filmhub.one)";
 
 const HIT_TTL = 30 * 24 * 60 * 60 * 1000; // месяц
 const MISS_TTL = 24 * 60 * 60 * 1000; // сутки

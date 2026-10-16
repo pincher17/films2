@@ -43,7 +43,7 @@ export async function generateMetadata(
       images: [`${filmInfoId.poster.url}`],
     },
     alternates: {
-      canonical: `${filmInfoId.name ? `https://filmhub.lol/film/${id}-${textTransform(filmInfoId.name)}${filmInfoId.year ? '-'+filmInfoId.year : ''}` : `https://filmhub.lol/film/${id}`}`,
+      canonical: `${filmInfoId.name ? `https://filmhub.one/film/${id}-${textTransform(filmInfoId.name)}${filmInfoId.year ? '-'+filmInfoId.year : ''}` : `https://filmhub.one/film/${id}`}`,
     }
   }
 }

@@ -45,7 +45,7 @@ async function sparql(query) {
       {
         headers: {
           accept: "application/sparql-results+json",
-          "User-Agent": "filmhub-film-page/1.0 (+https://filmhub.lol)",
+          "User-Agent": "filmhub-film-page/1.0 (+https://filmhub.one)",
         },
         cache: "no-store",
       }
