@@ -101,7 +101,7 @@ const FilmInfoText: React.FC<FilmInfoTextProps> = (props) => {
         </Flex>
 
         <Flex>
-          <MarginTopTitle>Рейтинг Кинопоиска:&nbsp;</MarginTopTitle>
+          <MarginTopTitle>Рейтинг:&nbsp;</MarginTopTitle>
           <MarginTopValue>{ratingKp}</MarginTopValue>
         </Flex>
 

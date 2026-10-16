@@ -100,7 +100,7 @@ export function toCard(record) {
     shortDescription: null,
     movieLength: null,
     rating: {
-      kp: record.kpRating ?? record.tmdbRating ?? 0,
+      kp: record.tmdbRating ?? record.kpRating ?? 0,
       imdb: 0,
       filmCritics: 0,
       russianFilmCritics: 0,
@@ -253,7 +253,7 @@ function passesLocalFilters(record, options) {
   const year = record.tmdbYear ?? record.kpYear;
   if (options.yearRange && !inRange(year, options.yearRange)) return false;
 
-  const rating = record.kpRating ?? record.tmdbRating;
+  const rating = record.tmdbRating ?? record.kpRating;
   if (options.ratingRange && !inRange(rating, options.ratingRange)) return false;
 
   const countries = record.originCountry || [];
@@ -289,8 +289,8 @@ function sortRecords(records, sort) {
     const yearA = a.tmdbYear ?? a.kpYear ?? 0;
     const yearB = b.tmdbYear ?? b.kpYear ?? 0;
     if (yearA !== yearB) return sort === "1" ? yearA - yearB : yearB - yearA;
-    const ratingA = a.kpRating ?? a.tmdbRating ?? 0;
-    const ratingB = b.kpRating ?? b.tmdbRating ?? 0;
+    const ratingA = a.tmdbRating ?? a.kpRating ?? 0;
+    const ratingB = b.tmdbRating ?? b.kpRating ?? 0;
     if (ratingA !== ratingB) return ratingB - ratingA;
     return (b.kpVotes ?? b.tmdbVotes ?? 0) - (a.kpVotes ?? a.tmdbVotes ?? 0);
   });
@@ -361,7 +361,7 @@ export async function buildList(options) {
     : options.ratingSort
     ? passed.sort(
         (a, b) =>
-          (b.kpRating ?? b.tmdbRating ?? 0) - (a.kpRating ?? a.tmdbRating ?? 0) ||
+          (b.tmdbRating ?? b.kpRating ?? 0) - (a.tmdbRating ?? a.kpRating ?? 0) ||
           (b.kpVotes ?? b.tmdbVotes ?? 0) - (a.kpVotes ?? a.tmdbVotes ?? 0)
       )
     : sortRecords(passed, options.sort);
