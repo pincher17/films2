@@ -1,4 +1,5 @@
 import { ensureCacheVersion } from "./cacheVersion.js";
+import { manualKinopoiskByTmdb, manualTmdbByKinopoisk } from "./manualMap.js";
 ensureCacheVersion();
 /**
  * Данные страницы фильма из TMDB.
@@ -145,6 +146,10 @@ export async function resolveTmdbByKinopoisk(kinopoiskId) {
   const key = String(kinopoiskId ?? "").trim();
   if (!key) return null;
 
+  // свой список важнее всего: он закрывает пробелы Wikidata
+  const manual = manualTmdbByKinopoisk(key);
+  if (manual) return manual;
+
   const data = loadStore();
   if (data.toTmdb[key] !== undefined) return data.toTmdb[key];
 
@@ -211,6 +216,13 @@ export async function resolveKinopoiskByTmdbIds(ids, media) {
   const missing = [];
 
   wanted.forEach((id) => {
+    // сначала свой список: он закрывает то, чего нет в Wikidata
+    const manual = manualKinopoiskByTmdb(id, media);
+    if (manual) {
+      result.set(Number(id), manual);
+      return;
+    }
+
     const cached = data.toKp[id];
     if (cached !== undefined) {
       if (cached) result.set(Number(id), cached);
