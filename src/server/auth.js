@@ -1,4 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 import { prisma } from "@/server/prisma";
 
@@ -16,9 +17,27 @@ const PROFILE_COOKIE = "fh_profile";
  */
 export const authOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    /*
+     * Вход через Google временно отключён: на сайте работает только Telegram.
+     * Чтобы вернуть — раскомментируй блок и верни кнопку на страницу /login,
+     * а также добавь домен в Google Cloud.
+     */
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
+
+    /*
+     * Заглушка: next-auth требует хотя бы один провайдер для инициализации.
+     * Войти через неё нельзя — authorize всегда возвращает null. Сессию для
+     * Telegram выдаёт наш собственный эндпоинт /api/auth/telegram.
+     */
+    CredentialsProvider({
+      name: "telegram",
+      credentials: {},
+      async authorize() {
+        return null;
+      },
     }),
   ],
   session: { strategy: "jwt" },
