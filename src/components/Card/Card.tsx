@@ -11,6 +11,8 @@ import {
   Rating,
   RatingNum,
   ResumeBadge,
+  SaveButton,
+  BookmarkIcon,
   Wrapper,
   Year,
 } from '../../app/styles/Card.styles';
@@ -18,6 +20,7 @@ import { CardProps } from './Card.types';
 import roundNumber from '../helpers/rounding';
 import textTransform from '../helpers/textTransform';
 import Link from 'next/link';
+import { useSaved } from '../SavedProvider/SavedProvider';
 
 
 const Card: React.FC<CardProps> = (props) =>{
@@ -63,6 +66,10 @@ const {
     .join(" · ");
 
 
+  // сохранён ли этот фильм: берём из общего состояния, без запроса на карточку
+  const { isSaved, toggle } = useSaved();
+  const saved = id ? isSaved(id) : false;
+
   let ratingKp
 
   if(rating){
@@ -87,6 +94,24 @@ const {
             <Link href={name ? `/film/${id}-${textTransform(name)}${year ? '-'+year : ''}` : `/film/${id}`}>
             <ImgWrapper>
             <ImgWrap>
+            {id ? (
+              <SaveButton
+                type="button"
+                className="fh-save"
+                aria-label={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
+                title={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
+                onClick={(event) => {
+                  // карточка целиком — ссылка, поэтому гасим переход
+                  event.preventDefault();
+                  event.stopPropagation();
+                  toggle(id);
+                }}
+              >
+                <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
+                  <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+                </BookmarkIcon>
+              </SaveButton>
+            ) : null}
             {poster?.url 
             && <Img
              src={poster.previewUrl} 

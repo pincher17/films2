@@ -3,6 +3,10 @@ import styled from 'styled-components'
 export const Wrapper = styled.div`
   width: 100%;
   overflow: hidden;
+  /* на компьютере закладка проявляется при наведении на карточку */
+  &:hover .fh-save {
+    opacity: 1;
+  }
 `
 
 /**
@@ -206,3 +210,51 @@ export const OverlayText = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
 `
+
+/**
+ * Кнопка «сохранить на потом» на карточке.
+ * На компьютере появляется при наведении на карточку (через класс fh-save,
+ * который ловит :hover у Wrapper), на телефоне видна всегда — там наведения нет.
+ */
+export const SaveButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 9px;
+  background: rgba(12, 12, 12, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.18s ease, background 0.18s ease, transform 0.12s ease;
+
+  &:hover {
+    background: rgba(12, 12, 12, 0.92);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  @media (max-width: 850px) {
+    opacity: 1;
+  }
+`;
+
+/** Иконка закладки: залитая, когда фильм сохранён. */
+export const BookmarkIcon = styled.svg<{ $active?: boolean }>`
+  width: 15px;
+  height: 17px;
+  fill: ${({ $active }) => ($active ? '#d32929' : 'none')};
+  stroke: ${({ $active }) => ($active ? '#d32929' : '#ffffff')};
+  stroke-width: 2;
+  stroke-linejoin: round;
+`;
