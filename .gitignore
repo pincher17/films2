@@ -6,3 +6,7 @@ node_modules
 .npm-cache/
 tsconfig.tsbuildinfo
 .env
+
+# артефакты PWA (генерируются при сборке)
+public/sw.js
+public/workbox-*.js
