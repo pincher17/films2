@@ -24,6 +24,33 @@ export const metadata: Metadata = {
     hdvb: '0e6fce67751495f8106975f552f21f9a:63c97b2ee9cedb6b8628e6008bebd0f0'
   },
   manifest: "/manifest.json",
+
+  /* Open Graph — то, что показывают Telegram, WhatsApp, VK и поисковики,
+     когда ссылку отправляют в чат. Без этих тегов превью было текстовым,
+     без картинки. */
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    url: 'https://filmhub.one',
+    siteName: 'Filmhub',
+    title: 'Filmhub — смотреть фильмы и сериалы онлайн',
+    description:
+      'Новинки кино и сериалов в хорошем качестве. Большой выбор фильмов, удобный поиск и подборки.',
+    images: [
+      {
+        url: 'https://filmhub.one/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Filmhub — фильмы и сериалы онлайн',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Filmhub — смотреть фильмы и сериалы онлайн',
+    description: 'Новинки кино и сериалов в хорошем качестве.',
+    images: ['https://filmhub.one/og-image.png'],
+  },
 }
 
 export default function RootLayout({
