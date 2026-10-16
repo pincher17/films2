@@ -433,6 +433,14 @@ export const SaveSquareButton = styled.button`
   cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
 
+  /* Иконка задана размером под карточку (15x17) — внутри крупной кнопки она
+     выглядела мелкой, поэтому задаём размер здесь. У рисунка свои пропорции
+     (18 из 24 по высоте), отсюда запас: получается примерно 20x24. */
+  & svg {
+    width: 26px;
+    height: 30px;
+  }
+
   &:active {
     transform: scale(0.97);
   }
