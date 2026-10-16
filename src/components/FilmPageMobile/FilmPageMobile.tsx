@@ -21,6 +21,8 @@ import {
   ImgWrapperFilmMobile,
   WatchRow,
   SaveSquareButton,
+  IconActions,
+  IconAction,
   MobileDescription,
   MobileDetailsLabel,
   MobileDetailsRow,
@@ -79,6 +81,21 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   const [descOpen, setDescOpen] = React.useState(false);
 
   // закладка: состояние общее для всего сайта, без отдельного запроса
+  // «Поделиться»: на телефоне вызываем системное меню, иначе копируем ссылку
+  const shareFilm = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (typeof navigator !== "undefined" && (navigator as any).share) {
+        await (navigator as any).share({ title: filmInfoId?.name || "Filmhub", url });
+      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        alert("Ссылка скопирована");
+      }
+    } catch {
+      // человек отменил системное меню — это не ошибка
+    }
+  };
+
   const { isSaved, toggle } = useSaved();
   const saved = isSaved(id);
 
@@ -142,21 +159,42 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
           </WrapperWatchFilm>
         </WrapperInfo>
         <ResumeHint filmId={id} />
-        <WatchRow>
-          <SaveSquareButton
+        <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
+
+        <IconActions>
+          <IconAction
             type="button"
             aria-label={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
-            title={saved ? 'Убрать из сохранённого' : 'Сохранить на потом'}
             onClick={() => toggle(id)}
           >
-            <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
-              <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
-            </BookmarkIcon>
-          </SaveSquareButton>
-          <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
-        </WatchRow>
+            <span className="circle">
+              <BookmarkIcon viewBox="0 0 24 24" $active={saved}>
+                <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+              </BookmarkIcon>
+            </span>
+            <span className="label">{saved ? 'В сохранённом' : 'Сохранить'}</span>
+          </IconAction>
 
-        {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? <TrailerButtonWatch onClick={watchTrailerStart}>Трейлер</TrailerButtonWatch> : ''}
+          {filmInfoId?.videos && filmInfoId?.videos.trailers[0] ? (
+            <IconAction type="button" onClick={watchTrailerStart}>
+              <span className="circle">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
+                </svg>
+              </span>
+              <span className="label">Трейлер</span>
+            </IconAction>
+          ) : null}
+
+          <IconAction type="button" onClick={shareFilm}>
+            <span className="circle">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 15V4m0 0L8 8m4-4l4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span className="label">Поделиться</span>
+          </IconAction>
+        </IconActions>
         <MobileSeo>Смотреть онлайн {filmInfoId?.type && translateCategory(filmInfoId.type)} {filmInfoId?.name} {filmInfoId?.year} года в хорошем качестве</MobileSeo>
         <MobileSectionTitle>Описание</MobileSectionTitle>
         <MobileDescription $open={descOpen}>{filmInfoId?.description}</MobileDescription>

@@ -445,3 +445,57 @@ export const SaveSquareButton = styled.button`
     transform: scale(0.97);
   }
 `;
+
+/**
+ * Ряд второстепенных действий: «Смотреть» остаётся широкой кнопкой, а под ней
+ * три круглые кнопки с подписями — как в Netflix. Иконку без подписи на
+ * телефоне легко не заметить, поэтому подписи здесь обязательны.
+ */
+export const IconActions = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 20px;
+`;
+
+export const IconAction = styled.button`
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #cfcfcf;
+  cursor: pointer;
+
+  & > .circle {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    transition: background 0.18s ease, transform 0.12s ease;
+  }
+
+  & > .label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  &:active > .circle {
+    transform: scale(0.95);
+  }
+
+  & > .circle svg {
+    width: 22px;
+    height: 22px;
+  }
+`;
