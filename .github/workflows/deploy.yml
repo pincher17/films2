@@ -1,0 +1,47 @@
+name: Deploy
+
+# Выкладка на сервер после успешных проверок.
+# Настроить секреты в GitHub: Settings → Secrets and variables → Actions:
+#   SSH_PRIVATE_KEY — приватный ключ выкладки (лежит на сервере в /root/.ssh/github-deploy)
+#   SSH_HOST        — 203.161.47.51
+#   SSH_USER        — root
+#   SSH_PORT        — 22022
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Настройка SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Выкладка
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p "${{ secrets.SSH_PORT }}" \
+            -o BatchMode=yes -o ConnectTimeout=20 \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" 'bash -s' << 'DEPLOY'
+          set -e
+          cd /var/www/filmhub
+          # артефакты PWA мешают git pull — удаляем перед обновлением
+          rm -f public/sw.js public/workbox-*.js
+          git pull origin main
+          npm ci --no-audit --no-fund
+          npx prisma db push --skip-generate --accept-data-loss
+          npx prisma generate
+          npm run build
+          systemctl restart filmhub
+          sleep 5
+          curl -s -o /dev/null -w "сайт после выкладки: %{http_code}\n" http://127.0.0.1:3000/
+          echo DEPLOY_DONE
+          DEPLOY

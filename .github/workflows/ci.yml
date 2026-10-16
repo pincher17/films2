@@ -1,0 +1,36 @@
+name: CI
+
+# Проверки на каждый push и pull request: типы и сборка.
+# Задача — не пустить на сервер сломанный код.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Установка зависимостей
+        run: npm ci --no-audit --no-fund
+
+      - name: Проверка типов
+        run: npx tsc --noEmit
+
+      - name: Сборка
+        run: npm run build
+        env:
+          # Для сборки достаточно заглушек: настоящие ключи в CI не нужны.
+          NEXTAUTH_SECRET: ci-placeholder
+          NEXTAUTH_URL: https://filmhub.one
+          NEXT_PUBLIC_TELEGRAM_BOT: filmhub_one_bot
+          TMDB_KEY: placeholder
+          DATABASE_URL: postgresql://user:pass@127.0.0.1:5432/db?schema=public
