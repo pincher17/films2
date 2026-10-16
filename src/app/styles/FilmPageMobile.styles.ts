@@ -370,3 +370,33 @@ export const TitleYear = styled.span`
     display: none;
   }
 `;
+
+/**
+ * Закладка в углу постера на мобильной странице фильма.
+ * Отдельная кнопка «Сохранить» в столбике действий была лишней: три равные
+ * кнопки спорили друг с другом. Здесь то же место, что на карточках каталога,
+ * поэтому привычно и не мешает главному действию.
+ */
+export const PosterSaveButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: rgba(12, 12, 12, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+
+  &:active {
+    transform: scale(0.94);
+  }
+`;
