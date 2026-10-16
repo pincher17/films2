@@ -33,7 +33,14 @@ export async function generateMetadata(
       description: `${filmInfoId.description}`,
       images: [
         {
+          /* Постер из TMDB: у каждой страницы фильма своё превью, поэтому
+             ссылка на конкретный фильм в чате выглядит как карточка фильма,
+             а не как общая картинка сайта. Размеры — стандарт TMDB w500:
+             Telegram по ним строит превью точнее. */
           url: `${filmInfoId.poster.url}`,
+          width: 500,
+          height: 750,
+          alt: `${filmInfoId.name} — смотреть онлайн`,
         }
       ]
     },
