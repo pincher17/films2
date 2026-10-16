@@ -17,6 +17,7 @@ model User {
   email     String?         @unique
   image     String?
   createdAt DateTime        @default(now())
+  telegramId String? @unique
   accounts  Account[]
   positions WatchPosition[]
 }
