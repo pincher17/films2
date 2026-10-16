@@ -84,16 +84,32 @@ export default function FilmPageMobile({ params }: { params: { id: number } }) {
   // «Поделиться»: на телефоне вызываем системное меню, иначе копируем ссылку
   const shareFilm = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
+    const title = filmInfoId?.name || "Filmhub";
+
+    // 1. системное меню телефона — доступно только на https или localhost
     try {
       if (typeof navigator !== "undefined" && (navigator as any).share) {
-        await (navigator as any).share({ title: filmInfoId?.name || "Filmhub", url });
-      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(url);
-        alert("Ссылка скопирована");
+        await (navigator as any).share({ title, url });
+        return;
       }
     } catch {
-      // человек отменил системное меню — это не ошибка
+      // человек закрыл меню — это не ошибка
+      return;
     }
+
+    // 2. буфер обмена — тоже требует защищённого соединения
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+        alert("Ссылка скопирована");
+        return;
+      }
+    } catch {
+      undefined;
+    }
+
+    // 3. запасной путь: работает всегда, в том числе на локальном адресе
+    window.prompt("Скопируйте ссылку:", url);
   };
 
   const { isSaved, toggle } = useSaved();
