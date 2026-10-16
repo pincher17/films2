@@ -15,7 +15,18 @@ export default function SearchPage({ params }: { params: { searchQuery: string }
   const totalFilms = useAppSelector(state => state.search.resultSearchTotal)
   const totalPages = useAppSelector(state => state.search.totalPages)
   const dispatch = useAppDispatch()
-  let searchQuery = params.searchQuery
+  // Адрес приходит закодированным (черный%20двор), и если передать его в API
+  // как есть, запрос уезжает закодированным ДВАЖДЫ: сервер ищет по строке
+  // вида %D1%87%D0%B5... и выдаёт случайные совпадения.
+  const safeDecode = (value: string) => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  };
+
+  let searchQuery = safeDecode(params.searchQuery)
   const [page, setPage] = useState(1);
   const didMount = React.useRef(false);
 

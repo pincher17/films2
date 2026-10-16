@@ -68,9 +68,16 @@ export const getFilmSearch = (query: string) =>{
 
 export const getFilmSearchPage = (query: string, page: number) =>{
     return (dispatch: any) => {
+        // запрос может прийти закодированным — декодируем, чтобы не искать мусор
+        let safeQuery = query;
+        try {
+            safeQuery = decodeURIComponent(query);
+        } catch {
+            safeQuery = query;
+        }
 
         dispatch(setLoading(true))
-        filmsApiV4.getFilmSearchV4(query, page).then((response: any) =>{
+        filmsApiV4.getFilmSearchV4(safeQuery, page).then((response: any) =>{
             dispatch(addResultSearchPage(response.data.docs))
             dispatch(addResultSearchTotal(response.data.total))
             dispatch(addCurrentPage(response.data.page))
