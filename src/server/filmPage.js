@@ -1,3 +1,5 @@
+import { ensureCacheVersion } from "./cacheVersion.js";
+ensureCacheVersion();
 /**
  * Данные страницы фильма из TMDB.
  *

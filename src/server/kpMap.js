@@ -1,3 +1,5 @@
+import { ensureCacheVersion } from "./cacheVersion.js";
+ensureCacheVersion();
 /**
  * Сопоставление фильмов TMDB с Кинопоиском и постоянный кэш карточек.
  *
