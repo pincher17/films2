@@ -24,6 +24,16 @@ export const NavigationItem = styled.div<NavigationItemProps>`
   &:hover {
     cursor: pointer;
   }
+  /* Одинаковая высота у всех пунктов: подпись выравнивается по низу блока,
+     поэтому иконки разной формы больше не сдвигают текст. */
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > a {
+    justify-content: flex-end;
+  }
 `;
 
 export const NavigationContainer = styled.div`
