@@ -73,7 +73,12 @@ export async function buildCardsByKinopoiskIds(ids, errors) {
       }
       const records = await resolveRecords(media, [item]);
       const record = records.get(item.id) || [...records.values()][0];
-      if (record) cards.push(toCard(record));
+      if (record) {
+        // id карточки — всегда кинопоисковый: по нему строятся ссылки и плеер.
+        // У фильмов из ручного списка соответствий record.id пустой, поэтому
+        // подставляем id, с которым пришли в функцию.
+        cards.push({ ...toCard(record), id: kinopoiskId });
+      }
     } catch (error) {
       console.warn("[cards] не удалось собрать карточку", kinopoiskId, error?.message);
       errors?.push(`${kinopoiskId}: ${error?.message}`);
