@@ -111,7 +111,7 @@ export default function SavedPage() {
             </p>
           </Empty>
         ) : (
-          <Cards cards={shown} />
+          <Cards cards={shown} loading={loading} />
         )}
       </Wrapper>
     </MainTag>

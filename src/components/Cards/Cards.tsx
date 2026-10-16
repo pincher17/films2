@@ -11,17 +11,20 @@ const Cards: React.FC<CardsProps> = (props) =>{
     const arraySkeletonCards = [1,2,3,4,5,6,7,8,9,10];
     const loadingFilters = useAppSelector(state => state.loading.loadingFilters);
 
+    // заглушки показываем и по флагам redux (каталог), и по флагу из props:
+    // у страниц со своим состоянием загрузки (например «Сохранённое») redux занят
+    const showSkeleton = loadingFilters || Boolean(props.loading);
 
     return (
     <Wrapper>
-        {loadingFilters
+        {showSkeleton
         ? arraySkeletonCards.map((index)=>
         <SkeletonCard key={index} />
        )
         : props.cards.map((item: any)=>
          <Card key={item.id} card={item} />
         )}
-        {loading && arraySkeletonCards.map((index)=>
+        {!showSkeleton && loading && arraySkeletonCards.map((index)=>
          <SkeletonCard key={index} />
         )}
     </Wrapper>
