@@ -28,8 +28,8 @@ const MobileNavigation = () => {
       {/* сохранённое: отдельный пункт меню, иконка — закладка */}
       <NavigationItem $active={(+(pathname === '/saved'))}>
         <StyledLink href="/saved">
-        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        <svg width="25" height="25" viewBox="4 2 16 20" fill="none" aria-hidden="true" style={{ display: "block" }}>
+          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
         </svg>
         <span>Сохранённое</span>
         </StyledLink>
