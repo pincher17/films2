@@ -110,8 +110,15 @@ export async function resolveTmdbByKinopoisk(kinopoiskId) {
         }
       : null;
 
-  data.toTmdb[key] = result;
-  saveStore();
+  /*
+   * Кэшируем ТОЛЬКО успешное соответствие. Раньше сюда попадал и null: если
+   * Wikidata в тот момент не ответила, фильм «залипал» как ненайденный
+   * навсегда и больше не появлялся в «Продолжить просмотр».
+   */
+  if (result) {
+    data.toTmdb[key] = result;
+    saveStore();
+  }
   return result;
 }
 
