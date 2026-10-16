@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
+  /* точка отсчёта для закладки: она лежит вне ссылки, но поверх постера */
+  position: relative;
   width: 100%;
   overflow: hidden;
   /* на компьютере закладка проявляется при наведении на карточку */
