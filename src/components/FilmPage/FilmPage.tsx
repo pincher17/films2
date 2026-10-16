@@ -60,8 +60,6 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import translateCategory from "../helpers/translateCategory";
 import roundNumber from "../helpers/rounding";
-import Turnstile from "../Turnstile/Turnstile";
-import { isTurnstileDisabled } from "../Turnstile/turnstileConfig";
 import { SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -199,44 +197,15 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   //////////////////////////////////////
   const [token, setToken] = useState(null);
   // При локальной разработке Cloudflare Turnstile не нужен
-  const [isVerified, setIsVerified] = useState(isTurnstileDisabled());
+  // Turnstile убран: проверка ботов отключена по решению владельца сайта
+  const isVerified = true;
 
  /*  useEffect(() => {
     setIsVerified(false); // Reset verification status when component mounts
     setToken(null); // Reset token when component mounts
   }, [id]); */
 
-  useEffect(() => {
-    // Check if the user is already verified in session storage
-    const verifiedStatus = sessionStorage.getItem('isVerified');
-    if (verifiedStatus === 'true') {
-      setIsVerified(true);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (token) {
-      const handleVerification = async () => {
-        const response = await fetch('/api/verify-token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          setIsVerified(true);
-          sessionStorage.setItem('isVerified', 'true'); // Store verification status in session storage
-        } else {
-          alert('Verification failed. Please try again.');
-        }
-      };
-
-      handleVerification();
-    }
-  }, [token]);
 ///////////////////////////////////////
   //////////////////////////////////////
 
@@ -249,9 +218,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
   if (resolution.width < 850) {
     return (
       <>
-    {!isVerified ? (
-      <Turnstile onToken={setToken} />
-    ) : (
+    {(
       <FilmPageMobile
         params={{
           id,
@@ -264,9 +231,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
 
   return (
     <>
-    {!isVerified ? (
-      <Turnstile onToken={setToken} />
-    ) : (
+    {(
     <Wrapper key={id}>
       {heroImage ? (
         <Backdrop>

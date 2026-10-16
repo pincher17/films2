@@ -11,7 +11,6 @@ import MobileNavigation from '@/components/MobileNavigation/MobileNavigation';
 import AllBlur from '@/components/AllBlur/AllBlur';
 import { H1 } from './Main.styles';
 import SwiperGenres from '@/components/SwiperGenres/SwiperGenres';
-import Turnstile from '@/components/Turnstile/Turnstile';
 
 export default function Home() {
 
