@@ -454,13 +454,16 @@ export const SaveSquareButton = styled.button`
 export const IconActions = styled.div`
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
+  /* По центру, а не по краям: когда трейлера нет, две кнопки разъезжались
+     к границам экрана и между ними зияла пустота. */
+  justify-content: center;
+  gap: 44px;
   margin-top: 20px;
 `;
 
 export const IconAction = styled.button`
-  flex: 1 1 0;
+  /* не растягиваем: иначе при двух кнопках они уезжают по краям */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
