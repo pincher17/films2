@@ -170,19 +170,12 @@ function noteApiget(response) {
 
 /** Данные карточек из apiget (0.01 ₽ за найденный материал, один раз на фильм) */
 async function hydrateFromApiget(kinopoiskIds) {
-  const records = new Map();
-  const ids = [...new Set(kinopoiskIds.filter(Boolean))];
-  if (!ids.length || !apigetAvailable()) return records;
-
-  for (let offset = 0; offset < ids.length; offset += APIGET_BATCH) {
-    const batch = ids.slice(offset, offset + APIGET_BATCH);
-    const response = noteApiget(await apigetApi.list(batch));
-    (response.content || []).forEach((item) => {
-      records.set(item.kinopoisk_id, item);
-    });
-  }
-
-  return records;
+  /*
+   * apiget отключён полностью: баланс кончился (ошибка 18), а все данные мы
+   * берём из TMDB и Wikidata. Раньше эта функция дёргала мёртвый API на каждом
+   * запросе — в логах было по четыре ошибки на запрос и лишние задержки.
+   */
+  return new Map();
 }
 
 function kpFields(kp) {
@@ -240,7 +233,8 @@ async function findByTitle(candidates) {
   await pool(candidates, 4, async (candidate) => {
     const query = candidate.tmdbTitle || candidate.originalTitle;
     if (!query) return null;
-    const response = noteApiget(await apigetApi.search({ query, limit: 30 }));
+    // поиск тоже идёт в TMDB, apiget больше не используем
+    const response = { content: [] };
     const item = matchApiget(candidate, response.results || []);
     if (item) found.set(candidate.tmdbId, item);
     return null;
