@@ -13,5 +13,8 @@ export interface CardProgress {
 
 export interface CardProps {
     card: (FilmsType | SequelsAndPrequelsType) & { progress?: CardProgress }
+    /** Скрыть закладку сохранения. Нужно в ряду «Продолжить просмотр»:
+        там у карточки уже есть крестик «убрать», две кнопки мешают. */
+    hideSave?: boolean;
 }
 

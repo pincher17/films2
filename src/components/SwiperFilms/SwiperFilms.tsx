@@ -120,7 +120,7 @@ const SwiperFilms: React.FC<SwiperFilmsProps> = ({ cards, title, collections, on
                     >
                       ✕
                     </RemoveButton>
-                    <Card card={item} key={item.id}/>
+                    <Card card={item} key={item.id} hideSave />
                   </div>
                 ) : (
                   <Card card={item} key={item.id}/>

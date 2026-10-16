@@ -133,7 +133,7 @@ const {
 
             </ImgWrapper>
             </Link>
-            {id ? (
+            {id && !props.hideSave ? (
               <SaveButton
                 type="button"
                 className="fh-save"
