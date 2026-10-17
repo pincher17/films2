@@ -173,6 +173,32 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       });
     };
 
+
+    /* Ищем номер серии в любом месте сообщения: плееры называют поля по-разному
+       (season/episode, season_number/episode_number, s/e), и жёсткий разбор
+       пропускал часть вариантов — из-за этого для сериалов не шла запись. */
+    const findEpisodeRaw = (data, depth = 0) => {
+      if (!data || typeof data !== "object" || depth > 4) return null;
+      const pick = (keys) => {
+        for (const key of keys) {
+          const value = data[key];
+          if (value !== undefined && value !== null && value !== "") {
+            const num = Number(value);
+            if (Number.isFinite(num) && num >= 0) return num;
+          }
+        }
+        return null;
+      };
+      const season = pick(["season", "season_number", "seasonNumber", "s"]);
+      const episode = pick(["episode", "episode_number", "episodeNumber", "e"]);
+      if (season !== null || episode !== null) return { season, episode };
+      for (const key of Object.keys(data)) {
+        const found = findEpisodeRaw(data[key], depth + 1);
+        if (found) return found;
+      }
+      return null;
+    };
+
     const onMessage = (event: MessageEvent) => {
       /* Диагностика протокола: нужна, чтобы понять, присылает ли плеер номер
          серии. Без этого приходится угадывать, и можно записать время не той серии. */
@@ -218,6 +244,19 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
 
       if (parsed.duration && parsed.duration > 0) durationRef.current = parsed.duration;
       if (parsed.seconds > 0) secondsRef.current = parsed.seconds;
+
+      /* Если парсер не увидел серию, но она есть в сообщении — запоминаем её.
+         Без этого для сериалов на компьютере запись не шла вообще. */
+      if (!episodeKnownRef.current) {
+        const raw = findEpisodeRaw(event.data);
+        if (raw && (raw.season !== null || raw.episode !== null)) {
+          if (raw.season !== null) seasonRef.current = raw.season;
+          if (raw.episode !== null) episodeRef.current = raw.episode;
+          episodeKnownRef.current = true;
+          setCurrentEpisode(seasonRef.current, episodeRef.current);
+          console.info("[bridge] серия найдена в сообщении:", seasonRef.current, episodeRef.current);
+        }
+      }
 
       if (!readyRef.current && secondsRef.current > 0) {
         readyRef.current = true;
