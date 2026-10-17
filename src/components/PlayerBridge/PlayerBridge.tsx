@@ -177,11 +177,13 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
     /* Ищем номер серии в любом месте сообщения: плееры называют поля по-разному
        (season/episode, season_number/episode_number, s/e), и жёсткий разбор
        пропускал часть вариантов — из-за этого для сериалов не шла запись. */
-    const findEpisodeRaw = (data, depth = 0) => {
+    type EpisodeGuess = { season: number | null; episode: number | null };
+
+    const findEpisodeRaw = (data: unknown, depth = 0): EpisodeGuess | null => {
       if (!data || typeof data !== "object" || depth > 4) return null;
-      const pick = (keys) => {
+      const pick = (keys: string[]): number | null => {
         for (const key of keys) {
-          const value = data[key];
+          const value = (data as Record<string, unknown>)[key];
           if (value !== undefined && value !== null && value !== "") {
             const num = Number(value);
             if (Number.isFinite(num) && num >= 0) return num;
@@ -189,11 +191,12 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
         }
         return null;
       };
+      const record = data as Record<string, unknown>;
       const season = pick(["season", "season_number", "seasonNumber", "s"]);
       const episode = pick(["episode", "episode_number", "episodeNumber", "e"]);
       if (season !== null || episode !== null) return { season, episode };
-      for (const key of Object.keys(data)) {
-        const found = findEpisodeRaw(data[key], depth + 1);
+      for (const key of Object.keys(record)) {
+        const found: EpisodeGuess | null = findEpisodeRaw(record[key], depth + 1);
         if (found) return found;
       }
       return null;
@@ -219,6 +222,20 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       if (!origin || event.origin !== origin) return;
 
       const parsed = readEvent(event.data);
+      const guess = findEpisodeRaw(event.data);
+
+      // подробный вывод: видно, что именно прислал плеер и как это разобрано
+      const secondsValue = parsed && "seconds" in parsed ? parsed.seconds : null;
+      const durationValue = parsed && "duration" in parsed ? parsed.duration : null;
+
+      console.info("[bridge] сообщение", {
+        разобрано: parsed?.kind || "не распознано",
+        секунды: secondsValue,
+        длительность: durationValue,
+        серия: guess ? { сезон: guess.season, серия: guess.episode } : "нет",
+        данные: typeof event.data === "string" ? event.data.slice(0, 220) : "[объект]",
+      });
+
       if (!parsed) return;
 
       if (parsed.kind === "episode") {
