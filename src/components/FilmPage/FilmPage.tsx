@@ -83,6 +83,11 @@ import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 
 export default function FilmPage({ params }: { params: { id: number } }) {
   let id = params.id;
+
+  // В адресе лежит «79848-сопрано». Плееру этого достаточно (он сам выдёргивает
+  // цифры), а для сохранения позиции нужен чистый номер: Number("79848-сопрано")
+  // давал NaN, и запись в базу молча не уходила.
+  const numericId = Number(String(params.id).replace(/\D/g, "")) || 0;
   // если для фильма заданы свои ссылки — играем их в своём плеере
   const streams = getFilmStreams(id);
   const dispatch = useAppDispatch();
@@ -368,8 +373,8 @@ export default function FilmPage({ params }: { params: { id: number } }) {
             </PosterBlock>
             <WrapperIframe key={id.toString()} id="fh-player">
               {/* мост к встроенному плееру: пишет позицию в нашу базу */}
-              <PlayerBridge filmId={id} />
-              <WatchTracker filmId={id} />
+              <PlayerBridge filmId={numericId} />
+              <WatchTracker filmId={numericId} />
               {/* <div key={id + id} className={s.film} ref={refDataFilm} id="yohoho" data-tv="1" ></div> */}
               {/* <div key={id} ref={refDataFilm} id='bazon' data-width='600' data-height='400'></div> */}
               {/* https://vid1648731340.vb17121coramclean.pw/play/${id}?d=filmhub.one */}
