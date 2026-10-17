@@ -23,6 +23,7 @@
  */
 
 import React from "react";
+import { debug, debugWarn } from "@/lib/debug";
 import { saveWatchPosition } from "@/api/watchPosition";
 import { useAppSelector } from "@/redux/hooks";
 import {
@@ -141,7 +142,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
           if (!episodeRef.current && position.episode) episodeRef.current = position.episode;
           if (seasonRef.current || episodeRef.current) {
             episodeKnownRef.current = true;
-            console.info("[bridge] серия из базы:", seasonRef.current, episodeRef.current);
+            debug("[bridge] серия из базы:", seasonRef.current, episodeRef.current);
           }
         })
         .catch(() => undefined);
@@ -207,9 +208,9 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
          серии. Без этого приходится угадывать, и можно записать время не той серии. */
       try {
         if (typeof event.data === "string" && event.data.length < 400) {
-          console.info("[bridge] сырое сообщение:", event.data);
+          debug("[bridge] сырое сообщение:", event.data);
         } else if (event.data && typeof event.data === "object") {
-          console.info("[bridge] сырое сообщение:", JSON.stringify(event.data).slice(0, 300));
+          debug("[bridge] сырое сообщение:", JSON.stringify(event.data).slice(0, 300));
         }
       } catch {
         undefined;
@@ -228,7 +229,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       const secondsValue = parsed && "seconds" in parsed ? parsed.seconds : null;
       const durationValue = parsed && "duration" in parsed ? parsed.duration : null;
 
-      console.info("[bridge] сообщение", {
+      debug("[bridge] сообщение", {
         разобрано: parsed?.kind || "не распознано",
         секунды: secondsValue,
         длительность: durationValue,
@@ -248,7 +249,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
         // сообщаем трекеру, какая серия играет: он должен писать в тот же ключ
         setCurrentEpisode(seasonRef.current, episodeRef.current);
         episodeKnownRef.current = true;
-        console.info(
+        debug(
           `[bridge] серия: сезон ${seasonRef.current}, серия ${episodeRef.current} — позиция пишется отдельно`
         );
         return;
@@ -271,7 +272,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
           if (raw.episode !== null) episodeRef.current = raw.episode;
           episodeKnownRef.current = true;
           setCurrentEpisode(seasonRef.current, episodeRef.current);
-          console.info("[bridge] серия найдена в сообщении:", seasonRef.current, episodeRef.current);
+          debug("[bridge] серия найдена в сообщении:", seasonRef.current, episodeRef.current);
         }
       }
 
@@ -279,7 +280,7 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
         readyRef.current = true;
         // с этого момента точный прогресс ведёт мост, оценка по времени не нужна
         markPlayerReporting();
-        console.info("[bridge] плеер отдаёт прогресс — позиция сохраняется на сервер");
+        debug("[bridge] плеер отдаёт прогресс — позиция сохраняется на сервер");
       }
     };
 

@@ -1,3 +1,5 @@
+import { debug, debugWarn } from "@/lib/debug";
+
 /**
  * Синхронизация позиции просмотра с сервером.
  *
@@ -32,12 +34,12 @@ export function saveWatchPosition({
   /* Диагностика: раньше функция молча выходила при неверном filmId, и понять,
      почему позиция не сохраняется, было нельзя. */
   if (!filmId || !Number.isFinite(seconds)) {
-    console.warn("[position] не отправляю: filmId =", filmId, "| seconds =", seconds);
+    debugWarn("[position] не отправляю: filmId =", filmId, "| seconds =", seconds);
     return;
   }
 
   const body = JSON.stringify({ filmId, season, episode, seconds, duration, source });
-  console.info("[position] отправляю:", { filmId, season, episode, seconds, source });
+  debug("[position] отправляю:", { filmId, season, episode, seconds, source });
 
   // при закрытии вкладки обычный запрос может не успеть уйти — sendBeacon надёжнее
   if (beacon && typeof navigator !== "undefined" && navigator.sendBeacon) {
@@ -58,5 +60,5 @@ export function saveWatchPosition({
     .then((response) => {
       if (!response.ok) console.warn("[position] сервер ответил:", response.status);
     })
-    .catch((error) => console.warn("[position] ошибка сети:", error?.message));
+    .catch((error) => debugWarn("[position] ошибка сети:", error?.message));
 }
