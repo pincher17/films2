@@ -174,6 +174,18 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
     };
 
     const onMessage = (event: MessageEvent) => {
+      /* Диагностика протокола: нужна, чтобы понять, присылает ли плеер номер
+         серии. Без этого приходится угадывать, и можно записать время не той серии. */
+      try {
+        if (typeof event.data === "string" && event.data.length < 400) {
+          console.info("[bridge] сырое сообщение:", event.data);
+        } else if (event.data && typeof event.data === "object") {
+          console.info("[bridge] сырое сообщение:", JSON.stringify(event.data).slice(0, 300));
+        }
+      } catch {
+        undefined;
+      }
+
       if (stopped) return;
 
       // доверяем только своему iframe
