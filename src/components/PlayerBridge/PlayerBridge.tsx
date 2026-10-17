@@ -128,6 +128,25 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       }
     };
 
+    /* Для сериала плеер на компьютере не сообщает номер серии, и запись
+       блокировалась целиком. Поэтому берём последнюю сохранённую серию из базы:
+       человек продолжает ту же серию, и писать нужно именно в неё. */
+    if (isSeries) {
+      fetch(`/api/position?filmId=${filmId}&latest=1`, { cache: "no-store" })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          const position = data?.position;
+          if (!position) return;
+          if (!seasonRef.current && position.season) seasonRef.current = position.season;
+          if (!episodeRef.current && position.episode) episodeRef.current = position.episode;
+          if (seasonRef.current || episodeRef.current) {
+            episodeKnownRef.current = true;
+            console.info("[bridge] серия из базы:", seasonRef.current, episodeRef.current);
+          }
+        })
+        .catch(() => undefined);
+    }
+
     const save = (beacon: boolean) => {
       const seconds = Math.floor(secondsRef.current);
       const duration = durationRef.current ? Math.floor(durationRef.current) : undefined;
