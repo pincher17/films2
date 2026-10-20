@@ -12,7 +12,7 @@ import path from "path";
  * «Продолжить просмотр» с навсегда записанными неудачами, рейтинги из
  * отключённого источника и разницу между карточкой и страницей фильма.
  */
-export const CACHE_VERSION = 3;
+export const CACHE_VERSION = 4;
 
 const DIR = path.join(process.cwd(), ".cache");
 const STAMP = path.join(DIR, "version.json");

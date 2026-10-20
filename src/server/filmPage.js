@@ -224,7 +224,11 @@ export async function resolveKinopoiskByTmdbIds(ids, media) {
       return;
     }
 
-    const cached = data.toKp[id];
+    /* Кэш разделяем по типу: у TMDB разные нумерации для фильмов и сериалов,
+       и общий ключ давал коллизии — сериал «Во все тяжкие» (1396) получал
+       кинопоисковый id фильма «Зеркало» (тоже 1396). */
+    const cacheKey = `${media || "movie"}:${id}`;
+    const cached = data.toKp[cacheKey];
     if (cached !== undefined) {
       if (cached) result.set(Number(id), cached);
     } else {
@@ -245,7 +249,7 @@ export async function resolveKinopoiskByTmdbIds(ids, media) {
 
     missing.forEach((id) => {
       const kp = found.get(id) ?? null;
-      data.toKp[id] = kp;
+      data.toKp[`${media || "movie"}:${id}`] = kp;
       if (kp) result.set(Number(id), kp);
     });
     saveStore();
