@@ -61,19 +61,22 @@ async function seed() {
 
   /* Страниц берём с запасом: каждая страница — 20 позиций, лимит TMDB — 500.
      Глубину можно увеличивать, скрипт не создаёт дублей (filmId уникален). */
+  /* Тип задаём явно для каждого источника: угадывание по данным оказывалось
+     ненадёжным, а ошибка в типе ведёт к чужим трейлерам (у TMDB разные
+     нумерации для фильмов и сериалов). */
   const sources = [
-    ["/discover/movie", 25, COMMON],
-    ["/discover/tv", 25, COMMON],
-    ["/trending/all/week", 5, null],
-    ["/movie/now_playing", 3, null],
+    ["/discover/movie", 25, COMMON, "movie"],
+    ["/discover/tv", 25, COMMON, "tv"],
+    ["/trending/all/week", 5, null, null],
+    ["/movie/now_playing", 3, null, "movie"],
   ];
 
   let added = 0;
-  for (const [endpoint, pages, params] of sources) {
+  for (const [endpoint, pages, params, fixedMedia] of sources) {
     for (let page = 1; page <= pages; page += 1) {
       const data = await tmdb(endpoint, { page: String(page), ...(params || {}) });
       for (const item of data.results || []) {
-        const media = item.media_type === "tv" || endpoint.startsWith("/tv") ? "tv" : "movie";
+        const media = fixedMedia || (item.media_type === "tv" ? "tv" : "movie");
         const title = item.title || item.name || item.original_title || item.original_name;
         if (!item.id || !title) continue;
         const year = Number(String(item.release_date || item.first_air_date || "").slice(0, 4)) || null;
