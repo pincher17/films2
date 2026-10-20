@@ -128,25 +128,53 @@ async function seed() {
 }
 
 /** Оценка найденного видео на YouTube: 0 — не брать. */
-function scoreVideo(video, title) {
+function scoreVideo(video, title, year) {
   const snippet = video.snippet || {};
   const videoTitle = norm(snippet.title);
   const wanted = norm(title);
-  let score = 0;
+  if (!wanted) return 0;
 
-  if (wanted && videoTitle.includes(wanted)) score += 2;
-  else if (wanted && wanted.split(" ").every((word) => videoTitle.includes(word))) score += 1;
-  else return 0;
+  // мусор вместо трейлера
+  if (/обзор|реакц|разбор|рецензи|летсплей|прохожден|прикол|смешн/.test(videoTitle)) return 0;
 
-  // отсекаем обзоры, реакции и разборы — это не трейлеры
-  if (/обзор|реакц|разбор|рецензи|летсплей|прохожден/.test(videoTitle)) return 0;
-  if (/трейлер|trailer|тизер|teaser/.test(videoTitle)) score += 1;
-  if (/русск|ru|russian|дубл/.test(videoTitle)) score += 2;
+  // должен быть трейлер
+  if (!/трейлер|trailer|тизер|teaser/.test(videoTitle)) return 0;
+
+  // название фильма должно встречаться в ролике
+  if (!videoTitle.includes(wanted)) return 0;
+
+  /* Спин-офф: «Мыслить как преступник: Эволюция» — другой сериал. Если после
+     названия идёт двоеточие или тире и дальше посторонние слова — отклоняем. */
+  const after = videoTitle.slice(videoTitle.indexOf(wanted) + wanted.length).trim();
+  const separator = after.search(/[:—–-]/);
+  if (separator > -1) {
+    const tail = after.slice(separator + 1).trim();
+    const allowedTail = /^(трейлер|trailer|тизер|teaser|русск|russian|дубл|сезон|серия|hd|4k|\d{4}|\s)*$/;
+    if (tail && !allowedTail.test(tail)) return 0;
+  }
+
+  let score = 2;
+
+  /* Год: если в названии ролика он есть и отличается от нашего — другой фильм. */
+  const years = videoTitle.match(/\b(19|20)\d{2}\b/g) || [];
+  if (year && years.length) {
+    if (years.some((value) => Math.abs(Number(value) - Number(year)) <= 1)) score += 1;
+    else return 0;
+  }
+
+  /* Русский: если в названии больше кириллицы, чем латиницы, это русский
+     ролик — даже без слова «русский». Раньше такие отбраковывались. */
+  const cyrillic = (videoTitle.match(/[а-яё]/g) || []).length;
+  const latin = (videoTitle.match(/[a-z]/g) || []).length;
+  if (cyrillic > latin) score += 2;
+  else if (/русск|russian|дубл/.test(videoTitle)) score += 2;
+
   if (/официальн|official/.test(norm(snippet.channelTitle))) score += 1;
   if (/трейлеры|trailers|кино/i.test(snippet.channelTitle || "")) score += 1;
 
   return score;
 }
+
 
 /** Обработка порции задач. */
 async function work(limit = 100) {
@@ -222,7 +250,7 @@ async function work(limit = 100) {
       }
 
       const scored = (search.items || [])
-        .map((video) => ({ video, score: scoreVideo(video, task.title) }))
+        .map((video) => ({ video, score: scoreVideo(video, task.title, task.year) }))
         .filter((item) => item.score >= 4)
         .sort((a, b) => b.score - a.score);
 
