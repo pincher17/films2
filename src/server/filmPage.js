@@ -1,4 +1,5 @@
 import { ensureCacheVersion } from "./cacheVersion.js";
+import { prisma } from "./prisma.js";
 import { manualKinopoiskByTmdb, manualTmdbByKinopoisk } from "./manualMap.js";
 ensureCacheVersion();
 /**
@@ -511,6 +512,58 @@ async function buildRelated(items, media) {
  * Полная карточка фильма в формате, который ждёт фронтенд Filmhub
  * (тот же FilmInfoType, что отдавал apiget).
  */
+
+/**
+ * Трейлер для страницы фильма: сначала TMDB, если там пусто — наша база.
+ * Наполнением базы занимается скрипт scripts/trailers.mjs.
+ */
+async function buildVideosBlock(trailer, kinopoiskId, tmdbId) {
+  if (trailer?.key) {
+    return {
+      trailers: [
+        {
+          // youtube-nocookie мягче к встраиванию, autoplay убран: именно он
+          // чаще всего провоцирует проверку «подтвердите, что вы не бот»
+          url: `https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1`,
+          watchUrl: `https://www.youtube.com/watch?v=${trailer.key}`,
+          name: trailer.name || "",
+          site: "YouTube",
+        },
+      ],
+      teasers: [],
+    };
+  }
+
+  try {
+    /* В базе трейлеры сохранены по TMDB id (так их нашёл скрипт), а страница
+       знает ещё и кинопоисковый — поэтому ищем по обоим. */
+    const keys = [Number(kinopoiskId), Number(tmdbId)].filter((id) => Number.isFinite(id) && id > 0);
+    const saved = keys.length
+      ? await prisma.trailer.findFirst({
+          where: { filmId: { in: keys } },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+    if (saved?.youtubeId) {
+      return {
+        trailers: [
+          {
+            url: `https://www.youtube-nocookie.com/embed/${saved.youtubeId}?rel=0&modestbranding=1&playsinline=1`,
+            watchUrl: `https://www.youtube.com/watch?v=${saved.youtubeId}`,
+            name: saved.title || "",
+            site: "YouTube",
+          },
+        ],
+        teasers: [],
+      };
+    }
+  } catch {
+    undefined;
+  }
+
+  return { trailers: [], teasers: [] };
+}
+
 export async function getFilmPageData(kinopoiskId) {
   const resolved = await resolveTmdbByKinopoisk(kinopoiskId);
   if (!resolved?.tmdbId) return null;
@@ -606,21 +659,7 @@ export async function getFilmPageData(kinopoiskId) {
       .filter(Boolean)
       .slice(0, 12),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
-    videos: trailer
-      ? {
-          trailers: [
-            {
-              // youtube-nocookie мягче к встраиванию, autoplay убран: именно
-              // он чаще всего провоцирует проверку «подтвердите, что вы не бот»
-              url: `https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1`,
-              watchUrl: `https://www.youtube.com/watch?v=${trailer.key}`,
-              name: trailer.name || "",
-              site: "YouTube",
-            },
-          ],
-          teasers: [],
-        }
-      : { trailers: [], teasers: [] },
+    videos: await buildVideosBlock(trailer, kinopoiskId, data.id),
     persons: [
       ...(data.credits?.cast || []).slice(0, 30).map((person) => ({
         id: person.id,
