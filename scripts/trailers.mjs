@@ -317,6 +317,53 @@ async function work(limit = 100) {
   await sendReport({ searches, counts, trailers, keys: KEYS.length });
 }
 
+
+/**
+ * Глубокий сбор: проходим по годам и набираем популярное в каждом.
+ * Так очередь покрывает весь каталог, а не только свежее.
+ */
+async function seedDeep() {
+  const currentYear = new Date().getFullYear();
+  let added = 0;
+
+  for (let year = currentYear; year >= 2005; year -= 1) {
+    for (const media of ["movie", "tv"]) {
+      const dateParam = media === "movie" ? "primary_release_year" : "first_air_date_year";
+      for (let page = 1; page <= 20; page += 1) {
+        const data = await tmdb(`/discover/${media}`, {
+          page: String(page),
+          sort_by: "popularity.desc",
+          [dateParam]: String(year),
+          // без ток-шоу, новостей, реалити и мыла
+          without_genres: "10767,10763,10764,10766",
+        });
+        const results = data.results || [];
+        if (!results.length) break;
+
+        for (const item of results) {
+          if (!item.id) continue;
+          const title = item.title || item.name || item.original_title || item.original_name;
+          if (!title) continue;
+          await prisma.trailerTask.upsert({
+            where: { filmId_media: { filmId: item.id, media } },
+            update: { popularity: item.popularity || 0 },
+            create: {
+              filmId: item.id,
+              tmdbId: item.id,
+              media,
+              title,
+              year,
+              popularity: item.popularity || 0,
+            },
+          });
+          added += 1;
+        }
+      }
+    }
+    console.info(`[seed-deep] ${year}: всего ${added}`);
+  }
+}
+
 async function stats() {
   const byStatus = await prisma.trailerTask.groupBy({ by: ["status"], _count: true });
   const trailers = await prisma.trailer.count();
@@ -362,6 +409,7 @@ async function sendReport({ searches, counts, trailers, keys }) {
 
 const [command, arg] = process.argv.slice(2);
 if (command === "seed") await seed();
+else if (command === "seed-deep") await seedDeep();
 else if (command === "work") await work(Number(arg) || 100);
 else if (command === "stats") await stats();
 else console.info("использование: seed | work <n> | stats");
