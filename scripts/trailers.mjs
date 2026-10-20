@@ -196,28 +196,12 @@ async function work(limit = 100) {
           (v) => v.site === "YouTube" && v.iso_639_1 === "ru" && /Trailer|Teaser/i.test(v.type)
         );
         if (russian.length) {
-          const best = russian[0];
-          await prisma.trailer.upsert({
-            where: {
-              filmId_media_youtubeId: {
-                filmId: task.filmId,
-                media: task.media || "movie",
-                youtubeId: best.key,
-              },
-            },
-            update: {},
-            create: {
-              filmId: task.filmId,
-              media: task.media || "movie",
-              youtubeId: best.key,
-              title: best.name,
-              lang: "ru",
-              source: "tmdb",
-            },
-          });
+          /* Трейлер есть в TMDB — копировать его в нашу базу не нужно:
+             страница фильма берёт его оттуда при показе. Достаточно отметить,
+             что задача закрыта, и не тратить на неё квоту YouTube. */
           await prisma.trailerTask.update({
             where: { id: task.id },
-            data: { status: "done", note: "TMDB (ru)" },
+            data: { status: "done", note: "есть в TMDB (ru)" },
           });
           continue;
         }
