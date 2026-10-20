@@ -31,7 +31,34 @@ function loadEnv() {
 loadEnv();
 
 const TMDB = process.env.TMDB_KEY;
-const YT = process.env.YOUTUBE_API_KEY;
+/* Ключей может быть несколько: когда у одного кончилась дневная квота,
+   переключаемся на следующий. В .env.local перечислите их через запятую
+   в YOUTUBE_API_KEYS, либо оставьте один в YOUTUBE_API_KEY. */
+const KEYS = (process.env.YOUTUBE_API_KEYS || process.env.YOUTUBE_API_KEY || "")
+  .split(",")
+  .map((key) => key.trim())
+  .filter(Boolean);
+let keyIndex = 0;
+
+/** Запрос к YouTube с автоматическим переключением ключа при лимите. */
+async function yt(pathAndQuery) {
+  while (keyIndex < KEYS.length) {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/${pathAndQuery}&key=${KEYS[keyIndex]}`
+    );
+    const data = await response.json();
+    const reason = data?.error?.errors?.[0]?.reason || "";
+    if (reason === "quotaExceeded" || reason === "dailyLimitExceeded" || reason === "rateLimitExceeded") {
+      console.warn(
+        `[work] дневной лимит у ключа ${keyIndex + 1} из ${KEYS.length} — переключаюсь`
+      );
+      keyIndex += 1;
+      continue;
+    }
+    return data;
+  }
+  return { error: { message: "дневной лимит у всех ключей" } };
+}
 
 const norm = (value) =>
   String(value || "")
@@ -175,12 +202,17 @@ async function work(limit = 100) {
       }
 
       const query = `${task.title} ${task.year || ""} трейлер`;
-      const search = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(query)}&key=${YT}`
-      ).then((r) => r.json());
+      const search = await yt(
+        `search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(query)}`
+      );
       searches += 1;
 
       if (search.error) {
+        // лимит кончился — дальше идти бессмысленно, оставляем задачи в очереди
+        if (/лимит/.test(search.error.message || "")) {
+          console.warn("[work] останавливаюсь:", search.error.message);
+          break;
+        }
         console.warn("[work] YouTube:", search.error.message);
         await prisma.trailerTask.update({
           where: { id: task.id },
@@ -208,9 +240,7 @@ async function work(limit = 100) {
       for (const candidate of scored) {
         const videoId = candidate.video.id?.videoId;
         if (!videoId) continue;
-        const details = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=status,contentDetails&id=${videoId}&key=${YT}`
-        ).then((r) => r.json());
+        const details = await yt(`videos?part=status,contentDetails&id=${videoId}`);
         const info = details.items?.[0];
         if (!info || info.status?.embeddable === false) continue;
         // отсекаем shorts и слишком длинные ролики
@@ -272,7 +302,7 @@ async function work(limit = 100) {
       `ошибок ${counts.failed || 0}, в очереди ${counts.pending || 0}, всего трейлеров ${trailers}`
   );
 
-  await sendReport({ searches, counts, trailers });
+  await sendReport({ searches, counts, trailers, keys: KEYS.length });
 }
 
 async function stats() {
@@ -287,7 +317,7 @@ async function stats() {
  * Отчёт в Telegram. Тихо пропускаем, если токена или чата нет:
  * скрипт должен работать и без уведомлений.
  */
-async function sendReport({ searches, counts, trailers }) {
+async function sendReport({ searches, counts, trailers, keys }) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return;
   let chatId = null;
@@ -299,7 +329,7 @@ async function sendReport({ searches, counts, trailers }) {
 
   const text = [
     "Трейлеры: порция обработана",
-    `поисков YouTube: ${searches}`,
+    `поисков YouTube: ${searches} (ключей: ${keys})`,
     `готово: ${counts.done || 0}`,
     `пропущено: ${counts.skipped || 0}`,
     `ошибок: ${counts.failed || 0}`,
