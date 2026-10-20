@@ -521,7 +521,7 @@ async function buildRelated(items, media) {
  * Трейлер для страницы фильма: сначала TMDB, если там пусто — наша база.
  * Наполнением базы занимается скрипт scripts/trailers.mjs.
  */
-async function buildVideosBlock(trailer, kinopoiskId, tmdbId) {
+async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
   if (trailer?.key) {
     return {
       trailers: [
@@ -542,9 +542,11 @@ async function buildVideosBlock(trailer, kinopoiskId, tmdbId) {
     /* В базе трейлеры сохранены по TMDB id (так их нашёл скрипт), а страница
        знает ещё и кинопоисковый — поэтому ищем по обоим. */
     const keys = [Number(kinopoiskId), Number(tmdbId)].filter((id) => Number.isFinite(id) && id > 0);
+    /* Тип обязателен: у TMDB разные нумерации, и без него фильм мог получить
+       трейлер сериала с тем же номером. */
     const saved = keys.length
       ? await prisma.trailer.findFirst({
-          where: { filmId: { in: keys } },
+          where: { filmId: { in: keys }, OR: [{ media: media || "movie" }, { media: null }] },
           orderBy: { createdAt: "desc" },
         })
       : null;
@@ -663,7 +665,7 @@ export async function getFilmPageData(kinopoiskId) {
       .filter(Boolean)
       .slice(0, 12),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
-    videos: await buildVideosBlock(trailer, kinopoiskId, data.id),
+    videos: await buildVideosBlock(trailer, kinopoiskId, data.id, data.__media),
     persons: [
       ...(data.credits?.cast || []).slice(0, 30).map((person) => ({
         id: person.id,

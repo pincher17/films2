@@ -89,6 +89,8 @@ model SavedItem {
 model Trailer {
   id        String   @id @default(cuid())
   filmId    Int
+  /// movie или tv: у TMDB разные нумерации, без типа возможны коллизии
+  media     String?
   youtubeId String
   title     String?
   lang      String?
@@ -96,7 +98,7 @@ model Trailer {
   source    String   @default("tmdb")
   createdAt DateTime @default(now())
 
-  @@unique([filmId, youtubeId])
+  @@unique([filmId, media, youtubeId])
   @@index([filmId])
 }
 
@@ -104,7 +106,7 @@ model Trailer {
 /// от популярных к редким, а статус не даёт проверять одно и то же повторно.
 model TrailerTask {
   id         String   @id @default(cuid())
-  filmId     Int      @unique
+  filmId     Int
   tmdbId     Int?
   /// movie или tv
   media      String?
@@ -119,5 +121,6 @@ model TrailerTask {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  @@unique([filmId, media])
   @@index([status, popularity])
 }

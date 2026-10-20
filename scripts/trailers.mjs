@@ -79,7 +79,7 @@ async function seed() {
         const year = Number(String(item.release_date || item.first_air_date || "").slice(0, 4)) || null;
 
         await prisma.trailerTask.upsert({
-          where: { filmId: item.id },
+          where: { filmId_media: { filmId: item.id, media } },
           update: { popularity: item.popularity || 0 },
           create: {
             filmId: item.id,
@@ -140,10 +140,17 @@ async function work(limit = 100) {
         if (russian.length) {
           const best = russian[0];
           await prisma.trailer.upsert({
-            where: { filmId_youtubeId: { filmId: task.filmId, youtubeId: best.key } },
+            where: {
+              filmId_media_youtubeId: {
+                filmId: task.filmId,
+                media: task.media || "movie",
+                youtubeId: best.key,
+              },
+            },
             update: {},
             create: {
               filmId: task.filmId,
+              media: task.media || "movie",
               youtubeId: best.key,
               title: best.name,
               lang: "ru",
@@ -222,10 +229,17 @@ async function work(limit = 100) {
         continue;
       }
       await prisma.trailer.upsert({
-        where: { filmId_youtubeId: { filmId: task.filmId, youtubeId: best.id.videoId } },
+        where: {
+          filmId_media_youtubeId: {
+            filmId: task.filmId,
+            media: task.media || "movie",
+            youtubeId: best.id.videoId,
+          },
+        },
         update: {},
         create: {
           filmId: task.filmId,
+          media: task.media || "movie",
           youtubeId: best.id.videoId,
           title: best.snippet.title,
           lang: "ru",
