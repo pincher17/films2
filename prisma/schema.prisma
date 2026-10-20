@@ -83,3 +83,41 @@ model SavedItem {
   /// выборка «моё сохранённое» идёт по профилю с сортировкой по дате
   @@index([userId, createdAt])
 }
+
+/// Найденный трейлер. Храним отдельно от данных TMDB: так мы не зависим от того,
+/// что TMDB передумает отдавать видео, и можем хранить свои находки с YouTube.
+model Trailer {
+  id        String   @id @default(cuid())
+  filmId    Int
+  youtubeId String
+  title     String?
+  lang      String?
+  /// tmdb или youtube — откуда взят трейлер
+  source    String   @default("tmdb")
+  createdAt DateTime @default(now())
+
+  @@unique([filmId, youtubeId])
+  @@index([filmId])
+}
+
+/// Очередь заполнения трейлеров. Это тот самый «единый список»: по нему идём
+/// от популярных к редким, а статус не даёт проверять одно и то же повторно.
+model TrailerTask {
+  id         String   @id @default(cuid())
+  filmId     Int      @unique
+  tmdbId     Int?
+  /// movie или tv
+  media      String?
+  title      String?
+  year       Int?
+  /// популярность из TMDB: по ней сортируем очередь
+  popularity Float    @default(0)
+  /// pending | done | skipped | failed
+  status     String   @default("pending")
+  attempts   Int      @default(0)
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status, popularity])
+}
