@@ -196,7 +196,7 @@ async function work(limit = 100) {
       }
 
       // 2. YouTube
-      if (!YT) {
+      if (!KEYS.length) {
         await prisma.trailerTask.update({ where: { id: task.id }, data: { status: "skipped", note: "нет ключа YouTube" } });
         continue;
       }
