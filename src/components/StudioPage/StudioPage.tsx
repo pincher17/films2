@@ -1,6 +1,9 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getActiveFilterChips } from "@/components/Filters/activeFilters";
+import { ActiveChip, ActiveChips } from "@/app/styles/Filters.styles";
+import { FilterBadge } from "@/app/styles/AllFilmsPage.styles";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
 import {
@@ -180,6 +183,9 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     if (page === 1) loadedPageRef.current = 1;
   }, [page]);
 
+  // чипы изменённых фильтров — как в каталоге
+  const activeChips = getActiveFilterChips(filtres);
+
   const showMore = () => {
     // максимум из ref и redux: защищает и от повторного запроса в одном тике,
     // и от обнуления счётчика
@@ -212,8 +218,16 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
             </div>
             <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
+              {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
             </FilterIcon>
           </WrapperName>
+          {activeChips.length > 0 && (
+            <ActiveChips>
+              {activeChips.map((chip) => (
+                <ActiveChip key={chip.key}>{chip.label}</ActiveChip>
+              ))}
+            </ActiveChips>
+          )}
           {resolution.width > 1150 ? <FiltersStudios mobile={false} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>

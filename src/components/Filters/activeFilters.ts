@@ -41,7 +41,8 @@ export function getActiveFilterChips(filters: any): ActiveFilterChip[] {
     chips.push({ key: "year", label: `Годы ${year[0]}–${year[1]}` });
   }
 
-  const genres = toArray(filters?.genre);
+  // в каталоге поле называется genre, в фильтрах студий — genres
+  const genres = toArray(filters?.genre ?? filters?.genres);
   if (genres.length) {
     const names = labelsOf(genres);
     chips.push({ key: "genre", label: names.length ? names.join(", ") : `Жанров: ${genres.length}` });
