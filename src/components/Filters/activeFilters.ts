@@ -14,6 +14,13 @@ const TYPE_NAMES: Record<string, string> = {
 
 const ALL_TYPES = ["1", "2", "3"];
 
+/* Значение фильтра может прийти массивом, объектом или строкой —
+   приводим к массиву, иначе часть фильтров терялась (например страны). */
+const toArray = (value: any): any[] => {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+};
+
 /** Названия выбранных элементов: поддерживаем и строки, и { label } */
 const labelsOf = (items: any[]): string[] =>
   items
@@ -34,14 +41,16 @@ export function getActiveFilterChips(filters: any): ActiveFilterChip[] {
     chips.push({ key: "year", label: `Годы ${year[0]}–${year[1]}` });
   }
 
-  if (Array.isArray(filters?.genre) && filters.genre.length) {
-    const names = labelsOf(filters.genre);
-    chips.push({ key: "genre", label: names.length ? names.join(", ") : `Жанров: ${filters.genre.length}` });
+  const genres = toArray(filters?.genre);
+  if (genres.length) {
+    const names = labelsOf(genres);
+    chips.push({ key: "genre", label: names.length ? names.join(", ") : `Жанров: ${genres.length}` });
   }
 
   /* Страны: по умолчанию выбрано «Все» (value === ""), тогда ничего не пишем. */
-  const country = Array.isArray(filters?.country) ? filters.country : [];
-  const chosenCountries = country.filter((item: any) => item && item.value !== "");
+  const chosenCountries = toArray(filters?.country).filter(
+    (item: any) => item && (typeof item === "string" ? item !== "" : item.value !== "")
+  );
   if (chosenCountries.length) {
     const names = labelsOf(chosenCountries);
     if (names.length) chips.push({ key: "country", label: names.join(", ") });

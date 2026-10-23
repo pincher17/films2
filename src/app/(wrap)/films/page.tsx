@@ -181,6 +181,10 @@ export default function Films() {
 
   // чипы изменённых фильтров: считаем один раз
   const activeChips = getActiveFilterChips(filtres);
+  // отладка: видно, что реально приходит в фильтрах
+  if (typeof window !== "undefined") {
+    console.info("[фильтры] страна:", filtres.country, "| чипы:", activeChips.map((c) => c.label));
+  }
 
   return (
     <>
