@@ -2,6 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getActiveFilterChips } from "@/components/Filters/activeFilters";
+import { ActiveChips, ActiveChip } from "@/app/styles/Filters.styles";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
 import {
@@ -191,6 +192,13 @@ export default function Films() {
                   : "Все фильмы"}
               </NameBlock>
             </div>
+            {getActiveFilterChips(filtres).length > 0 && (
+              <ActiveChips>
+                {getActiveFilterChips(filtres).map((chip) => (
+                  <ActiveChip key={chip.key}>{chip.label}</ActiveChip>
+                ))}
+              </ActiveChips>
+            )}
             <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
               {/* счётчик изменённых фильтров: по умолчанию его нет */}
