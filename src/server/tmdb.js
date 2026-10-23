@@ -96,16 +96,42 @@ export async function getGenres(media = "movie") {
   return map;
 }
 
+/**
+ * У сериалов в TMDB другая система жанров: «триллера», «ужасов», «фантастики»
+ * там нет, но есть «детектив», «криминал», «нф и фэнтези». Без сопоставления
+ * такие фильтры либо не работали, либо обнуляли выдачу.
+ */
+const TV_GENRE_FALLBACKS = {
+  триллер: ["детектив"],
+  ужасы: ["детектив"],
+  фантастика: ["нф и фэнтези"],
+  фэнтези: ["нф и фэнтези"],
+  боевик: ["боевик и приключения"],
+  приключения: ["боевик и приключения"],
+  история: ["война и политика"],
+  музыка: ["документальный"],
+  "короткометражка": ["драма"],
+};
+
 /** Жанр сайта -> id жанра TMDB (или null) */
 export async function resolveGenre(name, media) {
   const map = await getGenres(media);
   const key = String(name || "").toLowerCase().trim();
   if (map.has(key)) return { kind: "genre", id: map.get(key) };
+
+  /* Для сериалов подбираем ближайший существующий жанр: иначе, например,
+     «триллер» превращался в случайное ключевое слово и выдавал пустоту. */
+  if (media === "tv") {
+    for (const alias of TV_GENRE_FALLBACKS[key] || []) {
+      if (map.has(alias)) return { kind: "genre", id: map.get(alias) };
+    }
+  }
+
   return null;
 }
 
 /** Русские названия жанров, которых нет в TMDB, ищем как ключевые слова */
-const KEYWORD_ALIASES = {
+export const KEYWORD_ALIASES = {
   биография: "biography",
   мюзикл: "musical",
   спорт: "sport",

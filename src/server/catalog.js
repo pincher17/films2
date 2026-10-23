@@ -9,7 +9,7 @@
  * «короткометражек» по хронометражу и точная сверка года/рейтинга по данным КП.
  */
 
-import { discover, posterUrl, resolveGenre, resolveKeywordId, tmdbGet } from "./tmdb.js";
+import { discover, posterUrl, resolveGenre, resolveKeywordId, tmdbGet, KEYWORD_ALIASES } from "./tmdb.js";
 import { resolveRecords } from "./kpMap.js";
 
 /**
@@ -199,8 +199,14 @@ async function buildServerParams(media, options) {
   const genreIds = [];
   for (const name of options.genres || []) {
     const genre = await resolveGenre(name, media);
-    if (genre) genreIds.push(genre.id);
-    else {
+    if (genre) {
+      genreIds.push(genre.id);
+      continue;
+    }
+    /* Ключевые слова используем только для жанров, которых нет в TMDB вообще
+       (биография, мюзикл, спорт…). Для остальных первый результат поиска
+       оказывался случайным («экшен-триллер» вместо «триллера») и обнулял выдачу. */
+    if (KEYWORD_ALIASES[String(name).toLowerCase()] !== undefined) {
       const keywordId = await resolveKeywordId(name);
       if (keywordId) params.with_keywords = [params.with_keywords, keywordId].filter(Boolean).join(",");
     }
