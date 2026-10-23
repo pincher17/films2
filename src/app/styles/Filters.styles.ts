@@ -254,6 +254,12 @@ export const ActiveChips = styled.div`
     display: none;
   }
 
+  /* Чипы нужны только на телефоне: на компьютере фильтры и так видны
+     в боковой панели, и строка только загромождала бы заголовок. */
+  @media (min-width: 1151px) {
+    display: none;
+  }
+
   /* место под прокрутку у самого края экрана */
   @media (max-width: 850px) {
     margin-left: -16px;

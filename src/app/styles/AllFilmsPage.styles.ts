@@ -152,4 +152,9 @@ export const FilterBadge = styled.span`
   font-weight: 600;
   line-height: 18px;
   text-align: center;
+
+  /* счётчик нужен только там, где есть мобильная иконка фильтров */
+  @media (min-width: 1151px) {
+    display: none;
+  }
 `;
