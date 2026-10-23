@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getActiveFilterChips } from "@/components/Filters/activeFilters";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
 import {
@@ -19,6 +20,7 @@ import {
   Wrapper,
   WrapperButtonShowMore,
   WrapperNameBlock,
+  FilterBadge,
 } from "../../styles/AllFilmsPage.styles";
 import Cards from "@/components/Cards/Cards";
 import Sidebar from "@/components/Sidebar/Sidebar";
@@ -191,6 +193,10 @@ export default function Films() {
             </div>
             <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
+              {/* счётчик изменённых фильтров: по умолчанию его нет */}
+              {getActiveFilterChips(filtres).length > 0 && (
+                <FilterBadge>{getActiveFilterChips(filtres).length}</FilterBadge>
+              )}
             </FilterIcon>
           </WrapperNameBlock>
           {resolution.width > 1150 ? <Filters mobile={false} /> : ""}

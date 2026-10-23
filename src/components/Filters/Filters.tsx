@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import { getActiveFilterChips } from "./activeFilters";
 import { allGenres } from '../../data/allGenres';
 import Button from '../Button';
 import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ActiveChip, ActiveChips, ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
@@ -28,6 +29,8 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
+    // чипы только для изменённых фильтров: по умолчанию списка нет
+    const activeChips = getActiveFilterChips(filters);
     /**
      * Фильтры в адресной строке: тогда ссылку можно сохранить, а обновление
      * страницы не сбрасывает выбор. Раньше здесь стоял router.replace('/films'),
@@ -149,6 +152,13 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
 
     return (
     <Wrapper mobile={(+mobile)}>
+        {activeChips.length > 0 && (
+            <ActiveChips>
+                {activeChips.map((chip) => (
+                    <ActiveChip key={chip.key}>{chip.label}</ActiveChip>
+                ))}
+            </ActiveChips>
+        )}
         <WrapperAllInputs>
         <WrapperCheckbox>
         {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (

@@ -236,3 +236,22 @@ export const PillBox = styled.span<{ $active?: boolean }>`
     transition: opacity 0.15s ease;
   }
 `
+
+/** Чипы изменённых фильтров над содержимым панели */
+export const ActiveChips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
+
+export const ActiveChip = styled.span`
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+`;

@@ -28,6 +28,7 @@ export const NameBlock = styled.p`
   }
 `
 export const FilterIcon = styled.div`
+  position: relative;
  /*  background-image: url('Filtericon.svg'); */
   height: 35px;
   width: 35px;
@@ -135,4 +136,20 @@ export const Line2 = styled.div`
   border-radius: 1px;
   background-color: #fff;
   transform: translate(-50%, -50%) rotate(-45deg);
+`;
+/** Счётчик изменённых фильтров на иконке */
+export const FilterBadge = styled.span`
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #e50914;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
 `;
