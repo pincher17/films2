@@ -240,12 +240,31 @@ export const PillBox = styled.span<{ $active?: boolean }>`
 /** Чипы изменённых фильтров над содержимым панели */
 export const ActiveChips = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
-  margin-bottom: 16px;
+  /* длинные наборы фильтров листаются вбок, как ленты в мобильных приложениях */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 10px 0 18px;
+  padding-bottom: 2px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* место под прокрутку у самого края экрана */
+  @media (max-width: 850px) {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 export const ActiveChip = styled.span`
+  flex: 0 0 auto;
   padding: 6px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);

@@ -179,6 +179,9 @@ export default function Films() {
     return filtres.genre[0].label;
   };
 
+  // чипы изменённых фильтров: считаем один раз
+  const activeChips = getActiveFilterChips(filtres);
+
   return (
     <>
       <MainTag>
@@ -192,21 +195,21 @@ export default function Films() {
                   : "Все фильмы"}
               </NameBlock>
             </div>
-            {getActiveFilterChips(filtres).length > 0 && (
-              <ActiveChips>
-                {getActiveFilterChips(filtres).map((chip) => (
-                  <ActiveChip key={chip.key}>{chip.label}</ActiveChip>
-                ))}
-              </ActiveChips>
-            )}
             <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
               {/* счётчик изменённых фильтров: по умолчанию его нет */}
-              {getActiveFilterChips(filtres).length > 0 && (
-                <FilterBadge>{getActiveFilterChips(filtres).length}</FilterBadge>
-              )}
+              {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
             </FilterIcon>
           </WrapperNameBlock>
+          {/* Чипы — отдельной строкой под заголовком: если не помещаются,
+              строка прокручивается вбок */}
+          {activeChips.length > 0 && (
+            <ActiveChips>
+              {activeChips.map((chip) => (
+                <ActiveChip key={chip.key}>{chip.label}</ActiveChip>
+              ))}
+            </ActiveChips>
+          )}
           {resolution.width > 1150 ? <Filters mobile={false} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
