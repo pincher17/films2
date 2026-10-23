@@ -157,6 +157,10 @@ export async function GET(request) {
         excludeAsianByDefault: false,
         requirePoster: true,
         voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 50,
+        /* Страница студии: у зарубежного контента мало кинопоисковых id, и с
+           одной страницей TMDB (20 позиций) оставалось 7–12 карточек. Берём
+           больше страниц, чтобы после проверки набиралось на полную выдачу. */
+        tmdbPages: 10,
       });
 
       return NextResponse.json({ ...result, company });

@@ -330,6 +330,7 @@ export async function buildList(options) {
   );
 
   const byMedia = new Map();
+  const totalsByMedia = new Map();
   let totalResults = 0;
   let totalPages = 0;
 
@@ -337,11 +338,17 @@ export async function buildList(options) {
     const list = byMedia.get(kind) || new Map();
     (response.results || []).forEach((item) => list.set(item.id, item));
     byMedia.set(kind, list);
-    // фильмы и сериалы запрашиваются отдельно — счётчики складываем,
-    // иначе «всего» показывало только одну половину
-    totalResults += response.totalResults || 0;
-    totalPages += response.totalPages || 0;
+    /* Фильмы и сериалы запрашиваются отдельно — их счётчики складываем.
+       Но внутри одного типа страниц может быть несколько, и TMDB на каждой
+       возвращает один и тот же total, поэтому берём максимум, а не сумму. */
+    totalResults = Math.max(totalResults, 0);
+    const perKind = totalsByMedia.get(kind) || 0;
+    totalsByMedia.set(kind, Math.max(perKind, response.totalResults || 0));
+    totalPages = Math.max(totalPages, response.totalPages || 0);
   });
+
+  // складываем максимумы по каждому типу: фильмы + сериалы
+  totalResults = [...totalsByMedia.values()].reduce((sum, value) => sum + value, 0);
 
   const preFilter = buildPreFilter(options);
 
