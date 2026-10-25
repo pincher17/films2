@@ -69,8 +69,13 @@ export async function tmdbGet(path, params = {}, revalidate = 3600) {
 }
 
 /** URL постера по poster_path */
+/**
+ * Постер через наш домен: у части провайдеров image.tmdb.org недоступен,
+ * и картинки не грузились вообще. Запрос идёт на /img/... и проксируется
+ * на TMDB уже сервером (см. rewrites в next.config.js).
+ */
 export function posterUrl(path, size = "w500") {
-  return path ? `${TMDB_IMAGE}/${size}${path}` : null;
+  return path ? `/img/${size}${path}` : null;
 }
 
 // ---------------------------------------------------------------- справочники

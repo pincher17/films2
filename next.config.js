@@ -15,6 +15,13 @@ module.exports = withPWA({
     apiKey: process.env.API_KEY,
     apigetKey: process.env.APIGET_KEY,
   },
+  async rewrites() {
+    return [
+      // картинки TMDB через наш домен: у части провайдеров их CDN заблокирован
+      { source: '/img/:path*', destination: 'https://image.tmdb.org/t/p/:path*' },
+    ];
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
