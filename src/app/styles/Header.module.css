@@ -12,6 +12,8 @@
 
 .header_wrapper{
   display: flex;
+  /* зазор между логотипом, поиском и меню: на широких экранах они слипались */
+  column-gap: 24px;
   justify-content: space-between;
   align-items: center;
   /* Ширина и брейкпоинты те же, что у .layout страницы фильма
