@@ -50,7 +50,16 @@ export const Button = styled.div`
   text-decoration: none;
   border: 1px solid rgb(184, 22, 22);
   border-radius: 5px;
- 
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+
+  &:hover {
+    background-color: #cc1a1a;
+    border-color: #e02a2a;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 `
 /*
  * «Сбросить» — второстепенное действие: без красного фона, тонкая рамка и

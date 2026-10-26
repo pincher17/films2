@@ -36,6 +36,20 @@ export const SearchInput = styled.input`
     border-radius: 8px;
   }
   border-radius: 5px 0 0 5px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  /* Активное состояние: вместо синей рамки браузера — аккуратное красное
+     свечение вокруг поля */
+  &:focus {
+    outline: none;
+    border-color: rgb(184, 22, 22);
+    box-shadow: 0 0 0 2px rgba(184, 22, 22, 0.35);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgb(120, 120, 120);
+  }
+
   &::-webkit-input-placeholder {
     color: rgb(179, 179, 179);
     font-size: 16px;
