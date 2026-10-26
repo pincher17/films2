@@ -211,14 +211,8 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
       <MainTag>
         <Wrapper>
           <WrapperNameBlock>
-            <div>
-              <NameBlock>
-                {filtres.genre.length == 1
-                  ? searchGenreOne().charAt(0).toUpperCase() +
-                    searchGenreOne().slice(1)
-                  : SECTION_TITLES[section]}
-              </NameBlock>
-            </div>
+            {/* Заголовок раздела — сам переключатель */}
+
             <SectionSwitcher />
             <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
@@ -235,10 +229,10 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
               ))}
             </ActiveChips>
           )}
-          {resolution.width > 1150 ? <Filters mobile={false} /> : ""}
+          {resolution.width > 1150 ? <Filters mobile={false} hideTypes /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
-            {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} />}
+            {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes />}
           </Sidebar>
           <Cards cards={films} />
           <InfiniteScroll
