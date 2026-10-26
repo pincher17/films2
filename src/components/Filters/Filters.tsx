@@ -11,7 +11,7 @@ import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsSlice';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import SelectCountry from '../SelectCountry/SelectCountry';
 import SortSelect from '../SortSelect/SortSelect';
 
@@ -29,6 +29,9 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: 
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
+    /* Раздел каталога: без этого применение фильтров уводило на «Фильмы»
+       даже со страницы сериалов */
+    const pathname = usePathname();
     /**
      * Фильтры в адресной строке: тогда ссылку можно сохранить, а обновление
      * страницы не сбрасывает выбор. Раньше здесь стоял router.replace('/films'),
@@ -73,7 +76,7 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: 
         if (f.sortBy) params.set('sort', f.sortBy);
 
         const query = params.toString();
-        return query ? `/films?${query}` : '/films';
+        return query ? `${pathname}?${query}` : pathname;
     };
 
     /**
@@ -82,8 +85,8 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: 
      * и плитки типов, и все поля — состояние берётся из чистого адреса.
      */
     const resetFilters = () => {
-        router.replace('/films');
-        window.location.href = '/films';
+        router.replace(pathname);
+        window.location.href = pathname;
     };
 
     /*
@@ -115,7 +118,7 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: 
             updateGenre: false,
             country: valueCountry,
         }
-        router.replace('/films');
+        router.replace(pathname);
         dispatch(setFilters(createfilters))
         dispatch(setPage(1))
         dispatch(getAllFilmsFiltersThunk(createfilters, 1));
