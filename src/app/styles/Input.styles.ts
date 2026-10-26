@@ -13,7 +13,9 @@ export const InputWrapper = styled.div`
     display: block;
     position: relative;
     width: 100%;
-    margin-top: 14px;
+    /* отступ от подписи задаёт сам блок подписи: свои 14px давали разную
+       высоту у «Рейтинга» и у списков */
+    margin-top: 0;
     border-radius: 5px;
     /* общая высота со списками: 33px против 40px выглядели как разные поля */
     height: 40px;

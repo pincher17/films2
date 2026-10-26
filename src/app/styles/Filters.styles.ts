@@ -25,7 +25,8 @@ export const WrapperAllInputs = styled.div`
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: start;
-    gap: 18px 20px;
+    /* по горизонтали шире: у ползунков бегунки на краях иначе смыкаются */
+    gap: 18px 34px;
     padding: 20px 24px;
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.035);
