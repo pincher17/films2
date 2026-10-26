@@ -214,7 +214,7 @@ export async function resolveKinopoiskByTmdbIds(ids, media) {
 
   const data = loadStore();
   const result = new Map();
-  const missing = [];
+  let missing = [];
 
   wanted.forEach((id) => {
     // сначала свой список: он закрывает то, чего нет в Wikidata
@@ -235,6 +235,27 @@ export async function resolveKinopoiskByTmdbIds(ids, media) {
       missing.push(id);
     }
   });
+
+  /* Сначала смотрим свою таблицу соответствий — её наполняет скрипт kpmap
+     через платную API Кинопоиска. Она точнее Wikidata и покрывает зарубежные
+     сериалы, которых там нет. */
+  if (wanted.length) {
+    try {
+      const rows = await prisma.kpMap.findMany({
+        where: {
+          media: media || "movie",
+          tmdbId: { in: wanted.map((id) => Number(id)).filter(Number.isFinite) },
+        },
+      });
+      rows.forEach((row) => {
+        result.set(row.tmdbId, row.kpId);
+        data.toKp[`${media || "movie"}:${row.tmdbId}`] = row.kpId;
+      });
+      missing = missing.filter((id) => !result.has(Number(id)));
+    } catch {
+      undefined;
+    }
+  }
 
   if (missing.length) {
     const property = media === "tv" ? "P4983" : "P4947";

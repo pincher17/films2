@@ -124,3 +124,20 @@ model TrailerTask {
   @@unique([filmId, media])
   @@index([status, popularity])
 }
+
+/// Соответствие TMDB ↔ Кинопоиск, найденное через платную API Кинопоиска.
+/// Нужно потому, что от кинопоискового id зависит, попадёт ли фильм в каталог:
+/// без него карточку некуда вести.
+model KpMap {
+  id        String   @id @default(cuid())
+  tmdbId    Int
+  /// movie или tv — у TMDB разные нумерации
+  media     String
+  kpId      Int
+  title     String?
+  year      Int?
+  createdAt DateTime @default(now())
+
+  @@unique([tmdbId, media])
+  @@index([kpId])
+}
