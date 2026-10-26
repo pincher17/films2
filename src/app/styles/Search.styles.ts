@@ -38,6 +38,14 @@ export const SearchInput = styled.input`
   border-radius: 5px 0 0 5px;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
+  /* Системный синий крестик очистки убираем: ниже свой, в стиле сайта */
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
   /* Активное состояние: вместо синей рамки браузера — аккуратное красное
      свечение вокруг поля */
   /* Активное состояние: светлая граница и мягкое нейтральное свечение —
@@ -85,15 +93,26 @@ export const ButtonSearch = styled.div`
     border-radius: 0 5px 5px 0;
 `;
 export const Cancel = styled.div<CrossIconProps>`
-display: none;
-@media (max-width: 850px){
-  display: block;
-}
-  font-size: 18px;
-  font-weight: 400;
+  /* Кнопка очистки: свой крестик вместо системного синего */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  line-height: 1;
   position: relative;
-  margin-left: 20px;
+  margin-left: 12px;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+  }
   ${({sidebar}) => ((sidebar) ? 
    `margin-left: 0;
     cursor: pointer;
@@ -106,6 +125,27 @@ display: none;
 
 
 export const SearchList = styled.div`
+  /* Тонкая тёмная полоса прокрутки вместо широкой белой системной */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.32);
+  }
+
 @media (max-width: 850px){
     width: 100%;
     background: none;
