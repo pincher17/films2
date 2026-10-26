@@ -150,8 +150,12 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
     return (
     <Wrapper mobile={(+mobile)}>
         <WrapperAllInputs>
+        {/* Блок галочек нужен только там, где тип не задан разделом.
+            Раньше он оставался в разметке пустым и занимал первую колонку,
+            из-за чего фильтры съезжали вправо. */}
+        {!hideTypes && (
         <WrapperCheckbox>
-        {!hideTypes && typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (
+        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (
         <FilterPill $active={item.included} key={item.typeNumber} htmlFor={`type-${item.typeNumber}`}>
             <input
                 id={`type-${item.typeNumber}`}
@@ -160,8 +164,6 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
                 onChange={() => changeIncludedTypeOfMovies(item.typeNumber)}
             />
             <PillBox $active={item.included}>
-                {/* галочка всегда в разметке: если её монтировать и размонтировать,
-                    вёрстка дёргается на несколько пикселей */}
                 <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
                     <path d="M1 4.4l3 3L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -170,6 +172,7 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
         </FilterPill>
         ))}
         </WrapperCheckbox>
+        )}
             <SliderValue
                 title='Рейтинг'
                 integer={false}
