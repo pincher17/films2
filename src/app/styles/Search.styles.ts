@@ -93,33 +93,27 @@ export const ButtonSearch = styled.div`
     border-radius: 0 5px 5px 0;
 `;
 export const Cancel = styled.div<CrossIconProps>`
-  /* Кнопка очистки: свой крестик вместо системного синего */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  /* «Отмена» — текстовая кнопка мобильного поиска: закрывает его.
+     Внутри поля свой крестик очистки, это разные вещи. */
+  display: none;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
   color: rgba(255, 255, 255, 0.75);
-  font-size: 14px;
-  line-height: 1;
   position: relative;
-  margin-left: 12px;
+  margin-left: 16px;
+  padding: 6px 4px;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.22);
     color: #fff;
   }
-  ${({sidebar}) => ((sidebar) ? 
-   `margin-left: 0;
-    cursor: pointer;
-    right: 47px;
-    top: 26px;
-    position: absolute;` 
-    : '')};
+
+  @media (max-width: 850px) {
+    display: block;
+  }
 `;
 
 
