@@ -69,12 +69,16 @@
   display: flex;
   justify-content: space-between;
   gap: 26px;
+  /* пункты не сжимаются и не слипаются с поиском на широких экранах */
+  flex: 0 0 auto;
+  margin-left: auto;
 /* width: 180px; */
 align-items: center;
 }
 
 .nav_item{
   font-weight:500;
+  white-space: nowrap;
   color: white;
   cursor: pointer;
   text-decoration: none;
