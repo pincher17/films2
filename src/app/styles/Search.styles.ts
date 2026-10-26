@@ -6,6 +6,9 @@ export const SearchWrapper = styled.div<SearchWrapperProps>`
   width: 600px;
   height: 35px;
   display: flex;
+  /* равные отступы слева и справа: поиск по центру между логотипом и меню */
+  margin-left: auto;
+  margin-right: auto;
   @media (max-width: 1150px){
     width: 460px;
   }
