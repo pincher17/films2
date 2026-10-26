@@ -275,4 +275,12 @@ export const Field = styled.div`
     width: 100%;
     min-width: 0;
   }
+
+  /* подпись поля */
+  p {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.72);
+  }
 `;

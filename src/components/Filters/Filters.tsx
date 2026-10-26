@@ -194,12 +194,18 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
                 defaulSecondValue={filters.year[1]}
                 onChangeValue={changeValueYear}
             />
-                <p style={{paddingBottom: "14px"}}>Жанры</p>
-                <Field><MultipleSelect options={allGenres} onChange={setValueGenre}/></Field>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
-                <Field><SelectCountry onChange={setValueCountry}/></Field>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
-                <Field><SortSelect onChange={setValueSort}/></Field>
+                <Field>
+                  <p>Жанры</p>
+                  <MultipleSelect options={allGenres} onChange={setValueGenre}/>
+                </Field>
+                <Field>
+                  <p>Страны</p>
+                  <SelectCountry onChange={setValueCountry}/>
+                </Field>
+                <Field>
+                  <p>Сортировка</p>
+                  <SortSelect onChange={setValueSort}/>
+                </Field>
          </WrapperAllInputs>
          <ButtonWrapper>
             <FiltersActions>
