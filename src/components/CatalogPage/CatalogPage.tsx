@@ -200,6 +200,10 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
 
   // чипы изменённых фильтров: считаем один раз
   const activeChips = getActiveFilterChips(filtres);
+  // видно, какой тип уходит в запрос: film / series / cartoons
+  if (typeof window !== "undefined") {
+    console.info("[раздел]", section, "| тип в запросе:", sectionTypes.join(","));
+  }
   // отладка: видно, что реально приходит в фильтрах
   if (typeof window !== "undefined") {
     console.info("[фильтры] страна:", filtres.country, "| чипы:", activeChips.map((c) => c.label));
