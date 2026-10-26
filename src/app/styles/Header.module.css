@@ -150,3 +150,11 @@ align-items: center;
 .logo {
   margin-right: 24px;
 }
+
+/* Разделитель между разделами каталога и «Сохранённым» */
+.nav_divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  flex: 0 0 auto;
+}

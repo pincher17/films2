@@ -34,6 +34,8 @@ const Header: React.FC = () =>{
         <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Фильмы</Link>
         <Link href={'/series'} className={`${s.nav_item} ${pathname == "/series" ? s.active : ""}`}>Сериалы</Link>
         <Link href={'/cartoons'} className={`${s.nav_item} ${pathname == "/cartoons" ? s.active : ""}`}>Мультфильмы</Link>
+        {/* Разделитель: разделы каталога отделены от «Сохранённого» */}
+        <span className={s.nav_divider} aria-hidden="true" />
         <Link href={'/saved'} className={`${s.nav_item} ${pathname == "/saved" ? s.active : ""}`}>Сохранённое</Link>
         {/* вход внутри nav — так шапка на компьютере стоит как раньше */}
         <HeaderAuth />
