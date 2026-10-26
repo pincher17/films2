@@ -1,4 +1,5 @@
 import React from 'react';
+import HeaderCatalogMenu from './HeaderCatalogMenu';
 import Search from '../search/Search';
 import s from '../../app/styles/Header.module.css';
 import Logo from '../../../public/assets/img/logo1.svg'
@@ -30,7 +31,7 @@ const Header: React.FC = () =>{
         </Link>
         <Search />
         <nav className={s.nav}>
-        <Link href={'/films'} className={`${s.nav_item} ${pathname == "/films" ? s.active : ""}`}>Все фильмы</Link>
+        <HeaderCatalogMenu />
         <Link href={'/saved'} className={`${s.nav_item} ${pathname == "/saved" ? s.active : ""}`}>Сохранённое</Link>
         {/* вход внутри nav — так шапка на компьютере стоит как раньше */}
         <HeaderAuth />

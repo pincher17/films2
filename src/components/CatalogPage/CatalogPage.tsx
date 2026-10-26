@@ -24,7 +24,6 @@ import {
   FilterBadge,
 } from "@/app/styles/AllFilmsPage.styles";
 import Cards from "@/components/Cards/Cards";
-import SectionSwitcher from "@/components/SectionSwitcher/SectionSwitcher";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Filters from "@/components/Filters/Filters";
 import { MainTag } from "@/app/Main.styles";
@@ -211,10 +210,11 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
       <MainTag>
         <Wrapper>
           <WrapperNameBlock>
-            {/* Заголовок раздела — сам переключатель */}
+            <div>
+              <NameBlock>{SECTION_TITLES[section]}</NameBlock>
+            </div>
 
-            <SectionSwitcher />
-            <FilterIcon onClick={toggleSidebar}>
+                        <FilterIcon onClick={toggleSidebar}>
               <FilterIcon7 />
               {/* счётчик изменённых фильтров: по умолчанию его нет */}
               {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
