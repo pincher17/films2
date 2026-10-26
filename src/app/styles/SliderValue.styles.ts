@@ -56,9 +56,12 @@ export const Wrapper = styled.div`
 export const Title = styled.div`
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
   color: rgba(255, 255, 255, 0.65);
+  /* та же высота строки подписи, что у списков */
+  height: 18px;
+  line-height: 18px;
   margin-bottom: 8px;
+  white-space: nowrap;
 `
 
 export const WrapperInputs = styled.div`

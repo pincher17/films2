@@ -278,12 +278,22 @@ export const Field = styled.div`
   }
 
   /* подпись поля */
+  /* строка подписи одной высоты во всех колонках */
   p {
     margin: 0 0 8px;
     padding: 0;
+    height: 18px;
+    line-height: 18px;
     font-size: 13px;
     font-weight: 500;
-    line-height: 1.4;
     color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+  }
+
+  /* строка поля тоже фиксированной высоты — тогда все колонки совпадают */
+  > *:not(p) {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
   }
 `;
