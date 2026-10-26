@@ -262,3 +262,11 @@ export const WrapperInput = styled.div`
   gap: 14px;
   min-width: 240px;
 `;
+
+/** Одно поле фильтра: подпись и контрол вместе, одна ячейка сетки */
+export const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+`;

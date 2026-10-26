@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Field } from '../../app/styles/Filters.styles';
 import { allGenres } from '../../data/allGenres';
 import Button from '../Button';
 import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
@@ -194,11 +195,11 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
                 onChangeValue={changeValueYear}
             />
                 <p style={{paddingBottom: "14px"}}>Жанры</p>
-                <MultipleSelect options={allGenres} onChange={setValueGenre}/>
+                <Field><MultipleSelect options={allGenres} onChange={setValueGenre}/></Field>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
-                <SelectCountry onChange={setValueCountry}/>
+                <Field><SelectCountry onChange={setValueCountry}/></Field>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
-                <SortSelect onChange={setValueSort}/>
+                <Field><SortSelect onChange={setValueSort}/></Field>
          </WrapperAllInputs>
          <ButtonWrapper>
             <FiltersActions>
