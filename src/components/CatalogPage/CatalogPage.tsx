@@ -25,6 +25,7 @@ import { MainTag } from "@/app/Main.styles";
 import { useSearchParams } from "next/navigation";
 import { setFilterGenre, setFilters, setUpdateGenre } from "@/redux/filtersSlice";
 import { allGenres } from "@/data/allGenres";
+import { genresForSection } from "@/data/genresBySection";
 import FilterIcon7 from "/public/Filtericon.svg";
 import InfiniteScroll from '@/components/InfiniteScroll';
 
@@ -50,6 +51,7 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
   );
   const films = useAppSelector((state) => state.allFilms.films);
   const sectionTypes = SECTION_TYPES[section];
+  const sectionGenres = genresForSection(section);
   const baseFilters = useAppSelector((state) => state.filters);
   // тип задаётся разделом, поэтому из состояния его подменяем
   const filtres = { ...baseFilters, selectedTypeOfMovies: sectionTypes };
@@ -98,13 +100,19 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
         );
       });
 
-    if (genreList.length) dispatch(setFilterGenre(genreList));
+    /* Жанры, которых нет в этом разделе, отбрасываем: «триллер» есть у фильмов,
+       но у сериалов такого жанра нет — иначе фильтр молча ломал выдачу. */
+    const allowed = new Set(sectionGenres.map((item) => String(item.value).toLowerCase()));
+    const allowedGenres = genreList.filter((item) =>
+      allowed.has(String(item.value || "").toLowerCase())
+    );
+    if (allowedGenres.length) dispatch(setFilterGenre(allowedGenres));
 
     /*
      * Сразу перезапрашиваем каталог с новым жанром: иначе запрос, запущенный
      * со старым (пустым) состоянием, перезаписывает его и жанры теряются.
      */
-    const merged = { ...filtres, genre: genreList };
+    const merged = { ...filtres, genre: allowedGenres };
     /* Карточки прошлого раздела надо убрать: иначе при переходе
        фильмы → сериалы на экране остаётся старый список */
     dispatch(clearFilms());
@@ -231,10 +239,10 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
               ))}
             </ActiveChips>
           )}
-          {resolution.width > 1150 ? <Filters mobile={false} hideTypes /> : ""}
+          {resolution.width > 1150 ? <Filters mobile={false} hideTypes genres={sectionGenres} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
-            {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes />}
+            {<Filters mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes genres={sectionGenres} />}
           </Sidebar>
           <Cards cards={films} />
           <InfiniteScroll

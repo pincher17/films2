@@ -17,7 +17,7 @@ import SortSelect from '../SortSelect/SortSelect';
 
 
 
-const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setIsOpenSidebar, hideTypes}) =>{
+const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: string; label: string; id: number }[] }> = ({mobile, setIsOpenSidebar, hideTypes, genres}) =>{
 
     const filters = useAppSelector((state: { filters: any; }) => state.filters);
     const dispatch = useAppDispatch()
@@ -196,7 +196,7 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
             />
                 <Field>
                   <p>Жанры</p>
-                  <MultipleSelect options={allGenres} onChange={setValueGenre}/>
+                  <MultipleSelect options={genres || allGenres} onChange={setValueGenre}/>
                 </Field>
                 <Field>
                   <p>Страны</p>
