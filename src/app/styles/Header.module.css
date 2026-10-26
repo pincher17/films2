@@ -143,3 +143,10 @@ align-items: center;
     justify-content: space-between;
   }
 }
+
+
+/* Логотип: расстояние до поиска. Зазор контейнера не срабатывал,
+   поэтому задаём отдельным правилом. */
+.logo {
+  margin-right: 24px;
+}

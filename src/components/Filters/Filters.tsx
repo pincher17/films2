@@ -5,7 +5,7 @@ import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
@@ -193,14 +193,12 @@ const Filters: React.FC<FiltersProps & { hideTypes?: boolean }> = ({mobile, setI
                 defaulSecondValue={filters.year[1]}
                 onChangeValue={changeValueYear}
             />
-            <WrapperInput>
                 <p style={{paddingBottom: "14px"}}>Жанры</p>
                 <MultipleSelect options={allGenres} onChange={setValueGenre}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
                 <SelectCountry onChange={setValueCountry}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
                 <SortSelect onChange={setValueSort}/>
-            </WrapperInput>
          </WrapperAllInputs>
          <ButtonWrapper>
             <FiltersActions>

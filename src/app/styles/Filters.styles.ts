@@ -17,11 +17,6 @@ export const Wrapper = styled.div<FiltersWrapperProps>`
   box-sizing: border-box;
  }
 `
-export const WrapperInput = styled.div`
-  /* Поля-списки становятся элементами сетки панели, а не одной колонкой:
-     иначе жанры, страны и сортировка выстраивались столбиком справа */
-  display: contents;
-`
 
 export const WrapperAllInputs = styled.div`
     width: 100%;
@@ -258,4 +253,12 @@ export const ActiveChip = styled.span`
   font-size: 12px;
   line-height: 1;
   white-space: nowrap;
+`;
+
+/** Колонка полей — используется в фильтрах студий */
+export const WrapperInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 240px;
 `;
