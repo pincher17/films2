@@ -59,17 +59,25 @@ export const WrapperInput = styled.div`
 export const WrapperAllInputs = styled.div`
     width: 100%;
     margin-bottom: 18px;
-    /* Три равные колонки: слайдеры и списки заполняют всю ширину,
-     без пустот справа */
+    /* Панель фильтров: пять полей в один ряд, как в интернет-магазинах */
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: start;
-    gap: 26px 36px;
+    gap: 18px 20px;
+    padding: 20px 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  @media (max-width: 1250px){
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   @media (max-width: 1150px){
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 43px;
+    align-items: stretch;
+    gap: 26px;
+    padding: 16px 18px;
   }
   @media (max-width: 850px){
     flex: 1 1 auto;
