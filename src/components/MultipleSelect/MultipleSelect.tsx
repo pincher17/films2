@@ -37,7 +37,6 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({options, onChange}) => {
       maxWidth: '100%',
       /* Без минимальной ширины список сжимался на средних экранах:
          колонка фильтров там определяется содержимым, а не шириной. */
-      minWidth: '260px',
       borderColor: state.isFocused ? '#747474' : 'rgb(52 52 52)',
       boxShadow: 'none',
       flex: 1,

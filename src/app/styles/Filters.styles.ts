@@ -269,4 +269,10 @@ export const Field = styled.div`
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+
+  /* поле не выпихивает соседей за пределы своей ячейки */
+  > * {
+    width: 100%;
+    min-width: 0;
+  }
 `;

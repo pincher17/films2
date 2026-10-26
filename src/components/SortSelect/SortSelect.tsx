@@ -46,7 +46,6 @@ const SortSelect: React.FC<Props> = ({ onChange, studio, options }) => {
       maxWidth: '100%',
       /* Без минимальной ширины список сжимался на средних экранах:
          колонка фильтров там определяется содержимым, а не шириной. */
-      minWidth: '260px',
       borderColor: state.isFocused ? '#747474' : 'rgb(52 52 52)',
       boxShadow: 'none',
       flex: 1,
