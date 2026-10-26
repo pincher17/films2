@@ -123,12 +123,15 @@ export const SearchList = styled.div`
     scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 12px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      /* внутренний отступ: бегунок не прилипает к краю списка */
+      border: 3px solid transparent;
+      background-clip: content-box;
     }
 
     &::-webkit-scrollbar-thumb:hover {
