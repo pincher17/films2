@@ -48,6 +48,8 @@ const SortSelect: React.FC<Props> = ({ onChange, studio, options }) => {
          колонка фильтров там определяется содержимым, а не шириной. */
       borderColor: state.isFocused ? '#747474' : 'rgb(52 52 52)',
       boxShadow: 'none',
+      /* общая высота с полями ввода: 40px на компьютере */
+      minHeight: 40,
       flex: 1,
       cursor: 'pointer',
     }),

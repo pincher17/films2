@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
-  width: 222px;
+  /* тянется по своей ячейке сетки, как остальные поля: раньше стояло
+     222px, и «Рейтинг» с «Годом» были заметно уже списков */
+  width: 100%;
   /* без этого ползунок вылезал за край: у MUI-слайдера своя ширина,
      и он растягивался шире панели */
   max-width: 100%;
@@ -44,19 +46,34 @@ export const Wrapper = styled.div`
  }
 `
 
+/**
+ * Подпись поля. Размер и цвет совпадают с подписями списков — иначе
+ * «Рейтинг» и «Год» выглядели из другого интерфейса.
+ */
 export const Title = styled.div`
-  font-size: 18px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 8px;
 `
 
 export const WrapperInputs = styled.div`
  display: flex;
  margin-bottom: 12px;
+
+ /* Общая высота со списками. 44px — рекомендованный минимум для нажатия
+    пальцем (Apple HIG), на компьютере достаточно 40px. */
+ & .input {
+  height: 40px;
+  box-sizing: border-box;
+ }
  & > :first-child{
   margin-right: 30px;
  }
  @media (max-width: 850px){
   & .input{
-  height: 50px;
+  height: 44px;
  }
   }
 

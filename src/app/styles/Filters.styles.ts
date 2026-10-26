@@ -278,9 +278,11 @@ export const Field = styled.div`
 
   /* подпись поля */
   p {
-    margin: 0;
+    margin: 0 0 8px;
     padding: 0;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.65);
   }
 `;
