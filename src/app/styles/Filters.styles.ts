@@ -18,42 +18,9 @@ export const Wrapper = styled.div<FiltersWrapperProps>`
  }
 `
 export const WrapperInput = styled.div`
-  /* было 55px — под колонками фильтров оставалась пустота перед кнопками */
-  padding-bottom: 28px;
-  @media (max-width: 850px){
-    margin-top: -20px;
-    padding-bottom: 40px;
-    /* Такая же ширина, как у полей рейтинга и года: раньше здесь стоял
-       минус 28px, из-за чего списки были уже полей и правый край не совпадал. */
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-
-    /* Списки на react-select: обычное правило select к ним не применяется,
-       поэтому стилизуем через класс-префикс fh-select (задан в компонентах). */
-    .fh-select__control {
-      min-height: 52px;
-      height: 52px;
-      border-radius: 10px;
-      font-size: 16px;
-      background: #0e0e0e;
-      border-color: #343434;
-    }
-
-    .fh-select__value-container {
-      padding-left: 14px;
-    }
-
-    .fh-select__menu {
-      font-size: 16px;
-      background: #0e0e0e;
-    }
-
-    .fh-select__option {
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-  }
+  /* Поля-списки становятся элементами сетки панели, а не одной колонкой:
+     иначе жанры, страны и сортировка выстраивались столбиком справа */
+  display: contents;
 `
 
 export const WrapperAllInputs = styled.div`
