@@ -5,12 +5,7 @@ import { getActiveFilterChips } from "@/components/Filters/activeFilters";
 import { ActiveChips, ActiveChip } from "@/app/styles/Filters.styles";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
-import {
-  getAllFilmsFiltersThunk,
-  getAllFilmsThunk,
-  nextPage,
-  setPage,
-} from "@/redux/allFilmsSlice";
+import { getAllFilmsFiltersThunk, getAllFilmsThunk, nextPage, setPage, clearFilms } from '@/redux/allFilmsSlice';
 import {
   Button,
   CrossIcon,
@@ -112,6 +107,9 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
      * со старым (пустым) состоянием, перезаписывает его и жанры теряются.
      */
     const merged = { ...filtres, genre: genreList };
+    /* Карточки прошлого раздела надо убрать: иначе при переходе
+       фильмы → сериалы на экране остаётся старый список */
+    dispatch(clearFilms());
     dispatch(setFilters(merged as any));
     dispatch(setPage(1));
     dispatch(getAllFilmsFiltersThunk(merged as any, 1));
