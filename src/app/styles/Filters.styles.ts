@@ -59,10 +59,13 @@ export const WrapperInput = styled.div`
 export const WrapperAllInputs = styled.div`
     width: 100%;
     margin-bottom: -70px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    display: grid;
+    /* сетка использует освободившееся место: слева слайдеры, справа списки */
+    grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr) minmax(260px, 1fr);
+    gap: 22px 34px;
+    align-items: start;
   @media (max-width: 1150px){
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 43px;
