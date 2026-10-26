@@ -225,6 +225,9 @@ export async function GET(request) {
     const ratingFrom = numberOrUndefined(searchParams.get("ratingFrom"));
     const ratingTo = numberOrUndefined(searchParams.get("ratingTo"));
     const countryMode = searchParams.get("country") || "all";
+      /* Только сериалы: в TMDB у них меньше оценок, и общий порог 300
+         отсекал почти всё (криминал: 33 вместо 280). */
+      const seriesOnly = String(searchParams.get("types") || "") === "2";
     const sortParam = searchParams.get("sort") || "date-desc";
     const typesParam = searchParams.get("types") || "1,2,3";
     const cartoonsOnly = isCartoonsOnly(typesParam);
@@ -255,7 +258,7 @@ export async function GET(request) {
            почти всё, особенно при сортировке по рейтингу — оставались 3 записи
            из 242. Для «Русских» держим порог низким при любой сортировке,
            а для остальных высоким, чтобы в топ не лезли фильмы с одной оценкой. */
-        (countryMode === "ru"
+        (countryMode === "ru" || seriesOnly
           ? 20
           : sortOptions(sortParam).rating
           ? 300
