@@ -56,17 +56,23 @@ async function main() {
     )
   );
 
-  const tasks = await prisma.trailerTask.findMany({
-    where: { status: { not: "skipped" } },
-    orderBy: { popularity: "desc" },
-    take: LIMIT * 3,
-    select: { tmdbId: true, media: true, title: true, year: true },
-  });
+  /* Половину бюджета отдаём фильмам, половину сериалам: иначе по
+     популярности в топе только фильмы, а сериалы остаются без id. */
+  const takeFor = async (media, limit) => {
+    const rows = await prisma.trailerTask.findMany({
+      where: { status: { not: "skipped" }, media },
+      orderBy: { popularity: "desc" },
+      take: limit * 4,
+      select: { tmdbId: true, media: true, title: true, year: true },
+    });
+    return rows
+      .filter((task) => task.tmdbId && task.title)
+      .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`))
+      .slice(0, limit);
+  };
 
-  const queue = tasks
-    .filter((task) => task.tmdbId && task.title)
-    .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`))
-    .slice(0, LIMIT);
+  const half = Math.ceil(LIMIT / 2);
+  const queue = [...(await takeFor("movie", half)), ...(await takeFor("tv", LIMIT - half))];
 
   console.log(`[kpmap] кандидатов: ${queue.length}, лимит запросов: ${LIMIT}`);
 
@@ -108,6 +114,35 @@ async function main() {
 
   const total = await prisma.kpMap.count();
   console.log(`[kpmap] запросов: ${requests}, найдено: ${found}, всего в базе: ${total}`);
+
+  await sendReport({ requests, found, total });
+}
+
+/** Отчёт в Telegram: тихо пропускаем, если токена или чата нет */
+async function sendReport({ requests, found, total }) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return;
+  let chatId = null;
+  try {
+    chatId = fs.readFileSync("/root/.filmhub-tg-chat", "utf8").trim();
+  } catch {
+    return;
+  }
+  const text = [
+    "Кинопоиск: соответствия обновлены",
+    `запросов: ${requests}`,
+    `найдено: ${found}`,
+    `всего в базе: ${total}`,
+  ].join("\n");
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch {
+    undefined;
+  }
 }
 
 await main();
