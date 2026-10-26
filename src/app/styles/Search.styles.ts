@@ -38,12 +38,15 @@ export const SearchInput = styled.input`
   border-radius: 5px 0 0 5px;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
-  /* Системный синий крестик очистки убираем: ниже свой, в стиле сайта */
-  &::-webkit-search-cancel-button,
-  &::-webkit-search-decoration {
-    -webkit-appearance: none;
-    appearance: none;
-    display: none;
+  /* На компьютере убираем системный синий крестик у поля поиска.
+     Мобильную версию не трогаем. */
+  @media (min-width: 851px) {
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+      appearance: none;
+      display: none;
+    }
   }
 
   /* Активное состояние: вместо синей рамки браузера — аккуратное красное
@@ -93,51 +96,44 @@ export const ButtonSearch = styled.div`
     border-radius: 0 5px 5px 0;
 `;
 export const Cancel = styled.div<CrossIconProps>`
-  /* «Отмена» — текстовая кнопка мобильного поиска: закрывает его.
-     Внутри поля свой крестик очистки, это разные вещи. */
-  display: none;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.2;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.75);
+display: none;
+@media (max-width: 850px){
+  display: block;
+}
+  font-size: 18px;
+  font-weight: 400;
   position: relative;
-  margin-left: 16px;
-  padding: 6px 4px;
+  margin-left: 20px;
   cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: #fff;
-  }
-
-  @media (max-width: 850px) {
-    display: block;
-  }
+  ${({sidebar}) => ((sidebar) ? 
+   `margin-left: 0;
+    cursor: pointer;
+    right: 47px;
+    top: 26px;
+    position: absolute;` 
+    : '')};
 `;
 
 
 
 export const SearchList = styled.div`
-  /* Тонкая тёмная полоса прокрутки вместо широкой белой системной */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  /* Тонкая тёмная полоса прокрутки — только на компьютере */
+  @media (min-width: 851px) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
 
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.32);
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.32);
+    }
   }
 
 @media (max-width: 850px){
