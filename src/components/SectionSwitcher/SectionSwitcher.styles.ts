@@ -1,93 +1,54 @@
 import styled from "styled-components";
 import Link from "next/link";
 
-/** Обёртка: заголовок с меню */
+/** Пилюля с сегментами */
 export const Wrapper = styled.div`
-  position: relative;
-  display: inline-block;
-`;
-
-/** Крупный заголовок-кнопка */
-export const Trigger = styled.button`
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: #fff;
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.75;
-  }
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   @media (max-width: 850px) {
-    font-size: 24px;
-    gap: 8px;
-  }
-`;
-
-/** Стрелка: поворачивается при открытии */
-export const Caret = styled.span<{ $open?: boolean }>`
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 8px solid #c9151a;
-  transform: rotate(${({ $open }) => ($open ? "180deg" : "0deg")});
-  transition: transform 0.2s ease;
-`;
-
-/** Выпадающий список */
-export const Menu = styled.div<{ $open?: boolean }>`
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  min-width: 230px;
-  padding: 6px;
-  border-radius: 14px;
-  background: #161616;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-  z-index: 60;
-  opacity: ${({ $open }) => ($open ? 1 : 0)};
-  visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
-  transform: translateY(${({ $open }) => ($open ? "0" : "-6px")});
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
-
-  @media (max-width: 850px) {
-    min-width: 0;
+    display: flex;
     width: 100%;
+    margin: 0 0 16px;
   }
 `;
 
-/** Пункт меню */
-export const Item = styled(Link)<{ $active?: boolean }>`
-  display: block;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: ${({ $active }) => ($active ? "#fff" : "rgba(255, 255, 255, 0.72)")};
-  background: ${({ $active }) => ($active ? "rgba(201, 21, 26, 0.9)" : "transparent")};
-  font-size: 15px;
+/** Сегмент */
+export const Segment = styled(Link)<{ $active?: boolean }>`
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 14px;
   font-weight: 500;
-  text-decoration: none;
+  line-height: 1;
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  color: ${({ $active }) => ($active ? "#fff" : "rgba(255, 255, 255, 0.6)")};
+  background: ${({ $active }) => ($active ? "#c9151a" : "transparent")};
+  transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
     background: ${({ $active }) =>
-      $active ? "rgba(201, 21, 26, 0.9)" : "rgba(255, 255, 255, 0.08)"};
+      $active ? "#c9151a" : "rgba(255, 255, 255, 0.09)"};
     color: #fff;
   }
 
+  &:active {
+    transform: scale(0.98);
+  }
+
   @media (max-width: 850px) {
-    padding: 14px;
-    font-size: 16px;
+    padding: 11px 8px;
+    font-size: 13px;
+    min-height: 42px;
   }
 `;
