@@ -62,6 +62,8 @@ export const Title = styled.div`
   line-height: 18px;
   margin-bottom: 8px;
   white-space: nowrap;
+  /* 2px вниз: колонки со слайдерами стояли чуть выше списков */
+  margin-top: 2px;
 `
 
 export const WrapperInputs = styled.div`
