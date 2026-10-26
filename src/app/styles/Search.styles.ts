@@ -9,6 +9,8 @@ export const SearchWrapper = styled.div<SearchWrapperProps>`
   /* равные отступы слева и справа: поиск по центру между логотипом и меню */
   margin-left: auto;
   margin-right: auto;
+  /* визуально поле стояло выше логотипа и меню — сдвигаем на пару пикселей */
+  margin-top: 3px;
   @media (max-width: 1150px){
     width: 460px;
   }
