@@ -98,9 +98,7 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
         );
       });
 
-    if (!genreList.length) return;
-
-    dispatch(setFilterGenre(genreList));
+    if (genreList.length) dispatch(setFilterGenre(genreList));
 
     /*
      * Сразу перезапрашиваем каталог с новым жанром: иначе запрос, запущенный
@@ -113,7 +111,9 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
     dispatch(setFilters(merged as any));
     dispatch(setPage(1));
     dispatch(getAllFilmsFiltersThunk(merged as any, 1));
-  }, []);
+    /* Зависимость от раздела: одна и та же страница обслуживает три раздела,
+       и без этого при переходе фильмы → сериалы данные не перезагружались. */
+  }, [section]);
 
   useEffect(() => {
     if (isOpenSidebar) {
