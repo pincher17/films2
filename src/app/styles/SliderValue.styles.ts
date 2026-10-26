@@ -13,6 +13,9 @@ export const Wrapper = styled.div`
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    /* бегунки на краях дорожки не должны смыкаться с соседним полем */
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   /* На телефоне тонкую дорожку и мелкий бегунок тяжело тянуть пальцем */
