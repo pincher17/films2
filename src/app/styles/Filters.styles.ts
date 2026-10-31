@@ -306,3 +306,12 @@ export const Field = styled.div`
     align-items: center;
   }
 `;
+
+/** Панель фильтров студии: четыре поля вместо пяти */
+export const FiltersStudiosPanel = styled(WrapperAllInputs)`
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @media (max-width: 1250px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;

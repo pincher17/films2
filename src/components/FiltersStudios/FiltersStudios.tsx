@@ -4,7 +4,7 @@ import Button from '../Button';
 import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput, Field, FiltersActions } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput, Field, FiltersActions, FiltersStudiosPanel } from '../../app/styles/Filters.styles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersStudioType, setFilters } from '@/redux/filtersStudios';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsStudio';
@@ -91,7 +91,10 @@ console.log(filters.genre, valueGenre)
 
     return (
     <Wrapper mobile={(+mobile)}>
-        <WrapperAllInputs>
+        <FiltersStudiosPanel>
+        {/* Блок галочек не рендерим, когда тип задан переключателем: иначе
+            пустой контейнер занимает первую колонку и поля съезжают */}
+        {!hideTypes && (
         <WrapperCheckbox>
         {!hideTypes && typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
         <CheckBox
@@ -104,6 +107,7 @@ console.log(filters.genre, valueGenre)
         />
         ))}
         </WrapperCheckbox>
+        )}
             <SliderValue
                 title='Рейтинг'
                 integer={false}
@@ -133,7 +137,7 @@ console.log(filters.genre, valueGenre)
                 <p>Сортировка</p>
                 <SortSelect onChange={setValueSort} studio/>
             </Field>
-         </WrapperAllInputs>
+         </FiltersStudiosPanel>
          <ButtonWrapper>
             <FiltersActions>
                 <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
