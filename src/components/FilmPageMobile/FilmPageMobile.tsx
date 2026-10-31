@@ -48,7 +48,7 @@ import { getFilmById } from "@/redux/filmInfoSlice";
 import { Strong } from "@/app/styles/FilmPage.styles";
 import translateCategory from "../helpers/translateCategory";
 
-export default function FilmPageMobile({ params }: { params: { id: number } }) {
+export default function FilmPageMobile({ params }: { params: { id: number | string } }) {
   let id = params.id
   const dispatch = useAppDispatch();
   const filmInfoId = useAppSelector((state) => state.filmInfo.info);
