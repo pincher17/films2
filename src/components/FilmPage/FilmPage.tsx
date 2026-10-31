@@ -388,7 +388,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               ) : (
                 <>
                   <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                  src={`https://api.ortified.ws/embed/kp/${id}`}
+                  src={`https://api.ortified.ws/embed/${String(id).startsWith("tt") ? "imdb" : "kp"}/${id}`}
                   frameBorder="0"
                   scrolling="no"
                   allowFullScreen

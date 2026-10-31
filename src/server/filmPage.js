@@ -592,7 +592,20 @@ async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
 }
 
 export async function getFilmPageData(kinopoiskId) {
-  const resolved = await resolveTmdbByKinopoisk(kinopoiskId);
+  /* Плеер принимает и imdb id (tt0133093): это снимает зависимость от
+     кинопоисковых id, которых у зарубежного контента часто нет. */
+  const isImdb = /^tt\d+$/i.test(String(kinopoiskId || ""));
+  let resolved = null;
+
+  if (isImdb) {
+    const found = await tmdbGet(`/find/${kinopoiskId}`, { external_source: "imdb_id" });
+    const movie = found?.movie_results?.[0];
+    const show = found?.tv_results?.[0];
+    if (movie) resolved = { tmdbId: movie.id, media: "movie" };
+    else if (show) resolved = { tmdbId: show.id, media: "tv" };
+  } else {
+    resolved = await resolveTmdbByKinopoisk(kinopoiskId);
+  }
   if (!resolved?.tmdbId) return null;
 
   const media = resolved.media;
