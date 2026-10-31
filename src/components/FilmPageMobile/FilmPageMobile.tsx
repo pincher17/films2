@@ -147,7 +147,14 @@ export default function FilmPageMobile({ params }: { params: { id: number | stri
 
   /* Плеер и история просмотра работают с числовым id: для imdb-адреса
      берём число из него самого, чтобы запись не потерялась */
-  const numericFilmId = Number(String(id).replace(/\D/g, "")) || 0;
+  /* Для imdb-адресов берём отрицательное число: история и сохранённое
+       хранятся числом, и так они не пересекутся с кинопоисковыми id */
+  const imdbNumber = (() => {
+    const raw = String(id ?? "");
+    return /^tt\d+$/i.test(raw) ? -Number(raw.replace(/\D/g, "")) : 0;
+  })();
+
+  const numericFilmId = imdbNumber || Number(String(id).replace(/\D/g, "")) || 0;
 
   return (
     <Wrapper>

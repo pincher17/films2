@@ -87,7 +87,14 @@ export default function FilmPage({ params }: { params: { id: number | string } }
   // В адресе лежит «79848-сопрано». Плееру этого достаточно (он сам выдёргивает
   // цифры), а для сохранения позиции нужен чистый номер: Number("79848-сопрано")
   // давал NaN, и запись в базу молча не уходила.
-  const numericId = Number(String(params.id).replace(/\D/g, "")) || 0;
+  /* Для imdb-адресов берём отрицательное число: история и сохранённое
+       хранятся числом, и так они не пересекутся с кинопоисковыми id */
+  const imdbNumber = (() => {
+    const raw = String(params.id ?? "");
+    return /^tt\d+$/i.test(raw) ? -Number(raw.replace(/\D/g, "")) : 0;
+  })();
+
+  const numericId = imdbNumber || Number(String(params.id).replace(/\D/g, "")) || 0;
   // если для фильма заданы свои ссылки — играем их в своём плеере
   const streams = getFilmStreams(id);
   const dispatch = useAppDispatch();
