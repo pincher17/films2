@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Wrapper, Segment } from "@/components/SectionSwitcher/SectionSwitcher.styles";
+import { Wrapper, Segment } from "./StudioTypeSwitcher.styles";
 
 /**
  * Переключатель типа контента на странице студии.
@@ -26,7 +26,7 @@ export default function StudioTypeSwitcher({
   const current = value.length === 3 || value.length === 0 ? "1,2,3" : value.join(",");
 
   return (
-    <Wrapper as="div" role="tablist" aria-label="Тип контента">
+    <Wrapper role="tablist" aria-label="Тип контента">
       {OPTIONS.map((option) => {
         const active = option.value === current;
         return (
