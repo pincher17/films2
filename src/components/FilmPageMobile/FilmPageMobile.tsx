@@ -145,10 +145,14 @@ export default function FilmPageMobile({ params }: { params: { id: number | stri
       : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
+  /* Плеер и история просмотра работают с числовым id: для imdb-адреса
+     берём число из него самого, чтобы запись не потерялась */
+  const numericFilmId = Number(String(id).replace(/\D/g, "")) || 0;
+
   return (
     <Wrapper>
-      {watchFilm && <MobileWatchFilm id={id} setWatchFilm={setWatchFilm} />}
-      {watchTrailer && <TrailerMobileWatch id={id} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos?.trailers?.[0].url}`} />}
+      {watchFilm && <MobileWatchFilm id={numericFilmId} setWatchFilm={setWatchFilm} />}
+      {watchTrailer && <TrailerMobileWatch id={numericFilmId} setWatchTrailer={setWatchTrailer} src={`${filmInfoId?.videos?.trailers?.[0].url}`} />}
       <LayoutFilm>
         <Gradient>
         <BackgroundImage src={filmInfoId?.poster.previewUrl} />
