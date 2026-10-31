@@ -141,3 +141,18 @@ model KpMap {
   @@unique([tmdbId, media])
   @@index([kpId])
 }
+
+/// Соответствие TMDB ↔ IMDb. Заполняется скриптом через TMDB external_ids.
+/// Нужно, чтобы каталог мог показать фильм даже без кинопоискового id:
+/// плеер принимает imdb (tt...), а он есть почти у всего.
+model ImdbMap {
+  id        String   @id @default(cuid())
+  tmdbId    Int
+  /// movie или tv
+  media     String
+  imdbId    String
+  createdAt DateTime @default(now())
+
+  @@unique([tmdbId, media])
+  @@index([imdbId])
+}
