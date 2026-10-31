@@ -8,6 +8,7 @@
 
 import { tmdbGet, posterUrl } from "./tmdb.js";
 import { resolveKinopoiskByTmdbIds } from "./filmPage.js";
+import { prisma } from "./prisma.js";
 
 const PAGE_SIZE = 10;
 const TMDB_PAGE_SIZE = 20;
@@ -75,14 +76,35 @@ export async function searchFilms(query, page = 1) {
     resolveKinopoiskByTmdbIds(shows.map((item) => item.id), "tv"),
   ]);
 
+  /* У зарубежного контента кинопоискового id часто нет — тогда показываем
+     фильм по imdb-адресу (tt...), плеер его принимает. */
+  const imdbByFilm = new Map();
+  try {
+    const rows = await prisma.imdbMap.findMany({
+      where: {
+        OR: [
+          { media: "movie", tmdbId: { in: movies.map((item) => item.id) } },
+          { media: "tv", tmdbId: { in: shows.map((item) => item.id) } },
+        ],
+      },
+      select: { tmdbId: true, media: true, imdbId: true },
+    });
+    rows.forEach((row) => imdbByFilm.set(`${row.media}:${row.tmdbId}`, row.imdbId));
+  } catch {
+    undefined;
+  }
+
   const seen = new Set();
   const docs = items
     .map((item) => {
       const map = item.media_type === "movie" ? movieIds : showIds;
       const kinopoiskId = map.get(item.id);
-      if (!kinopoiskId || seen.has(kinopoiskId)) return null;
-      seen.add(kinopoiskId);
-      return toCard(item, kinopoiskId);
+      const imdbId = imdbByFilm.get(`${item.media_type}:${item.id}`);
+      // кинопоисковый адрес в приоритете, imdb — запасной
+      const cardId = kinopoiskId || imdbId;
+      if (!cardId || seen.has(cardId)) return null;
+      seen.add(cardId);
+      return toCard(item, cardId);
     })
     .filter(Boolean);
 
