@@ -145,7 +145,16 @@ export async function GET(request) {
         watchProvider: known?.provider || null,
         watchRegion: "US",
         genres: studioGenres,
-        excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre)),
+        excludeGenres: (() => {
+        const excluded = DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre));
+        /* У студий та же логика, что в каталоге: на странице фильмов и сериалов
+           мультипликации быть не должно — она живёт в разделе мультфильмов. */
+        const studioTypes = String(searchParams.get("types") || "");
+        if (studioTypes !== "3" && !studioGenres.includes("мультфильм")) {
+          excluded.push("мультфильм");
+        }
+        return excluded;
+      })(),
         yearRange: studioYears,
         yearFrom: studioYears[0],
         yearTo: studioYears[1],
