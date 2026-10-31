@@ -69,8 +69,9 @@
 
 .nav{
   display: flex;
-  justify-content: space-between;
-  gap: 26px;
+  /* пункты держим кучно у правого края, ближе к профилю */
+  justify-content: flex-end;
+  gap: 16px;
   /* пункты не сжимаются и не слипаются с поиском на широких экранах */
   flex: 0 0 auto;
   margin-left: auto;
@@ -80,6 +81,7 @@ align-items: center;
 
 .nav_item{
   font-weight:500;
+  font-size: 16px;
   white-space: nowrap;
   color: white;
   cursor: pointer;
