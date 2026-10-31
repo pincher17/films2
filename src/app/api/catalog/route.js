@@ -239,7 +239,16 @@ export async function GET(request) {
       types: typesParam,
       cartoonsOnly,
       genres,
-      excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre)),
+      excludeGenres: (() => {
+        const excluded = DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre));
+        /* Фильмы и сериалы — без мультипликации: она живёт в разделе
+           «Мультфильмы». Тип 3 — это как раз мультфильмы, для него не исключаем. */
+        const catalogTypes = String(searchParams.get("types") || "");
+        if (catalogTypes !== "3" && !genres.includes("мультфильм")) {
+          excluded.push("мультфильм");
+        }
+        return excluded;
+      })(),
       yearRange: yearFrom !== undefined && yearTo !== undefined ? [yearFrom, yearTo] : undefined,
       yearFrom,
       yearTo,
