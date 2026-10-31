@@ -227,7 +227,10 @@ export async function GET(request) {
     const countryMode = searchParams.get("country") || "all";
       /* Только сериалы: в TMDB у них меньше оценок, и общий порог 300
          отсекал почти всё (криминал: 33 вместо 280). */
-      const seriesOnly = String(searchParams.get("types") || "") === "2";
+      const requestedGenres = String(searchParams.get("genres") || "");
+      const seriesOnly =
+        String(searchParams.get("types") || "") === "2" ||
+        requestedGenres.toLowerCase().includes("мультсериал");
     const sortParam = searchParams.get("sort") || "date-desc";
     const typesParam = searchParams.get("types") || "1,2,3";
     const cartoonsOnly = isCartoonsOnly(typesParam);
