@@ -592,7 +592,23 @@ async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
 }
 
 export async function getFilmPageData(kinopoiskId) {
-  const resolved = await resolveTmdbByKinopoisk(kinopoiskId);
+  /* Плеер принимает и imdb id (tt0133093): это снимает зависимость от
+     кинопоисковых id, которых у зарубежного контента часто нет. */
+  /* Адрес может быть с текстовым хвостом (tt22007716-vernis-domoj-...):
+     для запроса к TMDB нужен только «tt» + цифры */
+  const imdbClean = String(kinopoiskId || "").match(/^tt\d+/i)?.[0] || "";
+  const isImdb = Boolean(imdbClean);
+  let resolved = null;
+
+  if (isImdb) {
+    const found = await tmdbGet(`/find/${imdbClean}`, { external_source: "imdb_id" });
+    const movie = found?.movie_results?.[0];
+    const show = found?.tv_results?.[0];
+    if (movie) resolved = { tmdbId: movie.id, media: "movie" };
+    else if (show) resolved = { tmdbId: show.id, media: "tv" };
+  } else {
+    resolved = await resolveTmdbByKinopoisk(kinopoiskId);
+  }
   if (!resolved?.tmdbId) return null;
 
   const media = resolved.media;
@@ -635,7 +651,9 @@ export async function getFilmPageData(kinopoiskId) {
   );
 
   return {
-    id: Number(kinopoiskId),
+    /* Для imdb-адресов (tt...) числовой id не существует — отдаём строку,
+       иначе на клиенте получался null и страница не открывалась. */
+    id: imdbClean || Number(kinopoiskId),
     name: data.title || data.name || "",
     alternativeName: data.original_title || data.original_name || "",
     enName: data.original_title || data.original_name || null,

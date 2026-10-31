@@ -81,13 +81,21 @@ import ResumeHint from "../ResumeHint/ResumeHint";
 import WatchTracker from "../WatchTracker/WatchTracker";
 import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 
-export default function FilmPage({ params }: { params: { id: number } }) {
+export default function FilmPage({ params }: { params: { id: number | string } }) {
   let id = params.id;
 
   // В адресе лежит «79848-сопрано». Плееру этого достаточно (он сам выдёргивает
   // цифры), а для сохранения позиции нужен чистый номер: Number("79848-сопрано")
   // давал NaN, и запись в базу молча не уходила.
-  const numericId = Number(String(params.id).replace(/\D/g, "")) || 0;
+  /* Для imdb-адресов берём отрицательное число: история и сохранённое
+       хранятся числом, и так они не пересекутся с кинопоисковыми id */
+  const imdbNumber = (() => {
+    const raw = String(params.id ?? "");
+    const clean = raw.match(/^tt\d+/i)?.[0];
+    return clean ? -Number(clean.replace(/\D/g, "")) : 0;
+  })();
+
+  const numericId = imdbNumber || Number(String(params.id).replace(/\D/g, "")) || 0;
   // если для фильма заданы свои ссылки — играем их в своём плеере
   const streams = getFilmStreams(id);
   const dispatch = useAppDispatch();
@@ -388,7 +396,7 @@ export default function FilmPage({ params }: { params: { id: number } }) {
               ) : (
                 <>
                   <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                  src={`https://api.ortified.ws/embed/kp/${id}`}
+                  src={`https://api.ortified.ws/embed/${String(id).startsWith("tt") ? "imdb" : "kp"}/${id}`}
                   frameBorder="0"
                   scrolling="no"
                   allowFullScreen
