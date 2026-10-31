@@ -185,6 +185,15 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     if (page === 1) loadedPageRef.current = 1;
   }, [page]);
 
+  /* Переключение типа должно перезагружать карточки: без этого пилюля
+     меняла подсветку, а список оставался прежним */
+  const typeKey = (filtres.selectedTypeOfMovies || []).map(String).join(",");
+  useEffect(() => {
+    dispatch(setPage(1));
+    dispatch(getAllFilmsThunk(filtres, 1, filtres.nameStudio));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeKey]);
+
   /* Жанры зависят от выбранного типа: у фильмов, сериалов и мультиков они разные */
   const studioKind =
     (filtres.selectedTypeOfMovies || []).map(String)[0] === "2"
@@ -237,9 +246,8 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
           <StudioTypeSwitcher
             value={(filtres.selectedTypeOfMovies || []).map(String)}
             onChange={(types) => {
+              // саму загрузку запускает эффект выше — по изменению типа
               dispatch(setFilters({ ...filtres, selectedTypeOfMovies: types } as any));
-              dispatch(setPage(1));
-              dispatch(getAllFilmsThunk({ ...filtres, selectedTypeOfMovies: types } as any, 1, filtres.nameStudio));
             }}
           />
           {activeChips.length > 0 && (
