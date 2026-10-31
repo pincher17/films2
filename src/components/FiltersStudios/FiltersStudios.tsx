@@ -15,7 +15,7 @@ import SortSelect from '../SortSelect/SortSelect';
 
 
 
-const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar}) =>{
+const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar}, hideTypes) =>{
 
     const filters = useAppSelector((state: { filtersStudios: any; }) => state.filtersStudios);
     const dispatch = useAppDispatch()
@@ -75,7 +75,7 @@ console.log(filters.genre, valueGenre)
     <Wrapper mobile={(+mobile)}>
         <WrapperAllInputs>
         <WrapperCheckbox>
-        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
+        {!hideTypes && typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
         <CheckBox
             checked={item.included}
             id={item.typeNumber}

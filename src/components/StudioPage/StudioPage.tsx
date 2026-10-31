@@ -31,6 +31,7 @@ import FilterIcon7 from "/public/Filtericon.svg";
 import { initialStateFiltersStudioType, setFilters, setNameStudio } from "@/redux/filtersStudios";
 import { allStudios } from "@/data/AllStudios";
 import FiltersStudios from "../FiltersStudios";
+import StudioTypeSwitcher from "@/components/StudioTypeSwitcher/StudioTypeSwitcher";
 import NetflixLogo from '../../../public/assets/img/studios-logo/Netflix_Logo.png';
 import AppleTvLogo from '../../../public/assets/img/studios-logo/Apple-Tv-Logo.png';
 import Hbo from '../../../public/assets/img/studios-logo/HBO.png';
@@ -221,6 +222,15 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
               {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
             </FilterIcon>
           </WrapperName>
+          {/* Тип контента — как в каталоге: один тап вместо галочек в шторке */}
+          <StudioTypeSwitcher
+            value={(filtres.selectedTypeOfMovies || []).map(String)}
+            onChange={(types) => {
+              dispatch(setFilters({ ...filtres, selectedTypeOfMovies: types } as any));
+              dispatch(setPage(1));
+              dispatch(getAllFilmsThunk({ ...filtres, selectedTypeOfMovies: types } as any, 1, filtres.nameStudio));
+            }}
+          />
           {activeChips.length > 0 && (
             <ActiveChips>
               {activeChips.map((chip) => (
@@ -228,14 +238,14 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
               ))}
             </ActiveChips>
           )}
-          {resolution.width > 1150 ? <FiltersStudios mobile={false} /> : ""}
+          {resolution.width > 1150 ? <FiltersStudios mobile={false} hideTypes /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
             <CrossIcon sidebar={+true} onClick={toggleSidebar}>
               <Line1 />
               <Line2 />
             </CrossIcon>
-            <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
+            <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes />
           </Sidebar>
           <Cards cards={films} />
           <InfiniteScroll
