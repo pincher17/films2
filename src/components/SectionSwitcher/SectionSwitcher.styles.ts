@@ -3,19 +3,19 @@ import Link from "next/link";
 
 /** Пилюля с сегментами */
 export const Wrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px;
-  margin: 0 0 18px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* На компьютере разделы есть в шапке — переключатель нужен только на телефоне */
+  display: none;
 
   @media (max-width: 850px) {
     display: flex;
+    align-items: center;
+    gap: 4px;
     width: 100%;
+    padding: 4px;
     margin: 0 0 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 `;
 
