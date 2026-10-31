@@ -53,8 +53,12 @@ export const WrapperAllInputs = styled.div`
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     margin-bottom: 0;
-    /* без отступа: чекбоксы у самого верха */
-    padding-top: 0;
+    /* Рамка панели внутри шторки не нужна, а скругление обрезало подпись */
+    border-radius: 0;
+    background: none;
+    border: none;
+    /* небольшой отступ сверху: при прокрутке подпись не уходит под край */
+    padding-top: 14px;
     /* запас снизу: последний фильтр не должен прятаться под кнопками */
     padding-bottom: 120px;
     box-sizing: border-box;
