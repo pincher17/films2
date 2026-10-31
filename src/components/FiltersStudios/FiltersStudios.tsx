@@ -15,7 +15,7 @@ import SortSelect from '../SortSelect/SortSelect';
 
 
 
-const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar}, hideTypes) =>{
+const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar, hideTypes, genres}) =>{
 
     const filters = useAppSelector((state: { filtersStudios: any; }) => state.filtersStudios);
     const dispatch = useAppDispatch()
@@ -108,7 +108,7 @@ console.log(filters.genre, valueGenre)
             />
             <WrapperInput>
                 <p style={{paddingBottom: "14px"}}>Жанры</p>
-                <MultipleSelectStudio options={allGenres} onChange={setValueGenre}/>
+                <MultipleSelectStudio options={genres || allGenres} onChange={setValueGenre}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
                 <SelectCountryStudios onChange={setValueCountry}/>
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>

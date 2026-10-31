@@ -10,7 +10,6 @@ import { Wrapper, Segment } from "./StudioTypeSwitcher.styles";
  * фильтр внутри студии — чтобы смотреть «только сериалы Netflix».
  */
 const OPTIONS = [
-  { value: "1,2,3", label: "Всё" },
   { value: "1", label: "Фильмы" },
   { value: "2", label: "Сериалы" },
   { value: "3", label: "Мультики" },
@@ -23,7 +22,8 @@ export default function StudioTypeSwitcher({
   value: string[];
   onChange: (types: string[]) => void;
 }) {
-  const current = value.length === 3 || value.length === 0 ? "1,2,3" : value.join(",");
+  // «Всё» больше нет: у студии всегда выбран один тип
+  const current = value.length === 1 ? value[0] : "1";
 
   return (
     <Wrapper role="tablist" aria-label="Тип контента">
