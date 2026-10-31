@@ -93,8 +93,17 @@ const initialFilters: initialStateFiltersStudioType ={
     country: [  { value: '', label: 'Все', id: 1 }],   
 }
 
-export default function StudioPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug
+export default function StudioPage({
+  params,
+  type = "1",
+}: {
+  params: { slug: string };
+  /* Тип контента задаётся страницей: /studio/x — фильмы, /studio/x/series — сериалы */
+  type?: string;
+}) {
+  const slug = params.slug;
+  /* Тип раздела: страница сама его задаёт, переключатель только ведёт по ссылкам */
+  const sectionType = type;
   const logo = logoMap[slug]?.src || '';
   const films = useAppSelector((state) => state.allFilmsStudio.films);
   const filtres = useAppSelector((state) => state.filtersStudios);
@@ -159,9 +168,9 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     const nameStudio = getValueBySlug(slug)
     const newNameStudio = nameStudio != filtres.nameStudio
     if (films.length === 0 || newNameStudio) {
-      dispatch(setFilters(initialFilters))
+      dispatch(setFilters({ ...initialFilters, selectedTypeOfMovies: [sectionType] } as any))
       dispatch(setPage(1));
-      dispatch(getAllFilmsFiltersThunk(initialFilters, 1, nameStudio));
+      dispatch(getAllFilmsFiltersThunk({ ...initialFilters, selectedTypeOfMovies: [sectionType] } as any, 1, nameStudio));
 
     } else {
       return;
@@ -244,11 +253,8 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
           {/* Тип контента — как в каталоге: один тап вместо галочек в шторке */}
           {/* Жанры зависят от типа: у фильмов, сериалов и мультиков они разные */}
           <StudioTypeSwitcher
-            value={(filtres.selectedTypeOfMovies || []).map(String)}
-            onChange={(types) => {
-              // саму загрузку запускает эффект выше — по изменению типа
-              dispatch(setFilters({ ...filtres, selectedTypeOfMovies: types } as any));
-            }}
+            slug={slug}
+            active={sectionType === "2" ? "/series" : sectionType === "3" ? "/cartoons" : ""}
           />
           {activeChips.length > 0 && (
             <ActiveChips>

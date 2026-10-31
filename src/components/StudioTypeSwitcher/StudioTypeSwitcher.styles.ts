@@ -22,7 +22,7 @@ export const Wrapper = styled.div`
 `;
 
 /** Сегмент */
-export const Segment = styled.button<{ $active?: boolean }>`
+export const Segment = styled.a<{ $active?: boolean }>`
   flex: 1 1 auto;
   display: flex;
   align-items: center;
@@ -38,6 +38,7 @@ export const Segment = styled.button<{ $active?: boolean }>`
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {

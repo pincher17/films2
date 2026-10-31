@@ -1,43 +1,39 @@
 "use client";
 
-import React from "react";
+import Link from "next/link";
 import { Wrapper, Segment } from "./StudioTypeSwitcher.styles";
 
 /**
  * Переключатель типа контента на странице студии.
  *
- * В отличие от разделов каталога, он не уводит на другую страницу, а меняет
- * фильтр внутри студии — чтобы смотреть «только сериалы Netflix».
+ * Ведёт на отдельные страницы — так у каждого типа свой адрес и своя выдача,
+ * без перезагрузки состояния и путаницы с фильтрами.
  */
 const OPTIONS = [
-  { value: "1", label: "Фильмы" },
-  { value: "2", label: "Сериалы" },
-  { value: "3", label: "Мультфильмы" },
+  { path: "", label: "Фильмы" },
+  { path: "/series", label: "Сериалы" },
+  { path: "/cartoons", label: "Мультфильмы" },
 ];
 
 export default function StudioTypeSwitcher({
-  value,
-  onChange,
+  slug,
+  active,
 }: {
-  value: string[];
-  onChange: (types: string[]) => void;
+  slug: string;
+  active: string;
 }) {
-  // «Всё» больше нет: у студии всегда выбран один тип
-  const current = value.length === 1 ? value[0] : "1";
-
   return (
     <Wrapper role="tablist" aria-label="Тип контента">
       {OPTIONS.map((option) => {
-        const active = option.value === current;
+        const isActive = option.path === active;
         return (
           <Segment
-            key={option.value}
-            as={"button" as any}
-            type="button"
+            as={Link}
+            key={option.path}
+            href={`/studio/${slug}${option.path}`}
+            $active={isActive}
             role="tab"
-            aria-selected={active}
-            $active={active}
-            onClick={() => onChange(option.value.split(","))}
+            aria-selected={isActive}
           >
             {option.label}
           </Segment>
