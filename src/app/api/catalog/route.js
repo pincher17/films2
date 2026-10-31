@@ -142,6 +142,8 @@ export async function GET(request) {
         cartoonsOnly: isCartoonsOnly(studioTypes),
         companyId,
         networkId,
+        watchProvider: known?.provider || null,
+        watchRegion: "US",
         genres: studioGenres,
         excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre)),
         yearRange: studioYears,

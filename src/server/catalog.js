@@ -189,8 +189,17 @@ async function buildServerParams(media, options) {
 
   // страницы студий: у сериалов берём сеть (что вышло на платформе),
   // у фильмов — продюсерскую компанию
-  if (isTv && options.networkId) params.with_networks = options.networkId;
-  else if (options.companyId) params.with_companies = options.companyId;
+  /* Страницы студий: фильтруем по платформе, где контент доступен.
+     По продюсерской компании выходило 4 фильма у Netflix — он их просто
+     покупает, а не снимает. */
+  if (options.watchProvider) {
+    params.with_watch_providers = options.watchProvider;
+    params.watch_region = options.watchRegion || "US";
+  } else if (isTv && options.networkId) {
+    params.with_networks = options.networkId;
+  } else if (options.companyId) {
+    params.with_companies = options.companyId;
+  }
 
   if (options.cartoonsOnly) {
     const animation = await resolveGenre("мультфильм", media);
