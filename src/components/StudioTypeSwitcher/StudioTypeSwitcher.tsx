@@ -12,7 +12,7 @@ import { Wrapper, Segment } from "./StudioTypeSwitcher.styles";
 const OPTIONS = [
   { value: "1", label: "Фильмы" },
   { value: "2", label: "Сериалы" },
-  { value: "3", label: "Мультики" },
+  { value: "3", label: "Мультфильмы" },
 ];
 
 export default function StudioTypeSwitcher({

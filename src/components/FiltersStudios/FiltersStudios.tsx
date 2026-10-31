@@ -109,8 +109,10 @@ console.log(filters.genre, valueGenre)
             <WrapperInput>
                 <p style={{paddingBottom: "14px"}}>Жанры</p>
                 <MultipleSelectStudio options={genres || allGenres} onChange={setValueGenre}/>
+        {/* Страны в студиях не нужны: Netflix и Apple — мировые платформы */}
+        {!true && (
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
-                <SelectCountryStudios onChange={setValueCountry}/>
+                <SelectCountryStudios onChange={setValueCountry}/>)}
                 <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
                 <SortSelect onChange={setValueSort} studio/>
             </WrapperInput>
