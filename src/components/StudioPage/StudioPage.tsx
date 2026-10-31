@@ -164,18 +164,16 @@ export default function StudioPage({
   }, []);
 
 
+  /* Зависимость от типа обязательна: /studio/x и /studio/x/series — разные
+     страницы с одинаковым slug, и без неё карточки оставались прежними. */
   useEffect(() => {
     const nameStudio = getValueBySlug(slug)
-    const newNameStudio = nameStudio != filtres.nameStudio
-    if (films.length === 0 || newNameStudio) {
-      dispatch(setFilters({ ...initialFilters, selectedTypeOfMovies: [sectionType] } as any))
-      dispatch(setPage(1));
-      dispatch(getAllFilmsFiltersThunk({ ...initialFilters, selectedTypeOfMovies: [sectionType] } as any, 1, nameStudio));
-
-    } else {
-      return;
-    }
-  }, [slug]);
+    const fresh = { ...initialFilters, selectedTypeOfMovies: [sectionType] };
+    dispatch(setFilters(fresh as any))
+    dispatch(setPage(1));
+    dispatch(getAllFilmsFiltersThunk(fresh as any, 1, nameStudio));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, sectionType]);
 
   useEffect(() => {
     if (films.length > prevCount.current) {
