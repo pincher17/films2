@@ -16,8 +16,10 @@ export async function generateMetadata(
   { params, searchParams }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // read route params
-  const id = extractDigits(params.id)
+  /* Адрес может быть кинопоисковым (79848-сопрано) или imdb (tt0121955):
+     у imdb цифры в начале нет, и вырезание превращало его в 0 */
+  const rawId = String(params.id ?? "");
+  const id = /^tt\d+$/i.test(rawId) ? rawId : extractDigits(rawId);
  
   // данные берём из TMDB напрямую на сервере; если фильма там нет — apiget
   const filmInfoId =
@@ -57,7 +59,9 @@ export async function generateMetadata(
 
 export default function Film({ params }: { params: { id: string } }) {
 
-  let id = extractDigits(params.id)
+  /* imdb-адрес передаём как есть: кинопоисковый — числом */
+  const rawId = String(params.id ?? "");
+  const id = /^tt\d+$/i.test(rawId) ? rawId : extractDigits(rawId);
   
   return (
    <>

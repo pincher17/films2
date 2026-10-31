@@ -81,7 +81,7 @@ import ResumeHint from "../ResumeHint/ResumeHint";
 import WatchTracker from "../WatchTracker/WatchTracker";
 import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 
-export default function FilmPage({ params }: { params: { id: number } }) {
+export default function FilmPage({ params }: { params: { id: number | string } }) {
   let id = params.id;
 
   // В адресе лежит «79848-сопрано». Плееру этого достаточно (он сам выдёргивает
