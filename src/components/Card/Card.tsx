@@ -20,6 +20,7 @@ import { CardProps } from './Card.types';
 import roundNumber from '../helpers/rounding';
 import textTransform from '../helpers/textTransform';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSaved } from '../SavedProvider/SavedProvider';
 
 
@@ -32,6 +33,12 @@ const {
     year,
     rating
   } = props.card
+
+  const router = useRouter();
+  /* Адрес страницы фильма: нужен и ссылке, и предзагрузке */
+  const href = name
+    ? `/film/${id}-${textTransform(name)}${year ? "-" + year : ""}`
+    : `/film/${id}`;
 
   /**
    * Время, на котором остановился просмотр, в виде таймкода:
@@ -91,7 +98,14 @@ const {
 
     return (
     <Wrapper key={id}>
-            <Link href={name ? `/film/${id}-${textTransform(name)}${year ? '-'+year : ''}` : `/film/${id}`}>
+            <Link
+              href={href}
+              /* Next не предзагружает страницы, которые рендерятся на сервере
+                 с данными. Поэтому начинаем загрузку при наведении — к клику
+                 страница уже готова и открывается мгновенно. */
+              onMouseEnter={() => router.prefetch(href)}
+              onTouchStart={() => router.prefetch(href)}
+            >
             <ImgWrapper>
             <ImgWrap>
             {poster?.url 
