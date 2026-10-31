@@ -172,9 +172,18 @@ align-items: center;
   transition: color 0.18s ease, transform 0.15s ease;
 }
 
+/* При наведении закладка заливается, а не подпрыгивает */
+.nav_icon svg path {
+  transition: fill 0.18s ease;
+}
+
 .nav_icon:hover {
   color: #fff;
-  transform: translateY(-1px);
+}
+
+.nav_icon:hover svg path,
+.nav_icon.active svg path {
+  fill: currentColor;
 }
 
 .nav_icon.active {
