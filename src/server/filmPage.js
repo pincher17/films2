@@ -648,7 +648,9 @@ export async function getFilmPageData(kinopoiskId) {
   );
 
   return {
-    id: Number(kinopoiskId),
+    /* Для imdb-адресов (tt...) числовой id не существует — отдаём строку,
+       иначе на клиенте получался null и страница не открывалась. */
+    id: /^tt\d+$/i.test(String(kinopoiskId)) ? String(kinopoiskId) : Number(kinopoiskId),
     name: data.title || data.name || "",
     alternativeName: data.original_title || data.original_name || "",
     enName: data.original_title || data.original_name || null,
