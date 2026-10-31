@@ -10,6 +10,7 @@
  */
 
 import { discover, posterUrl, resolveGenre, resolveKeywordId, tmdbGet, KEYWORD_ALIASES } from "./tmdb.js";
+import { prisma } from "./prisma.js";
 import { resolveRecords } from "./kpMap.js";
 
 /**
@@ -95,7 +96,8 @@ export function toCard(record) {
   const small = record.kpPosterSmall || tmdbPoster;
 
   return {
-    id: record.kinopoiskId,
+    /* Если кинопоискового id нет — ведём по imdb (плеер его принимает) */
+    id: record.kinopoiskId || record.imdbId || null,
     name,
     alternativeName: name,
     enName: null,
@@ -259,7 +261,8 @@ function buildPreFilter(options) {
 }
 
 function passesLocalFilters(record, options) {
-  if (!record?.kinopoiskId) return false;
+  /* Достаточно любого id: кинопоискового или imdb */
+  if (!record?.kinopoiskId && !record?.imdbId) return false;
 
   const year = record.tmdbYear ?? record.kpYear;
   if (options.yearRange && !inRange(year, options.yearRange)) return false;
@@ -362,13 +365,35 @@ export async function buildList(options) {
   // два разных фильма TMDB могут сопоставиться с одним кинопоисковым id —
   // в списке это даёт одинаковые key и React путает карточки, поэтому дубли убираем
   const seenKinopoisk = new Set();
+  /* Соответствия imdb: у зарубежного контента кинопоискового id часто нет,
+     и без этого карточки просто исчезали из выдачи. */
+  const imdbByKey = new Map();
+  try {
+    const allItems = [...byMedia.entries()].flatMap(([kind, list]) =>
+      [...list.values()].map((item) => ({ kind, id: item.id }))
+    );
+    const rows = await prisma.imdbMap.findMany({
+      where: {
+        OR: allItems.map(({ kind, id }) => ({ media: kind, tmdbId: id })),
+      },
+      select: { tmdbId: true, media: true, imdbId: true },
+    });
+    rows.forEach((row) => imdbByKey.set(`${row.media}:${row.tmdbId}`, row.imdbId));
+  } catch {
+    undefined;
+  }
+
   for (const [kind, list] of byMedia.entries()) {
     const items = [...list.values()];
     const resolved = await resolveRecords(kind, items, { preFilter });
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (!record?.kinopoiskId || seenKinopoisk.has(record.kinopoiskId)) return;
-      seenKinopoisk.add(record.kinopoiskId);
+      if (record && !record.imdbId) {
+        record.imdbId = imdbByKey.get(`${kind}:${item.id}`) || null;
+      }
+      const key = record?.kinopoiskId || record?.imdbId;
+      if (!key || seenKinopoisk.has(key)) return;
+      seenKinopoisk.add(key);
       records.push(record);
     });
   }
