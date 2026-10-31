@@ -158,3 +158,22 @@ align-items: center;
   background: rgba(255, 255, 255, 0.16);
   flex: 0 0 auto;
 }
+
+/* «Сохранённое» иконкой: не занимает место в строке навигации */
+.nav_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: color 0.18s ease, transform 0.15s ease;
+}
+
+.nav_icon:hover {
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.nav_icon.active {
+  color: #fff;
+}

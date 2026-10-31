@@ -36,7 +36,22 @@ const Header: React.FC = () =>{
         <Link href={'/cartoons'} className={`${s.nav_item} ${pathname == "/cartoons" ? s.active : ""}`}>Мультфильмы</Link>
         {/* Разделитель: разделы каталога отделены от «Сохранённого» */}
         <span className={s.nav_divider} aria-hidden="true" />
-        <Link href={'/saved'} className={`${s.nav_item} ${pathname == "/saved" ? s.active : ""}`}>Сохранённое</Link>
+        {/* «Сохранённое» иконкой: так поиск получает больше места */}
+        <Link
+          href={'/saved'}
+          className={`${s.nav_icon} ${pathname == "/saved" ? s.active : ""}`}
+          aria-label="Сохранённое"
+          title="Сохранённое"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M6 3.5h12a1 1 0 0 1 1 1v16l-7-4.2-7 4.2v-16a1 1 0 0 1 1-1z"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Link>
         {/* вход внутри nav — так шапка на компьютере стоит как раньше */}
         <HeaderAuth />
         <NavigationItem $active={(+(pathname === '/films'))}>

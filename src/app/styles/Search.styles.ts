@@ -3,7 +3,11 @@ import styled from "styled-components";
 
 export const SearchWrapper = styled.div<SearchWrapperProps>`
   position: relative;
-  width: 600px;
+  /* поиск тянется на всё свободное место: иконка «Сохранённого» освободила
+     ширину, и поле стало заметнее */
+  flex: 1 1 auto;
+  max-width: 760px;
+  min-width: 260px;
   height: 35px;
   display: flex;
   /* равные отступы слева и справа: поиск по центру между логотипом и меню */
