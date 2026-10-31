@@ -163,6 +163,7 @@ align-items: center;
 
 /* «Сохранённое» иконкой: не занимает место в строке навигации */
 .nav_icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,4 +179,17 @@ align-items: center;
 
 .nav_icon.active {
   color: #fff;
+}
+
+/* на вкладке «Сохранённое» — та же красная линия, что у пунктов меню */
+.nav_icon.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background-color: rgb(184, 22, 22);
 }
