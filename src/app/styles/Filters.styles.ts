@@ -40,7 +40,10 @@ export const WrapperAllInputs = styled.div`
     flex-direction: column;
     align-items: stretch;
     gap: 26px;
-    padding: 16px 18px;
+    /* Внутри шторки рамка не нужна: она вокруг и так есть */
+    padding: 0;
+    background: none;
+    border: none;
   }
   @media (max-width: 850px){
     flex: 1 1 auto;
