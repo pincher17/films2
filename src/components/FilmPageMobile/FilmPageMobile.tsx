@@ -151,7 +151,8 @@ export default function FilmPageMobile({ params }: { params: { id: number | stri
        хранятся числом, и так они не пересекутся с кинопоисковыми id */
   const imdbNumber = (() => {
     const raw = String(id ?? "");
-    return /^tt\d+$/i.test(raw) ? -Number(raw.replace(/\D/g, "")) : 0;
+    const clean = raw.match(/^tt\d+/i)?.[0];
+    return clean ? -Number(clean.replace(/\D/g, "")) : 0;
   })();
 
   const numericFilmId = imdbNumber || Number(String(id).replace(/\D/g, "")) || 0;

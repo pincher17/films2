@@ -91,7 +91,8 @@ export default function FilmPage({ params }: { params: { id: number | string } }
        хранятся числом, и так они не пересекутся с кинопоисковыми id */
   const imdbNumber = (() => {
     const raw = String(params.id ?? "");
-    return /^tt\d+$/i.test(raw) ? -Number(raw.replace(/\D/g, "")) : 0;
+    const clean = raw.match(/^tt\d+/i)?.[0];
+    return clean ? -Number(clean.replace(/\D/g, "")) : 0;
   })();
 
   const numericId = imdbNumber || Number(String(params.id).replace(/\D/g, "")) || 0;

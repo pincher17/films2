@@ -19,7 +19,7 @@ export async function generateMetadata(
   /* Адрес может быть кинопоисковым (79848-сопрано) или imdb (tt0121955):
      у imdb цифры в начале нет, и вырезание превращало его в 0 */
   const rawId = String(params.id ?? "");
-  const id = /^tt\d+$/i.test(rawId) ? rawId : extractDigits(rawId);
+  const id = /^tt\d+/i.test(rawId) ? rawId : extractDigits(rawId);
  
   // данные берём из TMDB напрямую на сервере; если фильма там нет — apiget
   const filmInfoId =
@@ -61,7 +61,7 @@ export default function Film({ params }: { params: { id: string } }) {
 
   /* imdb-адрес передаём как есть: кинопоисковый — числом */
   const rawId = String(params.id ?? "");
-  const id = /^tt\d+$/i.test(rawId) ? rawId : extractDigits(rawId);
+  const id = /^tt\d+/i.test(rawId) ? rawId : extractDigits(rawId);
   
   return (
    <>
