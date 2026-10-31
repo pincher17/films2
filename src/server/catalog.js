@@ -138,7 +138,11 @@ function inRange(value, range) {
  */
 
 /** Фильтры TMDB по типу материала */
-function mediaList(types) {
+function mediaList(types, genres) {
+  /* «мультсериал» — наша метка, а не жанр TMDB: оставляем только сериалы */
+  if ((genres || []).some((genre) => String(genre).toLowerCase() === "мультсериал")) {
+    return ["tv"];
+  }
   const selected = String(types || "1,2,3").split(",");
   const has = (value) => selected.includes(value);
   const movies = has("1");
@@ -312,7 +316,7 @@ function sortRecords(records, sort) {
 
 /** Основной сборщик: options -> карточки сайта */
 export async function buildList(options) {
-  const media = mediaList(options.types);
+  const media = mediaList(options.types, options.genres);
   if (!media.length) return { docs: [], total: 0, page: options.page || 1, pages: 1, limit: options.limit };
 
   const page = options.page || 1;
