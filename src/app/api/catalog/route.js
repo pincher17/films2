@@ -16,7 +16,7 @@ import { cacheStats } from "@/server/kpMap";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_EXCLUDED_GENRES = [
-  "документальный",
+  /* Документальное не исключаем: его ищут и фильтруют отдельно */
   "ток-шоу",
   "реальное ТВ",
   "короткометражка",

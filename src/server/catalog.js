@@ -241,7 +241,13 @@ async function buildServerParams(media, options) {
     if (genre) withoutGenres.push(genre.id);
   }
   if (withoutGenres.length) {
-    params.without_genres = [params.without_genres, ...withoutGenres].filter(Boolean).join(",");
+    /* Жанр не может быть одновременно обязательным и запрещённым: из-за этого
+       «драма» в сериалах давала ноль результатов. Убираем пересечения. */
+    const required = String(params.with_genres || "").split("|").filter(Boolean);
+    const safeWithout = withoutGenres.filter((id) => !required.includes(String(id)));
+    const merged = [params.without_genres, ...safeWithout].filter(Boolean);
+    // и дубликаты тоже убираем
+    params.without_genres = [...new Set(merged.join(",").split(",").filter(Boolean))].join(",");
   }
 
   return params;
