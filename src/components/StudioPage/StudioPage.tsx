@@ -288,13 +288,10 @@ export default function StudioPage({
             <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes genres={studioGenres} />
           </Sidebar>
           <Cards key={sectionType} cards={films} />
-          {/* Бесконечная прокрутка временно отключена: при смене типа она
-              успевала догрузить страницу прошлого раздела и подмешивала её
-              к новому списку. Остаётся кнопка «Показать ещё». */}
           <InfiniteScroll
             count={films.length}
             onLoad={showMore}
-            disabled
+            disabled={loadingFilters || films.length === 0}
           />
           <WrapperButtonShowMore>
             <Button onClick={showMore}>Показать еще</Button>
