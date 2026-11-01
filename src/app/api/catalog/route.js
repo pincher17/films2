@@ -261,12 +261,20 @@ export async function GET(request) {
       genres,
       excludeGenres: (() => {
         const excluded = DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre));
-        /* Фильмы и сериалы — без мультипликации: она живёт в разделе
-           «Мультфильмы». Тип 3 — это как раз мультфильмы, для него не исключаем. */
         const catalogTypes = String(searchParams.get("types") || "");
+
+        /* Мультипликация живёт в разделе «Мультфильмы» */
         if (catalogTypes !== "3" && !genres.includes("мультфильм")) {
           excluded.push("мультфильм");
         }
+
+        /* Документальное по умолчанию не показываем: в общем списке оно
+           забивает выдачу, особенно при сортировке по рейтингу. Но если жанр
+           выбран явно — показываем. Студий это правило не касается. */
+        if (!genres.includes("документальный")) {
+          excluded.push("документальный");
+        }
+
         return excluded;
       })(),
       yearRange: yearFrom !== undefined && yearTo !== undefined ? [yearFrom, yearTo] : undefined,
