@@ -111,8 +111,9 @@ export function toCard(record) {
     shortDescription: null,
     movieLength: null,
     rating: {
-      /* Карточки читают rating.kp — кладём туда IMDb, если он есть */
-      kp: rating ?? 0,
+      /* Пока показываем TMDB, как и раньше. IMDb копится в базе и включим
+         его, когда соответствий станет достаточно. */
+      kp: record.tmdbRating ?? record.kpRating ?? 0,
       imdb: record.imdbRating ?? 0,
       filmCritics: 0,
       russianFilmCritics: 0,
