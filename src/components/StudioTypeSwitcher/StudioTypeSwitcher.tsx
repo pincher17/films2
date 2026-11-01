@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { Wrapper, Segment } from "./StudioTypeSwitcher.styles";
 
 /**
  * Переключатель типа контента на странице студии.
  *
- * Ведёт на отдельные страницы — так у каждого типа свой адрес и своя выдача,
- * без перезагрузки состояния и путаницы с фильтрами.
+ * Ведёт на отдельные страницы обычными ссылками: переход перезагружает
+ * страницу целиком, поэтому список карточек всегда собирается заново и
+ * не смешивается с предыдущим разделом.
  */
 const OPTIONS = [
   { path: "", label: "Фильмы" },
@@ -28,7 +28,6 @@ export default function StudioTypeSwitcher({
         const isActive = option.path === active;
         return (
           <Segment
-            as={Link}
             key={option.path}
             href={`/studio/${slug}${option.path}`}
             $active={isActive}
