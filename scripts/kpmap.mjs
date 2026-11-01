@@ -56,6 +56,10 @@ async function main() {
     )
   );
 
+  /* Сначала русский контент: у зарубежного есть imdb id, и Кинопоиск там не
+     нужен. Кириллица в названии — простой признак нашего кино. */
+  const isCyrillic = (text) => /[а-яё]/i.test(String(text || ""));
+
   /* Половину бюджета отдаём фильмам, половину сериалам: иначе по
      популярности в топе только фильмы, а сериалы остаются без id. */
   const takeFor = async (media, limit) => {
@@ -65,10 +69,15 @@ async function main() {
       take: limit * 4,
       select: { tmdbId: true, media: true, title: true, year: true },
     });
-    return rows
+    const candidates = rows
       .filter((task) => task.tmdbId && task.title)
-      .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`))
-      .slice(0, limit);
+      .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`));
+
+    /* Сначала те, у кого название на кириллице — это наше кино, там Кинопоиск
+       полезнее всего. Остальные — после, если останется бюджет. */
+    const russian = candidates.filter((task) => isCyrillic(task.title));
+    const other = candidates.filter((task) => !isCyrillic(task.title));
+    return [...russian, ...other].slice(0, limit);
   };
 
   const half = Math.ceil(LIMIT / 2);
