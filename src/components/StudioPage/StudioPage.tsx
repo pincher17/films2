@@ -260,10 +260,13 @@ export default function StudioPage({
                 {getLabelBySlug(slug)}
               </NameStudio>
             </div>
-            <FilterIcon onClick={toggleSidebar}>
-              <FilterIcon7 />
-              {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
-            </FilterIcon>
+            {/* Пока шторка открыта, кнопка не нужна: иначе получалось два крестика */}
+            {!isOpenSidebar && (
+              <FilterIcon onClick={toggleSidebar}>
+                <FilterIcon7 />
+                {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
+              </FilterIcon>
+            )}
           </WrapperName>
           {/* Тип контента — как в каталоге: один тап вместо галочек в шторке */}
           {/* Жанры зависят от типа: у фильмов, сериалов и мультиков они разные */}
