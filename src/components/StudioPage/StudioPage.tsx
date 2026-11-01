@@ -284,10 +284,6 @@ export default function StudioPage({
           {resolution.width > 1150 ? <FiltersStudios mobile={false} hideTypes genres={studioGenres} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
-            <CrossIcon sidebar={+true} onClick={toggleSidebar}>
-              <Line1 />
-              <Line2 />
-            </CrossIcon>
             <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes genres={studioGenres} />
           </Sidebar>
           <Cards key={sectionType} cards={films} />
