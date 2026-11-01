@@ -229,6 +229,8 @@ export default function StudioPage({
   const activeChips = getActiveFilterChips(filtres);
 
   const showMore = () => {
+    /* во время смены типа список ещё не готов — догрузка подмешает старое */
+    if (loadingFilters) return;
     // максимум из ref и redux: защищает и от повторного запроса в одном тике,
     // и от обнуления счётчика
     const pageToLoad = Math.max(loadedPageRef.current, page) + 1;
@@ -285,7 +287,7 @@ export default function StudioPage({
             </CrossIcon>
             <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes genres={studioGenres} />
           </Sidebar>
-          <Cards cards={films} />
+          <Cards key={sectionType} cards={films} />
           <InfiniteScroll
             count={films.length}
             onLoad={showMore}
