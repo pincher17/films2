@@ -28,6 +28,7 @@ function loadEnv() {
 loadEnv();
 
 const KEY = process.env.KINOPOISK_API_KEY;
+const TMDB = process.env.TMDB_KEY;
 const LIMIT = Number(process.argv[2]) || 200;
 
 if (!KEY) {
@@ -57,8 +58,28 @@ async function main() {
   );
 
   /* Сначала русский контент: у зарубежного есть imdb id, и Кинопоиск там не
-     нужен. Кириллица в названии — простой признак нашего кино. */
-  const isCyrillic = (text) => /[а-яё]/i.test(String(text || ""));
+     нужен. Список русских фильмов спрашиваем у TMDB — это точный признак,
+     в отличие от кириллицы в названии (у нас все названия по-русски). */
+  const russianIds = new Set();
+  try {
+    for (const media of ["movie", "tv"]) {
+      for (let page = 1; page <= 5; page += 1) {
+        const params = new URLSearchParams({
+          api_key: TMDB,
+          with_original_language: "ru",
+          sort_by: "popularity.desc",
+          page: String(page),
+        });
+        const data = await fetch(
+          `https://api.themoviedb.org/3/discover/${media}?${params}`
+        ).then((r) => r.json());
+        (data.results || []).forEach((item) => russianIds.add(`${media}:${item.id}`));
+      }
+    }
+  } catch {
+    undefined;
+  }
+  console.log(`[kpmap] русских тайтлов знаем: ${russianIds.size}`);
 
   /* Половину бюджета отдаём фильмам, половину сериалам: иначе по
      популярности в топе только фильмы, а сериалы остаются без id. */
@@ -73,10 +94,10 @@ async function main() {
       .filter((task) => task.tmdbId && task.title)
       .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`));
 
-    /* Сначала те, у кого название на кириллице — это наше кино, там Кинопоиск
-       полезнее всего. Остальные — после, если останется бюджет. */
-    const russian = candidates.filter((task) => isCyrillic(task.title));
-    const other = candidates.filter((task) => !isCyrillic(task.title));
+    /* Сначала русские, потом остальные — если останется бюджет */
+    const isRussian = (task) => russianIds.has(`${task.media || "movie"}:${task.tmdbId}`);
+    const russian = candidates.filter(isRussian);
+    const other = candidates.filter((task) => !isRussian(task));
     return [...russian, ...other].slice(0, limit);
   };
 
