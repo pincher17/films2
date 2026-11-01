@@ -95,6 +95,10 @@ export function toCard(record) {
   const big = record.kpPosterBig || tmdbPoster;
   const small = record.kpPosterSmall || tmdbPoster;
 
+  /* Рейтинг: IMDb точнее (больше голосов), TMDB — запасной вариант */
+  const rating = record.imdbRating ?? record.tmdbRating ?? record.kpRating ?? null;
+  const votes = record.imdbVotes ?? record.tmdbVotes ?? record.kpVotes ?? null;
+
   return {
     /* Если кинопоискового id нет — ведём по imdb (плеер его принимает) */
     id: record.kinopoiskId || record.imdbId || null,
@@ -107,15 +111,16 @@ export function toCard(record) {
     shortDescription: null,
     movieLength: null,
     rating: {
-      kp: record.tmdbRating ?? record.kpRating ?? 0,
-      imdb: 0,
+      /* Карточки читают rating.kp — кладём туда IMDb, если он есть */
+      kp: rating ?? 0,
+      imdb: record.imdbRating ?? 0,
       filmCritics: 0,
       russianFilmCritics: 0,
       await: 0,
     },
     votes: {
-      kp: record.kpVotes ?? record.tmdbVotes ?? 0,
-      imdb: 0,
+      kp: votes ?? 0,
+      imdb: record.imdbVotes ?? 0,
       filmCritics: 0,
       russianFilmCritics: 0,
       await: 0,
@@ -387,6 +392,7 @@ export async function buildList(options) {
   /* Соответствия imdb: у зарубежного контента кинопоискового id часто нет,
      и без этого карточки просто исчезали из выдачи. */
   const imdbByKey = new Map();
+  const imdbRatingsByKey = new Map();
   try {
     const allItems = [...byMedia.entries()].flatMap(([kind, list]) =>
       [...list.values()].map((item) => ({ kind, id: item.id }))
@@ -398,6 +404,20 @@ export async function buildList(options) {
       select: { tmdbId: true, media: true, imdbId: true },
     });
     rows.forEach((row) => imdbByKey.set(`${row.media}:${row.tmdbId}`, row.imdbId));
+
+    /* Рейтинги IMDb для этих же фильмов */
+    const imdbIds = [...imdbByKey.values()].filter(Boolean);
+    if (imdbIds.length) {
+      const ratings = await prisma.imdbRating.findMany({
+        where: { imdbId: { in: imdbIds } },
+        select: { imdbId: true, rating: true, votes: true },
+      });
+      const byImdb = new Map(ratings.map((r) => [r.imdbId, r]));
+      rows.forEach((row) => {
+        const found = byImdb.get(row.imdbId);
+        if (found) imdbRatingsByKey.set(`${row.media}:${row.tmdbId}`, found);
+      });
+    }
   } catch {
     undefined;
   }
@@ -409,6 +429,13 @@ export async function buildList(options) {
       const record = resolved.get(item.id);
       if (record && !record.imdbId) {
         record.imdbId = imdbByKey.get(`${kind}:${item.id}`) || null;
+      }
+      if (record) {
+        const imdbRating = imdbRatingsByKey.get(`${kind}:${item.id}`);
+        if (imdbRating) {
+          record.imdbRating = imdbRating.rating;
+          record.imdbVotes = imdbRating.votes;
+        }
       }
       const key = record?.kinopoiskId || record?.imdbId;
       if (!key || seenKinopoisk.has(key)) return;
