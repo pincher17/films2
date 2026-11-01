@@ -6,12 +6,7 @@ import { ActiveChip, ActiveChips } from "@/app/styles/Filters.styles";
 import { FilterBadge } from "@/app/styles/AllFilmsPage.styles";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
-import {
-  getAllFilmsFiltersThunk,
-  getAllFilmsThunk,
-  nextPage,
-  setPage,
-} from "@/redux/allFilmsStudio";
+import { getAllFilmsFiltersThunk, getAllFilmsThunk, nextPage, setPage, clearFilms } from "@/redux/allFilmsStudio";
 import {
   Button,
   CrossIcon,
@@ -169,6 +164,9 @@ export default function StudioPage({
   useEffect(() => {
     const nameStudio = getValueBySlug(slug)
     const fresh = { ...initialFilters, selectedTypeOfMovies: [sectionType] };
+    /* Карточки прошлого типа убираем: иначе фильмы, сериалы и мультики
+       смешиваются в одну кучу при переходе между страницами */
+    dispatch(clearFilms())
     dispatch(setFilters(fresh as any))
     dispatch(setPage(1));
     dispatch(getAllFilmsFiltersThunk(fresh as any, 1, nameStudio));
