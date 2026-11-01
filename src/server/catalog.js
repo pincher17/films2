@@ -59,9 +59,25 @@ export async function buildCardsByKinopoiskIds(ids, errors) {
     const kinopoiskId = Number(rawId);
     if (!kinopoiskId) continue;
     try {
-      // resolveTmdbByKinopoisk отдаёт только { tmdbId, media } — сам фильм
-      // нужно запросить отдельно
-      const link = await resolveTmdbByKinopoisk(kinopoiskId);
+      /* Отрицательный id — это imdb-фильм (так мы храним позиции и закладки
+         для фильмов без кинопоиска). Ищем его через /find/ по tt-адресу. */
+      let link = null;
+      if (kinopoiskId < 0) {
+        const imdbId = `tt${Math.abs(kinopoiskId)}`;
+        const found = await tmdbGet(`/find/${imdbId}`, { external_source: "imdb_id" });
+        const movieHit = found?.movie_results?.[0];
+        const tvHit = found?.tv_results?.[0];
+        if (movieHit) link = { tmdbId: movieHit.id, media: "movie" };
+        else if (tvHit) link = { tmdbId: tvHit.id, media: "tv" };
+        if (!link) {
+          errors?.push(`${imdbId}: нет соответствия в TMDB`);
+          continue;
+        }
+      } else {
+        // resolveTmdbByKinopoisk отдаёт только { tmdbId, media } — сам фильм
+        // нужно запросить отдельно
+        link = await resolveTmdbByKinopoisk(kinopoiskId);
+      }
       if (!link?.tmdbId) {
         errors?.push(`${kinopoiskId}: нет соответствия в TMDB`);
         continue;
