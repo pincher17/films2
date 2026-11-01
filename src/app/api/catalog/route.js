@@ -167,7 +167,11 @@ export async function GET(request) {
         countryMode: searchParams.get("country") || "all",
         excludeAsianByDefault: false,
         requirePoster: true,
-        voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 50,
+        /* Для сериалов порог ниже: у них в TMDB меньше оценок, и с 50 оставалось
+         вдвое меньше выдачи. */
+        voteCountMin:
+          numberOrUndefined(searchParams.get("voteCountMin")) ??
+          (String(searchParams.get("types") || "") === "2" ? 20 : 50),
         /* Страница студии: у зарубежного контента мало кинопоисковых id, и с
            одной страницей TMDB (20 позиций) оставалось 7–12 карточек. Берём
            больше страниц, чтобы после проверки набиралось на полную выдачу. */
