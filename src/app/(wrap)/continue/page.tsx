@@ -38,6 +38,12 @@ const SORTS = [
 
 export default function ContinuePage() {
   const [docs, setDocs] = React.useState<SavedDoc[]>([]);
+
+  /* Удаление из «Продолжить просмотр»: убираем с экрана сразу, потом с сервера */
+  const remove = (card: SavedDoc) => {
+    setDocs((prev) => prev.filter((item) => item.id !== card.id));
+    fetch(`/api/continue?filmId=${card.id}`, { method: "DELETE" }).catch(() => undefined);
+  };
   const [loading, setLoading] = React.useState(true);
   const [type, setType] = React.useState("all");
   const [sort, setSort] = React.useState("date-desc");
@@ -111,7 +117,7 @@ export default function ContinuePage() {
             </p>
           </Empty>
         ) : (
-          <Cards cards={shown} loading={loading} />
+          <Cards cards={shown} loading={loading} onRemove={remove} />
         )}
       </Wrapper>
     </MainTag>

@@ -35,6 +35,8 @@ const {
   } = props.card
 
   const router = useRouter();
+  /* Крестик удаления — как в ряду «Продолжить просмотр» на главной */
+  const onRemove = (props as { onRemove?: (card: any) => void }).onRemove;
   /* Адрес страницы фильма: нужен и ссылке, и предзагрузке */
   const href = name
     ? `/film/${id}-${textTransform(name)}${year ? "-" + year : ""}`
@@ -147,6 +149,35 @@ const {
 
             </ImgWrapper>
             </Link>
+            {onRemove && (
+              <button
+                type="button"
+                title="Убрать из «Продолжить просмотр»"
+                aria-label="Убрать из «Продолжить просмотр»"
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  zIndex: 5,
+                  width: 30,
+                  height: 30,
+                  borderRadius: "50%",
+                  border: "none",
+                  cursor: "pointer",
+                  background: "rgba(0,0,0,0.65)",
+                  color: "#fff",
+                  fontSize: 16,
+                  lineHeight: 1,
+                }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onRemove(props.card);
+                }}
+              >
+                ✕
+              </button>
+            )}
             {id && !props.hideSave ? (
               <SaveButton
                 type="button"
