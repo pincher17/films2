@@ -166,7 +166,7 @@ export default function StudioPage({
       "[студия] раздел:", sectionType,
       "| slug:", slug,
       "| карточек в сторе:", films.length,
-      "| первые:", films.slice(0, 4).map((f: any) => f?.name || f?.id)
+      "| первые:", JSON.stringify(films.slice(0, 3).map((f: any) => ({ id: f?.id, name: f?.name, type: f?.type })))
     );
   }, [films, sectionType, slug]);
 

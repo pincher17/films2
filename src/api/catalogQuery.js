@@ -18,6 +18,13 @@ async function requestList(params) {
   try {
     const response = await axios.get(CATALOG_URL, { params });
     const data = response.data || {};
+    /* Отладка: видно, что именно уходит на сервер и что оттуда приходит */
+    console.info(
+      "[каталог] запрос:", { task: params.task, types: params.types, genres: params.genres, country: params.country, page: params.page },
+      "→ карточек:", Array.isArray(data.docs) ? data.docs.length : 0,
+      "| типы:", (data.docs || []).slice(0, 6).map((d) => d.type),
+      "| названия:", (data.docs || []).slice(0, 6).map((d) => d.name)
+    );
     return {
       data: {
         docs: Array.isArray(data.docs) ? data.docs : [],
