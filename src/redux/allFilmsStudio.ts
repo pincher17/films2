@@ -74,13 +74,6 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
 
         filmsApiV4.getFilmsStudio(filters, page, nameStudio).then((response: any) =>{
             
-            /* Проверяем актуальность: без этого опоздавший ответ прошлого
-               раздела (например, мультфильмов) добавлялся к новому списку —
-               получалась смесь сериалов и анимации. */
-            if (currentSignature !== signature) {
-              dispatch(setLoading(false));
-              return;
-            }
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
             console.log(response)
