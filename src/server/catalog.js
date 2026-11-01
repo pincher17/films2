@@ -518,8 +518,10 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2", 
     });
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-      seen.add(record.kinopoiskId);
+      /* Ключ — кинопоиск или imdb: фильм без кп-id не должен исчезать */
+      const key = record?.kinopoiskId || record?.imdbId;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
       records.push(record);
     });
   }
@@ -551,8 +553,9 @@ export async function buildMovieShelf(kind, limit = 25) {
   const seen = new Set();
   items.forEach((item) => {
     const record = resolved.get(item.id);
-    if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-    seen.add(record.kinopoiskId);
+    const key = record?.kinopoiskId || record?.imdbId;
+    if (!key || seen.has(key)) return;
+    seen.add(key);
     records.push(record);
   });
 
@@ -607,11 +610,13 @@ export async function buildTop(limit = 10) {
     const resolved = await resolveRecords(kind, items, {
       preFilter: buildPreFilter({ excludeAsianByDefault: true }),
     });
-    const seen = new Set(records.map((record) => record.kinopoiskId));
+    const seen = new Set(records.map((record) => record.kinopoiskId || record.imdbId));
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-      seen.add(record.kinopoiskId);
+      /* Ключ — кинопоиск или imdb: фильм без кп-id не должен исчезать */
+      const key = record?.kinopoiskId || record?.imdbId;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
       records.push(record);
     });
   }
