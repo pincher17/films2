@@ -156,3 +156,15 @@ model ImdbMap {
   @@unique([tmdbId, media])
   @@index([imdbId])
 }
+
+/// Рейтинг IMDb: средняя оценка и число голосов.
+/// Загружается из официального датасета IMDb (title.ratings.tsv) — бесплатно,
+/// без лимитов. Нужен, чтобы показывать оценки по IMDb, а не только по TMDB.
+model ImdbRating {
+  id      String @id @default(cuid())
+  imdbId  String @unique
+  rating  Float
+  votes   Int
+
+  @@index([rating])
+}
