@@ -65,7 +65,6 @@ const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar
         }
         
     }
-console.log(filters.genre, valueGenre)
     const changeValueRating:any = (e: any) => {
         setValueRating(e)
     }

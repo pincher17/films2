@@ -76,8 +76,7 @@ export const getAllFilmsThunk = (filters: initialStateFiltersStudioType, page: a
             
             dispatch(addFilms(response.data.docs))
             dispatch(setLoading(false))
-            console.log(response)
-    })
+        })
     .catch((error: any) => {
         console.warn("[студии] запрос не выполнен:", error?.message || error)
         // важно: снимаем лоадер, иначе скелетоны останутся навсегда
@@ -106,8 +105,7 @@ export const getAllFilmsFiltersThunk = (filters: initialStateFiltersStudioType, 
 
             dispatch(addFilmsNewFilters(response.data.docs))
             dispatch(setLoadingFilters(false))
-            console.log(response)
-    })
+        })
     .catch((error: any) => {
         console.warn("[студии] запрос не выполнен:", error?.message || error)
         dispatch(setLoadingFilters(false))
