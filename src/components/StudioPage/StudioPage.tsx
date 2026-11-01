@@ -180,7 +180,7 @@ export default function StudioPage({
     /* Счётчик страниц и признак «всё загружено» тоже сбрасываем: иначе
        бесконечная прокрутка сразу догружает страницу прошлого типа */
     loadedPageRef.current = 1;
-    setStuckCount(0);
+    stuckCount.current = 0;
     setAllLoaded(false);
     dispatch(clearFilms())
     dispatch(setFilters(fresh as any))
