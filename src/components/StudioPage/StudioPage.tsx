@@ -159,6 +159,17 @@ export default function StudioPage({
   }, []);
 
 
+  /* Отладка: видно, какой раздел открыт, какие фильтры уходят и что приходит.
+     Нужно, чтобы понять, откуда берётся смешивание типов. */
+  useEffect(() => {
+    console.info(
+      "[студия] раздел:", sectionType,
+      "| slug:", slug,
+      "| карточек в сторе:", films.length,
+      "| первые:", films.slice(0, 4).map((f: any) => f?.name || f?.id)
+    );
+  }, [films, sectionType, slug]);
+
   /* Зависимость от типа обязательна: /studio/x и /studio/x/series — разные
      страницы с одинаковым slug, и без неё карточки оставались прежними. */
   useEffect(() => {
@@ -169,6 +180,7 @@ export default function StudioPage({
     dispatch(clearFilms())
     dispatch(setFilters(fresh as any))
     dispatch(setPage(1));
+    console.info("[студия] запрос:", { sectionType, types: fresh.selectedTypeOfMovies, nameStudio });
     dispatch(getAllFilmsFiltersThunk(fresh as any, 1, nameStudio));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, sectionType]);
