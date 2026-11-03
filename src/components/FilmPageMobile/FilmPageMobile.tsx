@@ -186,7 +186,7 @@ export default function FilmPageMobile({ params }: { params: { id: number | stri
             />
           </WrapperWatchFilm>
         </WrapperInfo>
-        <ResumeHint filmId={id} />
+        <ResumeHint filmId={numericFilmId} />
         <ButtonWatch onClick={watchFilmStart}>Смотреть</ButtonWatch>
 
         <IconActions>

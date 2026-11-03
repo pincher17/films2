@@ -325,7 +325,7 @@ export default function FilmPage({ params }: { params: { id: number | string } }
                 {saved ? 'Сохранено' : 'Сохранить'}
               </SaveFilmButton>
             </HeroButtons>
-            <ResumeHint filmId={id} />
+            <ResumeHint filmId={numericId} />
             {filmInfoId?.description ? (
               <>
                 <HeroDescription
