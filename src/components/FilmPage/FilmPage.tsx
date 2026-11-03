@@ -95,6 +95,11 @@ export default function FilmPage({ params }: { params: { id: number | string } }
     return clean ? -Number(clean.replace(/\D/g, "")) : 0;
   })();
 
+  /* Плееру нужен чистый id: из адреса вида tt0121955-yuzhnyj-park-1997
+     берём только tt-часть, иначе внешний сервис не находит видео */
+  const cleanPlayerId =
+    String(params.id).match(/^tt\d+/i)?.[0] || String(params.id).replace(/\D/g, "");
+
   const numericId = imdbNumber || Number(String(params.id).replace(/\D/g, "")) || 0;
   // если для фильма заданы свои ссылки — играем их в своём плеере
   const streams = getFilmStreams(id);
@@ -396,7 +401,7 @@ export default function FilmPage({ params }: { params: { id: number | string } }
               ) : (
                 <>
                   <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                  src={`https://api.ortified.ws/embed/${String(id).startsWith("tt") ? "imdb" : "kp"}/${id}`}
+                  src={`https://api.ortified.ws/embed/${cleanPlayerId.startsWith("tt") ? "imdb" : "kp"}/${cleanPlayerId}`}
                   frameBorder="0"
                   scrolling="no"
                   allowFullScreen
