@@ -73,12 +73,31 @@ function readEvent(data: any): ParsedEvent | null {
     };
   }
 
+  /* Часть плееров (anymanga) присылает полезные данные вложенными в поле
+     «данные», а служебные — в корне. Читаем оба места. */
+  const payload = data?.данные && typeof data.данные === "object" ? data.данные : null;
+
   // Прогресс просмотра: имена полей у разных плееров отличаются
   if (event === "timeupdate" || event === "progress" || event === "viewProgress") {
-    const seconds = number(data.value ?? data.seconds ?? data.time ?? data.timeSeconds);
-    const duration = number(data.duration ?? data.total ?? data.length);
+    const seconds = number(
+      data.value ?? data.seconds ?? data.time ?? data.timeSeconds ??
+      payload?.value ?? payload?.seconds ?? payload?.time ?? payload?.timeSeconds
+    );
+    const duration = number(
+      data.duration ?? data.total ?? data.length ??
+      payload?.duration ?? payload?.total ?? payload?.length
+    );
     if (seconds === null) return null;
     return { kind: "progress", seconds, duration };
+  }
+
+  /* «watch» — плеер сообщает, какую серию играет. У anymanga это событие
+     приходит при старте и при переключении серии. */
+  if (event === "watch" || event === "startWatching") {
+    const season = number(payload?.сезон ?? payload?.season ?? data?.season);
+    const episode = number(payload?.серия ?? payload?.episode ?? data?.episode);
+    if (season === null && episode === null) return null;
+    return { kind: "episode", season, episode };
   }
 
   // Отдельное событие длительности
