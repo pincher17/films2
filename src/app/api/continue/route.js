@@ -90,7 +90,7 @@ export async function GET() {
 export async function DELETE(request) {
   const { searchParams } = new URL(request.url);
   const filmId = Number(searchParams.get("filmId"));
-  if (!Number.isInteger(filmId) || filmId <= 0) {
+  if (!Number.isInteger(filmId) || filmId === 0) {
     return NextResponse.json({ ok: false, error: "нужен filmId" }, { status: 400, headers: noStore });
   }
 

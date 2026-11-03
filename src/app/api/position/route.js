@@ -16,7 +16,7 @@ function parseIds(searchParams, body) {
   const filmId = Number(get("filmId"));
   const season = Number(get("season") ?? 0) || 0;
   const episode = Number(get("episode") ?? 0) || 0;
-  if (!Number.isInteger(filmId) || filmId <= 0) return null;
+  if (!Number.isInteger(filmId) || filmId === 0) return null;
   if (!Number.isInteger(season) || season < 0) return null;
   if (!Number.isInteger(episode) || episode < 0) return null;
   return { filmId, season, episode };
