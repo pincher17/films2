@@ -63,7 +63,8 @@ export async function buildCardsByKinopoiskIds(ids, errors) {
          для фильмов без кинопоиска). Ищем его через /find/ по tt-адресу. */
       let link = null;
       if (kinopoiskId < 0) {
-        const imdbId = `tt${Math.abs(kinopoiskId)}`;
+        /* Ведущие нули важны: tt0121955 без них превращается в tt121955 и не находится */
+        const imdbId = `tt${String(Math.abs(kinopoiskId)).padStart(7, "0")}`;
         const found = await tmdbGet(`/find/${imdbId}`, { external_source: "imdb_id" });
         const movieHit = found?.movie_results?.[0];
         const tvHit = found?.tv_results?.[0];
@@ -94,7 +95,13 @@ export async function buildCardsByKinopoiskIds(ids, errors) {
         // id карточки — всегда кинопоисковый: по нему строятся ссылки и плеер.
         // У фильмов из ручного списка соответствий record.id пустой, поэтому
         // подставляем id, с которым пришли в функцию.
-        cards.push({ ...toCard(record), id: kinopoiskId });
+        /* Для imdb-фильма в ссылке нужен tt-адрес: с отрицательным числом
+           маршрут /film/-121955 не откроется */
+        const cardId =
+          kinopoiskId < 0
+            ? `tt${String(Math.abs(kinopoiskId)).padStart(7, "0")}`
+            : kinopoiskId;
+        cards.push({ ...toCard(record), id: cardId });
       }
     } catch (error) {
       console.warn("[cards] не удалось собрать карточку", kinopoiskId, error?.message);
