@@ -146,8 +146,11 @@ function scoreVideo(video, title, year) {
      ролик — даже без слова «русский». Раньше такие отбраковывались. */
   const cyrillic = (videoTitle.match(/[а-яё]/g) || []).length;
   const latin = (videoTitle.match(/[a-z]/g) || []).length;
-  if (cyrillic > latin) score += 2;
-  else if (/русск|russian|дубл/.test(videoTitle)) score += 2;
+  const russian = cyrillic > latin || /русск|russian|дубл/.test(videoTitle);
+  /* Английский ролик на сайт не берём ни при каких бонусах: раньше он проходил
+     за счёт года и «официального» канала. */
+  if (!russian) return 0;
+  score += 2;
 
   if (/официальн|official/.test(norm(video.channel))) score += 1;
   if (/трейлеры|trailers|кино/i.test(video.channel || "")) score += 1;
