@@ -53,8 +53,15 @@ export async function GET() {
 
   const errors = [];
   const cards = await buildCardsByKinopoiskIds(uniqueRows.map((row) => row.filmId), errors);
-  // id карточки — строка, filmId в базе — число: приводим к строке
-  const byFilmId = new Map(uniqueRows.map((row) => [String(row.filmId), row]));
+  /* Карточка imdb-фильма имеет id вида tt0121955, а запись в базе — число
+     -121955. Кладём в карту оба ключа, иначе прогресс не находится. */
+  const byFilmId = new Map();
+  uniqueRows.forEach((row) => {
+    byFilmId.set(String(row.filmId), row);
+    if (row.filmId < 0) {
+      byFilmId.set(`tt${String(Math.abs(row.filmId)).padStart(7, "0")}`, row);
+    }
+  });
 
   const docs = cards.map((card) => {
     const row = byFilmId.get(String(card.id));
