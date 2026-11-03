@@ -7,15 +7,21 @@
  *   node scripts/trailers.mjs stats     — показать состояние
  *
  * Логика обработки одной задачи:
- *   1. TMDB: есть трейлер с языком ru  → сохраняем (квота YouTube не тратится)
+ *   1. TMDB: есть трейлер с языком ru  → сохраняем (YouTube не трогаем)
  *   2. иначе YouTube: поиск «название год трейлер» → оценка результата
  *   3. не прошло порог → статус «skipped» с причиной
  *
  * Только русские трейлеры: владелец сайта попросил не подставлять английские.
+ *
+ * Поиск идёт без API-ключа (см. yt-search.mjs). Причина: у Data API квота
+ * 10 000 единиц на проект в сутки, а один search.list стоит 100 единиц —
+ * это ~465 поисков на пять ключей и стоп на неделю. Нам нужно 10 656 задач,
+ * поэтому страница поиска разбирается напрямую: квоты у этого пути нет.
  */
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
+import { searchYouTube, oembed } from "./yt-search.mjs";
 
 const prisma = new PrismaClient();
 
@@ -31,34 +37,9 @@ function loadEnv() {
 loadEnv();
 
 const TMDB = process.env.TMDB_KEY;
-/* Ключей может быть несколько: когда у одного кончилась дневная квота,
-   переключаемся на следующий. В .env.local перечислите их через запятую
-   в YOUTUBE_API_KEYS, либо оставьте один в YOUTUBE_API_KEY. */
-const KEYS = (process.env.YOUTUBE_API_KEYS || process.env.YOUTUBE_API_KEY || "")
-  .split(",")
-  .map((key) => key.trim())
-  .filter(Boolean);
-let keyIndex = 0;
 
-/** Запрос к YouTube с автоматическим переключением ключа при лимите. */
-async function yt(pathAndQuery) {
-  while (keyIndex < KEYS.length) {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/${pathAndQuery}&key=${KEYS[keyIndex]}`
-    );
-    const data = await response.json();
-    const reason = data?.error?.errors?.[0]?.reason || "";
-    if (reason === "quotaExceeded" || reason === "dailyLimitExceeded" || reason === "rateLimitExceeded") {
-      console.warn(
-        `[work] дневной лимит у ключа ${keyIndex + 1} из ${KEYS.length} — переключаюсь`
-      );
-      keyIndex += 1;
-      continue;
-    }
-    return data;
-  }
-  return { error: { message: "дневной лимит у всех ключей" } };
-}
+/** Пауза между запросами: без неё YouTube быстро начинает отвечать 429. */
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const norm = (value) =>
   String(value || "")
@@ -129,8 +110,7 @@ async function seed() {
 
 /** Оценка найденного видео на YouTube: 0 — не брать. */
 function scoreVideo(video, title, year) {
-  const snippet = video.snippet || {};
-  const videoTitle = norm(snippet.title);
+  const videoTitle = norm(video.title);
   const wanted = norm(title);
   if (!wanted) return 0;
 
@@ -169,8 +149,8 @@ function scoreVideo(video, title, year) {
   if (cyrillic > latin) score += 2;
   else if (/русск|russian|дубл/.test(videoTitle)) score += 2;
 
-  if (/официальн|official/.test(norm(snippet.channelTitle))) score += 1;
-  if (/трейлеры|trailers|кино/i.test(snippet.channelTitle || "")) score += 1;
+  if (/официальн|official/.test(norm(video.channel))) score += 1;
+  if (/трейлеры|trailers|кино/i.test(video.channel || "")) score += 1;
 
   return score;
 }
@@ -179,6 +159,7 @@ function scoreVideo(video, title, year) {
 /** Обработка порции задач. */
 async function work(limit = 100) {
   let searches = 0;
+  let emptyStreak = 0;
   const tasks = await prisma.trailerTask.findMany({
     where: { status: "pending" },
     orderBy: { popularity: "desc" },
@@ -207,35 +188,39 @@ async function work(limit = 100) {
         }
       }
 
-      // 2. YouTube
-      if (!KEYS.length) {
-        await prisma.trailerTask.update({ where: { id: task.id }, data: { status: "skipped", note: "нет ключа YouTube" } });
-        continue;
-      }
-
+      // 2. YouTube без ключа и без квоты
+      await sleep(250); // без паузы YouTube быстро начинает отвечать 429
       const query = `${task.title} ${task.year || ""} трейлер`;
-      const search = await yt(
-        `search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(query)}`
-      );
-      searches += 1;
-
-      if (search.error) {
-        // лимит кончился — дальше идти бессмысленно, оставляем задачи в очереди
-        if (/лимит/.test(search.error.message || "")) {
-          console.warn("[work] останавливаюсь:", search.error.message);
-          break;
-        }
-        console.warn("[work] YouTube:", search.error.message);
+      let results;
+      try {
+        results = await searchYouTube(query);
+      } catch (error) {
+        searches += 1;
+        emptyStreak += 1;
+        console.warn(`[work] поиск не удался (${error.status || "?"}): ${error.message}`);
         await prisma.trailerTask.update({
           where: { id: task.id },
-          data: { status: "failed", note: search.error.message.slice(0, 120), attempts: { increment: 1 } },
+          data: { status: "failed", note: String(error.message).slice(0, 120), attempts: { increment: 1 } },
         });
+        /* Если YouTube закрыл дверь, долбить дальше бессмысленно: задачи
+           остаются в очереди и вернутся в следующий прогон. */
+        if (emptyStreak >= 5) {
+          console.warn("[work] пять ошибок подряд — останавливаюсь, очередь сохранена");
+          break;
+        }
+        await sleep(5000);
         continue;
       }
+      searches += 1;
+      emptyStreak = 0;
 
-      const scored = (search.items || [])
+      /* Длительность уже есть в выдаче, поэтому shorts и двухчасовые ролики
+         отсекаем сразу — без лишних запросов. */
+      const scored = results
         .map((video) => ({ video, score: scoreVideo(video, task.title, task.year) }))
-        .filter((item) => item.score >= 4)
+        .filter(
+          (item) => item.score >= 4 && item.video.durationSec >= 20 && item.video.durationSec <= 900
+        )
         .sort((a, b) => b.score - a.score);
 
       if (!scored.length) {
@@ -246,24 +231,15 @@ async function work(limit = 100) {
         continue;
       }
 
-      // Проверяем встраиваемость точечно: фильтр в поиске отсекал почти всё,
-      // а этот запрос стоит 1 единицу и даёт точный ответ.
+      /* Встраиваемость проверяем через oembed: он бесплатный и отвечает
+         ошибкой для роликов, которые встроить нельзя. */
       let best = null;
-      for (const candidate of scored) {
-        const videoId = candidate.video.id?.videoId;
-        if (!videoId) continue;
-        const details = await yt(`videos?part=status,contentDetails&id=${videoId}`);
-        const info = details.items?.[0];
-        if (!info || info.status?.embeddable === false) continue;
-        // отсекаем shorts и слишком длинные ролики
-        const duration = info.contentDetails?.duration || "";
-        const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-        const seconds = match
-          ? (Number(match[1] || 0) * 3600) + (Number(match[2] || 0) * 60) + Number(match[3] || 0)
-          : 0;
-        if (seconds < 20 || seconds > 900) continue;
-        best = candidate.video;
-        break;
+      for (const candidate of scored.slice(0, 3)) {
+        if (await oembed(candidate.video.videoId)) {
+          best = candidate.video;
+          break;
+        }
+        await sleep(200);
       }
 
       if (!best) {
@@ -278,15 +254,15 @@ async function work(limit = 100) {
           filmId_media_youtubeId: {
             filmId: task.filmId,
             media: task.media || "movie",
-            youtubeId: best.id.videoId,
+            youtubeId: best.videoId,
           },
         },
         update: {},
         create: {
           filmId: task.filmId,
           media: task.media || "movie",
-          youtubeId: best.id.videoId,
-          title: best.snippet.title,
+          youtubeId: best.videoId,
+          title: best.title,
           lang: "ru",
           source: "youtube",
         },
@@ -314,7 +290,7 @@ async function work(limit = 100) {
       `ошибок ${counts.failed || 0}, в очереди ${counts.pending || 0}, всего трейлеров ${trailers}`
   );
 
-  await sendReport({ searches, counts, trailers, keys: KEYS.length });
+  await sendReport({ searches, counts, trailers });
 }
 
 
@@ -376,7 +352,7 @@ async function stats() {
  * Отчёт в Telegram. Тихо пропускаем, если токена или чата нет:
  * скрипт должен работать и без уведомлений.
  */
-async function sendReport({ searches, counts, trailers, keys }) {
+async function sendReport({ searches, counts, trailers }) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return;
   let chatId = null;
@@ -388,7 +364,7 @@ async function sendReport({ searches, counts, trailers, keys }) {
 
   const text = [
     "Трейлеры: порция обработана",
-    `поисков YouTube: ${searches} (ключей: ${keys})`,
+    `поисков YouTube: ${searches} (без ключа)`,
     `готово: ${counts.done || 0}`,
     `пропущено: ${counts.skipped || 0}`,
     `ошибок: ${counts.failed || 0}`,
