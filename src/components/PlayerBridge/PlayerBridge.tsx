@@ -174,10 +174,14 @@ const PlayerBridge: React.FC<Props> = ({ filmId, season = 0, episode = 0, saveEv
       if (!readyRef.current) return;
       if (seconds < MIN_SECONDS) return;
 
-      // Сериал: пока плеер не сообщил серию, не пишем вовсе — иначе появится
-      // ложная запись (season=0, episode=0) и фильм задвоится в ряду.
-      // Для обычного фильма ключ (0,0) остаётся рабочим.
-      if (isSeries && !episodeKnownRef.current) return;
+      /* Раньше для сериалов запись блокировалась, пока плеер не сообщит серию.
+         Но часть плееров (anymanga) присылает только время и длительность —
+         серии в их событиях нет, и такие сериалы не сохранялись никогда.
+         Теперь пишем с сезоном 0, серией 0: карточка появится в «Продолжить
+         просмотр», а когда плеер всё же сообщит серию — ключ уточнится. */
+      if (isSeries && !episodeKnownRef.current) {
+        debug("[bridge] серия неизвестна — пишем с ключом 0/0");
+      }
       if (duration && seconds > duration + 5) return;
       if (Date.now() - lastSavedRef.current < 5000 && !beacon) return;
 
