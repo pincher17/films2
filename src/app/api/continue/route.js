@@ -97,10 +97,24 @@ export async function DELETE(request) {
   const userId = await currentProfile(false);
   if (!userId) return NextResponse.json({ ok: false }, { status: 200, headers: noStore });
 
-  const season = Math.max(0, Math.floor(Number(searchParams.get("season")) || 0));
-  const episode = Math.max(0, Math.floor(Number(searchParams.get("episode")) || 0));
+  /* Если сезон и серия не переданы — убираем фильм целиком, со всеми
+     сериями. Иначе удалялась запись «сезон 0, серия 0», которой нет,
+     и карточка возвращалась после обновления. */
+  const rawSeason = searchParams.get("season");
+  const rawEpisode = searchParams.get("episode");
+  const scoped =
+    rawSeason !== null && rawEpisode !== null && rawSeason !== "" && rawEpisode !== "";
 
-  await prisma.watchPosition.deleteMany({ where: { userId, filmId, season, episode } });
+  const where = scoped
+    ? {
+        userId,
+        filmId,
+        season: Math.max(0, Math.floor(Number(rawSeason) || 0)),
+        episode: Math.max(0, Math.floor(Number(rawEpisode) || 0)),
+      }
+    : { userId, filmId };
 
-  return NextResponse.json({ ok: true }, { headers: noStore });
+  const removed = await prisma.watchPosition.deleteMany({ where });
+
+  return NextResponse.json({ ok: true, removed: removed.count }, { headers: noStore });
 }

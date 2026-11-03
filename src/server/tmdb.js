@@ -165,18 +165,18 @@ export async function resolveKeywordId(name) {
  * компанию-однофамильца (для «Netflix» — фирму с 15 фильмами).
  */
 export const PLATFORM_IDS = {
-  netflix: { network: 213, company: 213 },
-  hbo: { network: 49, company: 3268 },
-  "apple tv+": { network: 2552, company: 194232 },
-  "amazon prime video": { network: 1024, company: 210099 },
-  hulu: { network: 453, company: null },
-  "disney+": { network: 2739, company: 2 },
-  "paramount+": { network: 4330, company: 4 },
-  max: { network: 3186, company: 174 },
-  peacock: { network: 3353, company: null },
-  "dc universe": { network: null, company: 184898 },
-  kion: { network: null, company: 294156 },
-  okko: { network: null, company: 175169 },
+  netflix: { network: 213, company: 213, provider: 8 },
+  hbo: { network: 49, company: 3268, provider: 1899 },
+  "apple tv+": { network: 2552, company: 194232, provider: 350 },
+  "amazon prime video": { network: 1024, company: 210099, provider: 9 },
+  hulu: { network: 453, company: null, provider: 15 },
+  "disney+": { network: 2739, company: 2, provider: 337 },
+  "paramount+": { network: 4330, company: 4, provider: 2303 },
+  max: { network: 3186, company: 174, provider: 1899 },
+  peacock: { network: 3353, company: null, provider: 386 },
+  "dc universe": { network: null, company: 184898, provider: 402 },
+  kion: { network: null, company: 294156, provider: null },
+  okko: { network: null, company: 175169, provider: 376 },
 };
 
 /** id платформы по названию студии с сайта */

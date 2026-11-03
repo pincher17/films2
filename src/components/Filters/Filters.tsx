@@ -1,22 +1,23 @@
 import React, { useEffect } from 'react';
+import { Field } from '../../app/styles/Filters.styles';
 import { allGenres } from '../../data/allGenres';
 import Button from '../Button';
 import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import MultipleSelect from '../MultipleSelect';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, FilterPill, FiltersActions, PillBox, Wrapper, WrapperAllInputs, WrapperCheckbox } from '../../app/styles/Filters.styles';
 import { FiltersProps } from './Filters.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersType, setFilters } from '@/redux/filtersSlice';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsSlice';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import SelectCountry from '../SelectCountry/SelectCountry';
 import SortSelect from '../SortSelect/SortSelect';
 
 
 
-const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
+const Filters: React.FC<FiltersProps & { hideTypes?: boolean; genres?: { value: string; label: string; id: number }[] }> = ({mobile, setIsOpenSidebar, hideTypes, genres}) =>{
 
     const filters = useAppSelector((state: { filters: any; }) => state.filters);
     const dispatch = useAppDispatch()
@@ -28,6 +29,9 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
+    /* Раздел каталога: без этого применение фильтров уводило на «Фильмы»
+       даже со страницы сериалов */
+    const pathname = usePathname();
     /**
      * Фильтры в адресной строке: тогда ссылку можно сохранить, а обновление
      * страницы не сбрасывает выбор. Раньше здесь стоял router.replace('/films'),
@@ -72,7 +76,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
         if (f.sortBy) params.set('sort', f.sortBy);
 
         const query = params.toString();
-        return query ? `/films?${query}` : '/films';
+        return query ? `${pathname}?${query}` : pathname;
     };
 
     /**
@@ -81,8 +85,8 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
      * и плитки типов, и все поля — состояние берётся из чистого адреса.
      */
     const resetFilters = () => {
-        router.replace('/films');
-        window.location.href = '/films';
+        router.replace(pathname);
+        window.location.href = pathname;
     };
 
     /*
@@ -114,7 +118,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
             updateGenre: false,
             country: valueCountry,
         }
-        router.replace('/films');
+        router.replace(pathname);
         dispatch(setFilters(createfilters))
         dispatch(setPage(1))
         dispatch(getAllFilmsFiltersThunk(createfilters, 1));
@@ -150,6 +154,10 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
     return (
     <Wrapper mobile={(+mobile)}>
         <WrapperAllInputs>
+        {/* Блок галочек нужен только там, где тип не задан разделом.
+            Раньше он оставался в разметке пустым и занимал первую колонку,
+            из-за чего фильтры съезжали вправо. */}
+        {!hideTypes && (
         <WrapperCheckbox>
         {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: number) => (
         <FilterPill $active={item.included} key={item.typeNumber} htmlFor={`type-${item.typeNumber}`}>
@@ -160,8 +168,6 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
                 onChange={() => changeIncludedTypeOfMovies(item.typeNumber)}
             />
             <PillBox $active={item.included}>
-                {/* галочка всегда в разметке: если её монтировать и размонтировать,
-                    вёрстка дёргается на несколько пикселей */}
                 <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
                     <path d="M1 4.4l3 3L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -170,6 +176,7 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
         </FilterPill>
         ))}
         </WrapperCheckbox>
+        )}
             <SliderValue
                 title='Рейтинг'
                 integer={false}
@@ -190,14 +197,18 @@ const Filters: React.FC<FiltersProps> = ({mobile, setIsOpenSidebar}) =>{
                 defaulSecondValue={filters.year[1]}
                 onChangeValue={changeValueYear}
             />
-            <WrapperInput>
-                <p style={{paddingBottom: "14px"}}>Жанры</p>
-                <MultipleSelect options={allGenres} onChange={setValueGenre}/>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
-                <SelectCountry onChange={setValueCountry}/>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
-                <SortSelect onChange={setValueSort}/>
-            </WrapperInput>
+                <Field>
+                  <p>Жанры</p>
+                  <MultipleSelect options={genres || allGenres} onChange={setValueGenre}/>
+                </Field>
+                <Field>
+                  <p>Страны</p>
+                  <SelectCountry onChange={setValueCountry}/>
+                </Field>
+                <Field>
+                  <p>Сортировка</p>
+                  <SortSelect onChange={setValueSort}/>
+                </Field>
          </WrapperAllInputs>
          <ButtonWrapper>
             <FiltersActions>

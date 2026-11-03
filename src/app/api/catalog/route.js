@@ -16,7 +16,7 @@ import { cacheStats } from "@/server/kpMap";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_EXCLUDED_GENRES = [
-  "документальный",
+  /* Документальное не исключаем: его ищут и фильтруют отдельно */
   "ток-шоу",
   "реальное ТВ",
   "короткометражка",
@@ -142,8 +142,19 @@ export async function GET(request) {
         cartoonsOnly: isCartoonsOnly(studioTypes),
         companyId,
         networkId,
+        watchProvider: known?.provider || null,
+        watchRegion: "US",
         genres: studioGenres,
-        excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre)),
+        excludeGenres: (() => {
+        const excluded = DEFAULT_EXCLUDED_GENRES.filter((genre) => !studioGenres.includes(genre));
+        /* У студий та же логика, что в каталоге: на странице фильмов и сериалов
+           мультипликации быть не должно — она живёт в разделе мультфильмов. */
+        const studioTypes = String(searchParams.get("types") || "");
+        if (studioTypes !== "3" && !studioGenres.includes("мультфильм")) {
+          excluded.push("мультфильм");
+        }
+        return excluded;
+      })(),
         yearRange: studioYears,
         yearFrom: studioYears[0],
         yearTo: studioYears[1],
@@ -156,11 +167,17 @@ export async function GET(request) {
         countryMode: searchParams.get("country") || "all",
         excludeAsianByDefault: false,
         requirePoster: true,
-        voteCountMin: numberOrUndefined(searchParams.get("voteCountMin")) ?? 50,
+        /* Для сериалов порог ниже: у них в TMDB меньше оценок, и с 50 оставалось
+         вдвое меньше выдачи. */
+        voteCountMin:
+          numberOrUndefined(searchParams.get("voteCountMin")) ??
+          (String(searchParams.get("types") || "") === "2" ? 20 : 50),
         /* Страница студии: у зарубежного контента мало кинопоисковых id, и с
            одной страницей TMDB (20 позиций) оставалось 7–12 карточек. Берём
            больше страниц, чтобы после проверки набиралось на полную выдачу. */
-        tmdbPages: 10,
+        /* 10 страниц TMDB на одну страницу сайта — слишком грубо: 200 позиций
+           проверки давали всего 2-3 страницы выдачи. Теперь пагинация мельче. */
+        tmdbPages: 3,
       });
 
       return NextResponse.json({ ...result, company });
@@ -225,6 +242,12 @@ export async function GET(request) {
     const ratingFrom = numberOrUndefined(searchParams.get("ratingFrom"));
     const ratingTo = numberOrUndefined(searchParams.get("ratingTo"));
     const countryMode = searchParams.get("country") || "all";
+      /* Только сериалы: в TMDB у них меньше оценок, и общий порог 300
+         отсекал почти всё (криминал: 33 вместо 280). */
+      const requestedGenres = String(searchParams.get("genres") || "");
+      const seriesOnly =
+        String(searchParams.get("types") || "") === "2" ||
+        requestedGenres.toLowerCase().includes("мультсериал");
     const sortParam = searchParams.get("sort") || "date-desc";
     const typesParam = searchParams.get("types") || "1,2,3";
     const cartoonsOnly = isCartoonsOnly(typesParam);
@@ -236,7 +259,24 @@ export async function GET(request) {
       types: typesParam,
       cartoonsOnly,
       genres,
-      excludeGenres: DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre)),
+      excludeGenres: (() => {
+        const excluded = DEFAULT_EXCLUDED_GENRES.filter((genre) => !genres.includes(genre));
+        const catalogTypes = String(searchParams.get("types") || "");
+
+        /* Мультипликация живёт в разделе «Мультфильмы» */
+        if (catalogTypes !== "3" && !genres.includes("мультфильм")) {
+          excluded.push("мультфильм");
+        }
+
+        /* Документальное по умолчанию не показываем: в общем списке оно
+           забивает выдачу, особенно при сортировке по рейтингу. Но если жанр
+           выбран явно — показываем. Студий это правило не касается. */
+        if (!genres.includes("документальный")) {
+          excluded.push("документальный");
+        }
+
+        return excluded;
+      })(),
       yearRange: yearFrom !== undefined && yearTo !== undefined ? [yearFrom, yearTo] : undefined,
       yearFrom,
       yearTo,
@@ -255,7 +295,7 @@ export async function GET(request) {
            почти всё, особенно при сортировке по рейтингу — оставались 3 записи
            из 242. Для «Русских» держим порог низким при любой сортировке,
            а для остальных высоким, чтобы в топ не лезли фильмы с одной оценкой. */
-        (countryMode === "ru"
+        (countryMode === "ru" || seriesOnly
           ? 20
           : sortOptions(sortParam).rating
           ? 300

@@ -3,9 +3,18 @@ import styled from "styled-components";
 
 export const SearchWrapper = styled.div<SearchWrapperProps>`
   position: relative;
-  width: 600px;
+  /* поиск тянется на всё свободное место: иконка «Сохранённого» освободила
+     ширину, и поле стало заметнее */
+  flex: 1 1 auto;
+  max-width: 760px;
+  min-width: 260px;
   height: 35px;
   display: flex;
+  /* равные отступы слева и справа: поиск по центру между логотипом и меню */
+  margin-left: auto;
+  margin-right: auto;
+  /* визуально поле стояло выше логотипа и меню — сдвигаем на пару пикселей */
+  margin-top: 3px;
   @media (max-width: 1150px){
     width: 460px;
   }
@@ -33,6 +42,33 @@ export const SearchInput = styled.input`
     border-radius: 8px;
   }
   border-radius: 5px 0 0 5px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  /* На компьютере убираем системный синий крестик у поля поиска.
+     Мобильную версию не трогаем. */
+  @media (min-width: 851px) {
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+      appearance: none;
+      display: none;
+    }
+  }
+
+  /* Активное состояние: вместо синей рамки браузера — аккуратное красное
+     свечение вокруг поля */
+  /* Активное состояние: светлая граница и мягкое нейтральное свечение —
+     спокойнее красной рамки и привычнее по современным интерфейсам */
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgb(120, 120, 120);
+  }
+
   &::-webkit-input-placeholder {
     color: rgb(179, 179, 179);
     font-size: 16px;
@@ -87,6 +123,28 @@ display: none;
 
 
 export const SearchList = styled.div`
+  /* Тонкая тёмная полоса прокрутки — только на компьютере */
+  @media (min-width: 851px) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      /* внутренний отступ: бегунок не прилипает к краю списка */
+      border: 3px solid transparent;
+      background-clip: content-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.32);
+    }
+  }
+
 @media (max-width: 850px){
     width: 100%;
     background: none;

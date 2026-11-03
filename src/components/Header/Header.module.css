@@ -1,0 +1,67 @@
+
+/* Выпадающий выбор раздела каталога */
+.dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dropdown_trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.dropdown_caret {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  opacity: 0.75;
+  transition: transform 0.18s ease;
+}
+
+.dropdown_caret_open {
+  transform: rotate(180deg);
+}
+
+.dropdown_menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  min-width: 210px;
+  padding: 6px;
+  border-radius: 14px;
+  background: #161616;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  z-index: 200;
+}
+
+.dropdown_item {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dropdown_item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dropdown_item_active {
+  background: rgba(201, 21, 26, 0.9);
+  color: #fff;
+}

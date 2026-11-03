@@ -194,7 +194,7 @@ const HeaderAuth: React.FC = () => {
             <MenuName>{user?.name || "Профиль"}</MenuName>
             {user?.email && <MenuMail>{user.email}</MenuMail>}
           </MenuHead>
-          <MenuItem href="/" onClick={() => setOpen(false)}>
+          <MenuItem href="/continue" onClick={() => setOpen(false)}>
             Продолжить просмотр
           </MenuItem>
           <MenuItem href="/films" onClick={() => setOpen(false)}>

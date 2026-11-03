@@ -22,7 +22,7 @@ const Cards: React.FC<CardsProps> = (props) =>{
         <SkeletonCard key={index} />
        )
         : props.cards.map((item: any)=>
-         <Card key={item.id} card={item} />
+         <Card key={item.id} card={item} onRemove={props.onRemove} hideSave={Boolean(props.onRemove)} />
         )}
         {!showSkeleton && loading && arraySkeletonCards.map((index)=>
          <SkeletonCard key={index} />

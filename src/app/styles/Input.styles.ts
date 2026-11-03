@@ -13,9 +13,12 @@ export const InputWrapper = styled.div`
     display: block;
     position: relative;
     width: 100%;
-    margin-top: 14px;
+    /* отступ от подписи задаёт сам блок подписи: свои 14px давали разную
+       высоту у «Рейтинга» и у списков */
+    margin-top: 0;
     border-radius: 5px;
-    height: 33px;
+    /* общая высота со списками: 33px против 40px выглядели как разные поля */
+    height: 40px;
     border: 1px solid rgb(52 52 52);
     font-style: normal;
     font-weight: 300;
@@ -35,9 +38,9 @@ export const InputWrapper = styled.div`
       outline: none;
     }
 
-    /* на телефоне поля выше: 33px было слишком мелко для пальца */
+    /* на телефоне — 44px, рекомендованный минимум для нажатия пальцем */
     @media (max-width: 850px) {
-      height: 52px;
+      height: 44px;
       border-radius: 10px;
       margin-top: 10px;
       font-size: 16px;

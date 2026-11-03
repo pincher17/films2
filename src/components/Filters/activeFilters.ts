@@ -57,15 +57,8 @@ export function getActiveFilterChips(filters: any): ActiveFilterChip[] {
     if (names.length) chips.push({ key: "country", label: names.join(", ") });
   }
 
-  /* Тип: по умолчанию выбраны все три, тогда это дефолт и чипа быть не должно. */
-  const selected = Array.isArray(filters?.selectedTypeOfMovies)
-    ? filters.selectedTypeOfMovies.map(String)
-    : [];
-  const isDefaultTypes = selected.length === 3 && ALL_TYPES.every((type) => selected.includes(type));
-  if (selected.length && !isDefaultTypes) {
-    const names = selected.map((type: string) => TYPE_NAMES[type] || type);
-    chips.push({ key: "type", label: names.join(", ") });
-  }
+  /* Тип контента чипом не показываем: в разделах каталога он и так очевиден
+     из заголовка и переключателя, а чип только дублировал его. */
 
   return chips;
 }

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { allGenres } from '../../data/allGenres';
 import Button from '../Button';
+import { ResetButton } from '../../app/styles/AllFilmsPage.styles';
 import CheckBox from '../CheckBox';
 import SliderValue from '../SliderValue';
-import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput } from '../../app/styles/Filters.styles';
+import { ButtonWrapper, Wrapper, WrapperAllInputs, WrapperCheckbox, WrapperInput, Field, FiltersActions, FiltersStudiosPanel } from '../../app/styles/Filters.styles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { CountryType, initialStateFiltersStudioType, setFilters } from '@/redux/filtersStudios';
 import { getAllFilmsFiltersThunk, setPage } from '@/redux/allFilmsStudio';
@@ -15,7 +16,7 @@ import SortSelect from '../SortSelect/SortSelect';
 
 
 
-const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar}) =>{
+const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar, hideTypes, genres}) =>{
 
     const filters = useAppSelector((state: { filtersStudios: any; }) => state.filtersStudios);
     const dispatch = useAppDispatch()
@@ -28,6 +29,23 @@ const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar
     const [typeOfMovies, setTypeOfMovies] = React.useState(filters.typeOfMovies);
     const [selectedTypeOfMovies, setSelectedTypeOfMovies] = React.useState(filters.selectedTypeOfMovies);
     const router = useRouter();
+    /* Сброс: возвращаем стартовые значения и перезагружаем страницу —
+       так состояние точно чистое, как в каталоге */
+    const resetFilters = () => {
+        const fresh: any = {
+            genres: [],
+            rating: [1, 10],
+            sortByRelease: '-1',
+            sortBy: 'date-desc',
+            year: [1960, 2026],
+            selectedTypeOfMovies: ['1'],
+        };
+        dispatch(setFilters(fresh));
+        dispatch(setPage(1));
+        dispatch(getAllFilmsFiltersThunk(fresh, 1, nameStudio));
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
+    };
+
     const changeFilters = () => {
         const createfilters: initialStateFiltersStudioType ={
             genres: valueGenre,
@@ -47,7 +65,6 @@ const FiltersStudios: React.FC<FiltersStudiosProps> = ({mobile, setIsOpenSidebar
         }
         
     }
-console.log(filters.genre, valueGenre)
     const changeValueRating:any = (e: any) => {
         setValueRating(e)
     }
@@ -73,9 +90,12 @@ console.log(filters.genre, valueGenre)
 
     return (
     <Wrapper mobile={(+mobile)}>
-        <WrapperAllInputs>
+        <FiltersStudiosPanel>
+        {/* Блок галочек не рендерим, когда тип задан переключателем: иначе
+            пустой контейнер занимает первую колонку и поля съезжают */}
+        {!hideTypes && (
         <WrapperCheckbox>
-        {typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
+        {!hideTypes && typeOfMovies.map((item: { included: any; typeNumber: string; name: any; }, index: any) => (
         <CheckBox
             checked={item.included}
             id={item.typeNumber}
@@ -86,6 +106,7 @@ console.log(filters.genre, valueGenre)
         />
         ))}
         </WrapperCheckbox>
+        )}
             <SliderValue
                 title='Рейтинг'
                 integer={false}
@@ -106,17 +127,21 @@ console.log(filters.genre, valueGenre)
                 defaulSecondValue={filters.year[1]}
                 onChangeValue={changeValueYear}
             />
-            <WrapperInput>
-                <p style={{paddingBottom: "14px"}}>Жанры</p>
-                <MultipleSelectStudio options={allGenres} onChange={setValueGenre}/>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Страны</p>
-                <SelectCountryStudios onChange={setValueCountry}/>
-                <p style={{paddingBottom: "14px", marginTop:'20px'}}>Сортировка</p>
+            {/* Каждое поле — своя ячейка панели, как в каталоге */}
+            <Field>
+                <p>Жанры</p>
+                <MultipleSelectStudio options={genres || allGenres} onChange={setValueGenre}/>
+            </Field>
+            <Field>
+                <p>Сортировка</p>
                 <SortSelect onChange={setValueSort} studio/>
-            </WrapperInput>
-         </WrapperAllInputs>
+            </Field>
+         </FiltersStudiosPanel>
          <ButtonWrapper>
-            <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
+            <FiltersActions>
+                <Button onClick={changeFilters}>Применить&nbsp;фильтры</Button>
+                <ResetButton onClick={resetFilters}>Сбросить</ResetButton>
+            </FiltersActions>
          </ButtonWrapper>
          
     </Wrapper>

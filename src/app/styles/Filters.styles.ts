@@ -17,55 +17,33 @@ export const Wrapper = styled.div<FiltersWrapperProps>`
   box-sizing: border-box;
  }
 `
-export const WrapperInput = styled.div`
-  /* было 55px — под колонками фильтров оставалась пустота перед кнопками */
-  padding-bottom: 28px;
-  @media (max-width: 850px){
-    margin-top: -20px;
-    padding-bottom: 40px;
-    /* Такая же ширина, как у полей рейтинга и года: раньше здесь стоял
-       минус 28px, из-за чего списки были уже полей и правый край не совпадал. */
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-
-    /* Списки на react-select: обычное правило select к ним не применяется,
-       поэтому стилизуем через класс-префикс fh-select (задан в компонентах). */
-    .fh-select__control {
-      min-height: 52px;
-      height: 52px;
-      border-radius: 10px;
-      font-size: 16px;
-      background: #0e0e0e;
-      border-color: #343434;
-    }
-
-    .fh-select__value-container {
-      padding-left: 14px;
-    }
-
-    .fh-select__menu {
-      font-size: 16px;
-      background: #0e0e0e;
-    }
-
-    .fh-select__option {
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-  }
-`
 
 export const WrapperAllInputs = styled.div`
     width: 100%;
-    margin-bottom: -70px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    margin-bottom: 18px;
+    /* Панель фильтров: пять полей в один ряд, как в интернет-магазинах */
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: start;
+    /* по горизонтали шире: у ползунков бегунки на краях иначе смыкаются */
+    gap: 18px 34px;
+    padding: 20px 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  @media (max-width: 1250px){
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   @media (max-width: 1150px){
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 43px;
+    align-items: stretch;
+    gap: 26px;
+    /* Внутри шторки рамка не нужна: она вокруг и так есть */
+    padding: 0;
+    background: none;
+    border: none;
   }
   @media (max-width: 850px){
     flex: 1 1 auto;
@@ -75,8 +53,12 @@ export const WrapperAllInputs = styled.div`
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     margin-bottom: 0;
-    /* без отступа: чекбоксы у самого верха */
-    padding-top: 0;
+    /* Рамка панели внутри шторки не нужна, а скругление обрезало подпись */
+    border-radius: 0;
+    background: none;
+    border: none;
+    /* небольшой отступ сверху: при прокрутке подпись не уходит под край */
+    padding-top: 14px;
     /* запас снизу: последний фильтр не должен прятаться под кнопками */
     padding-bottom: 120px;
     box-sizing: border-box;
@@ -279,4 +261,57 @@ export const ActiveChip = styled.span`
   font-size: 12px;
   line-height: 1;
   white-space: nowrap;
+`;
+
+/** Колонка полей — используется в фильтрах студий */
+export const WrapperInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 240px;
+`;
+
+/** Одно поле фильтра: подпись и контрол вместе, одна ячейка сетки */
+export const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  /* поле не выпихивает соседей за пределы своей ячейки */
+  > * {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* подпись поля */
+  /* строка подписи одной высоты во всех колонках */
+  p {
+    /* у списков подпись ближе к полю: react-select сам добавляет отступ,
+       из-за него колонки со списками стояли ниже слайдеров */
+    margin: 0 0 4px;
+    padding: 0;
+    height: 18px;
+    line-height: 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+  }
+
+  /* строка поля тоже фиксированной высоты — тогда все колонки совпадают */
+  > *:not(p) {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+`;
+
+/** Панель фильтров студии: четыре поля вместо пяти */
+export const FiltersStudiosPanel = styled(WrapperAllInputs)`
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @media (max-width: 1250px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 `;

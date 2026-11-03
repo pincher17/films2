@@ -59,9 +59,25 @@ export async function buildCardsByKinopoiskIds(ids, errors) {
     const kinopoiskId = Number(rawId);
     if (!kinopoiskId) continue;
     try {
-      // resolveTmdbByKinopoisk отдаёт только { tmdbId, media } — сам фильм
-      // нужно запросить отдельно
-      const link = await resolveTmdbByKinopoisk(kinopoiskId);
+      /* Отрицательный id — это imdb-фильм (так мы храним позиции и закладки
+         для фильмов без кинопоиска). Ищем его через /find/ по tt-адресу. */
+      let link = null;
+      if (kinopoiskId < 0) {
+        const imdbId = `tt${Math.abs(kinopoiskId)}`;
+        const found = await tmdbGet(`/find/${imdbId}`, { external_source: "imdb_id" });
+        const movieHit = found?.movie_results?.[0];
+        const tvHit = found?.tv_results?.[0];
+        if (movieHit) link = { tmdbId: movieHit.id, media: "movie" };
+        else if (tvHit) link = { tmdbId: tvHit.id, media: "tv" };
+        if (!link) {
+          errors?.push(`${imdbId}: нет соответствия в TMDB`);
+          continue;
+        }
+      } else {
+        // resolveTmdbByKinopoisk отдаёт только { tmdbId, media } — сам фильм
+        // нужно запросить отдельно
+        link = await resolveTmdbByKinopoisk(kinopoiskId);
+      }
       if (!link?.tmdbId) {
         errors?.push(`${kinopoiskId}: нет соответствия в TMDB`);
         continue;
@@ -95,6 +111,10 @@ export function toCard(record) {
   const big = record.kpPosterBig || tmdbPoster;
   const small = record.kpPosterSmall || tmdbPoster;
 
+  /* Рейтинг: IMDb точнее (больше голосов), TMDB — запасной вариант */
+  const rating = record.imdbRating ?? record.tmdbRating ?? record.kpRating ?? null;
+  const votes = record.imdbVotes ?? record.tmdbVotes ?? record.kpVotes ?? null;
+
   return {
     /* Если кинопоискового id нет — ведём по imdb (плеер его принимает) */
     id: record.kinopoiskId || record.imdbId || null,
@@ -107,15 +127,17 @@ export function toCard(record) {
     shortDescription: null,
     movieLength: null,
     rating: {
+      /* Пока показываем TMDB, как и раньше. IMDb копится в базе и включим
+         его, когда соответствий станет достаточно. */
       kp: record.tmdbRating ?? record.kpRating ?? 0,
-      imdb: 0,
+      imdb: record.imdbRating ?? 0,
       filmCritics: 0,
       russianFilmCritics: 0,
       await: 0,
     },
     votes: {
-      kp: record.kpVotes ?? record.tmdbVotes ?? 0,
-      imdb: 0,
+      kp: votes ?? 0,
+      imdb: record.imdbVotes ?? 0,
       filmCritics: 0,
       russianFilmCritics: 0,
       await: 0,
@@ -138,7 +160,11 @@ function inRange(value, range) {
  */
 
 /** Фильтры TMDB по типу материала */
-function mediaList(types) {
+function mediaList(types, genres) {
+  /* «мультсериал» — наша метка, а не жанр TMDB: оставляем только сериалы */
+  if ((genres || []).some((genre) => String(genre).toLowerCase() === "мультсериал")) {
+    return ["tv"];
+  }
   const selected = String(types || "1,2,3").split(",");
   const has = (value) => selected.includes(value);
   const movies = has("1");
@@ -185,8 +211,17 @@ async function buildServerParams(media, options) {
 
   // страницы студий: у сериалов берём сеть (что вышло на платформе),
   // у фильмов — продюсерскую компанию
-  if (isTv && options.networkId) params.with_networks = options.networkId;
-  else if (options.companyId) params.with_companies = options.companyId;
+  /* Страницы студий: фильтруем по платформе, где контент доступен.
+     По продюсерской компании выходило 4 фильма у Netflix — он их просто
+     покупает, а не снимает. */
+  if (options.watchProvider) {
+    params.with_watch_providers = options.watchProvider;
+    params.watch_region = options.watchRegion || "US";
+  } else if (isTv && options.networkId) {
+    params.with_networks = options.networkId;
+  } else if (options.companyId) {
+    params.with_companies = options.companyId;
+  }
 
   if (options.cartoonsOnly) {
     const animation = await resolveGenre("мультфильм", media);
@@ -228,7 +263,13 @@ async function buildServerParams(media, options) {
     if (genre) withoutGenres.push(genre.id);
   }
   if (withoutGenres.length) {
-    params.without_genres = [params.without_genres, ...withoutGenres].filter(Boolean).join(",");
+    /* Жанр не может быть одновременно обязательным и запрещённым: из-за этого
+       «драма» в сериалах давала ноль результатов. Убираем пересечения. */
+    const required = String(params.with_genres || "").split("|").filter(Boolean);
+    const safeWithout = withoutGenres.filter((id) => !required.includes(String(id)));
+    const merged = [params.without_genres, ...safeWithout].filter(Boolean);
+    // и дубликаты тоже убираем
+    params.without_genres = [...new Set(merged.join(",").split(",").filter(Boolean))].join(",");
   }
 
   return params;
@@ -312,7 +353,7 @@ function sortRecords(records, sort) {
 
 /** Основной сборщик: options -> карточки сайта */
 export async function buildList(options) {
-  const media = mediaList(options.types);
+  const media = mediaList(options.types, options.genres);
   if (!media.length) return { docs: [], total: 0, page: options.page || 1, pages: 1, limit: options.limit };
 
   const page = options.page || 1;
@@ -368,6 +409,7 @@ export async function buildList(options) {
   /* Соответствия imdb: у зарубежного контента кинопоискового id часто нет,
      и без этого карточки просто исчезали из выдачи. */
   const imdbByKey = new Map();
+  const imdbRatingsByKey = new Map();
   try {
     const allItems = [...byMedia.entries()].flatMap(([kind, list]) =>
       [...list.values()].map((item) => ({ kind, id: item.id }))
@@ -379,6 +421,20 @@ export async function buildList(options) {
       select: { tmdbId: true, media: true, imdbId: true },
     });
     rows.forEach((row) => imdbByKey.set(`${row.media}:${row.tmdbId}`, row.imdbId));
+
+    /* Рейтинги IMDb для этих же фильмов */
+    const imdbIds = [...imdbByKey.values()].filter(Boolean);
+    if (imdbIds.length) {
+      const ratings = await prisma.imdbRating.findMany({
+        where: { imdbId: { in: imdbIds } },
+        select: { imdbId: true, rating: true, votes: true },
+      });
+      const byImdb = new Map(ratings.map((r) => [r.imdbId, r]));
+      rows.forEach((row) => {
+        const found = byImdb.get(row.imdbId);
+        if (found) imdbRatingsByKey.set(`${row.media}:${row.tmdbId}`, found);
+      });
+    }
   } catch {
     undefined;
   }
@@ -390,6 +446,13 @@ export async function buildList(options) {
       const record = resolved.get(item.id);
       if (record && !record.imdbId) {
         record.imdbId = imdbByKey.get(`${kind}:${item.id}`) || null;
+      }
+      if (record) {
+        const imdbRating = imdbRatingsByKey.get(`${kind}:${item.id}`);
+        if (imdbRating) {
+          record.imdbRating = imdbRating.rating;
+          record.imdbVotes = imdbRating.votes;
+        }
       }
       const key = record?.kinopoiskId || record?.imdbId;
       if (!key || seenKinopoisk.has(key)) return;
@@ -471,8 +534,10 @@ export async function buildTrending(window = "week", limit = 25, types = "1,2", 
     });
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-      seen.add(record.kinopoiskId);
+      /* Ключ — кинопоиск или imdb: фильм без кп-id не должен исчезать */
+      const key = record?.kinopoiskId || record?.imdbId;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
       records.push(record);
     });
   }
@@ -504,8 +569,9 @@ export async function buildMovieShelf(kind, limit = 25) {
   const seen = new Set();
   items.forEach((item) => {
     const record = resolved.get(item.id);
-    if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-    seen.add(record.kinopoiskId);
+    const key = record?.kinopoiskId || record?.imdbId;
+    if (!key || seen.has(key)) return;
+    seen.add(key);
     records.push(record);
   });
 
@@ -560,11 +626,13 @@ export async function buildTop(limit = 10) {
     const resolved = await resolveRecords(kind, items, {
       preFilter: buildPreFilter({ excludeAsianByDefault: true }),
     });
-    const seen = new Set(records.map((record) => record.kinopoiskId));
+    const seen = new Set(records.map((record) => record.kinopoiskId || record.imdbId));
     items.forEach((item) => {
       const record = resolved.get(item.id);
-      if (!record?.kinopoiskId || seen.has(record.kinopoiskId)) return;
-      seen.add(record.kinopoiskId);
+      /* Ключ — кинопоиск или imdb: фильм без кп-id не должен исчезать */
+      const key = record?.kinopoiskId || record?.imdbId;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
       records.push(record);
     });
   }

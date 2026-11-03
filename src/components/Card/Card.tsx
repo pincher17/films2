@@ -20,6 +20,7 @@ import { CardProps } from './Card.types';
 import roundNumber from '../helpers/rounding';
 import textTransform from '../helpers/textTransform';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSaved } from '../SavedProvider/SavedProvider';
 
 
@@ -32,6 +33,14 @@ const {
     year,
     rating
   } = props.card
+
+  const router = useRouter();
+  /* Крестик удаления — как в ряду «Продолжить просмотр» на главной */
+  const onRemove = (props as { onRemove?: (card: any) => void }).onRemove;
+  /* Адрес страницы фильма: нужен и ссылке, и предзагрузке */
+  const href = name
+    ? `/film/${id}-${textTransform(name)}${year ? "-" + year : ""}`
+    : `/film/${id}`;
 
   /**
    * Время, на котором остановился просмотр, в виде таймкода:
@@ -91,7 +100,14 @@ const {
 
     return (
     <Wrapper key={id}>
-            <Link href={name ? `/film/${id}-${textTransform(name)}${year ? '-'+year : ''}` : `/film/${id}`}>
+            <Link
+              href={href}
+              /* Next не предзагружает страницы, которые рендерятся на сервере
+                 с данными. Поэтому начинаем загрузку при наведении — к клику
+                 страница уже готова и открывается мгновенно. */
+              onMouseEnter={() => router.prefetch(href)}
+              onTouchStart={() => router.prefetch(href)}
+            >
             <ImgWrapper>
             <ImgWrap>
             {poster?.url 
@@ -133,6 +149,35 @@ const {
 
             </ImgWrapper>
             </Link>
+            {onRemove && (
+              <button
+                type="button"
+                title="Убрать из «Продолжить просмотр»"
+                aria-label="Убрать из «Продолжить просмотр»"
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  zIndex: 5,
+                  width: 30,
+                  height: 30,
+                  borderRadius: "50%",
+                  border: "none",
+                  cursor: "pointer",
+                  background: "rgba(0,0,0,0.65)",
+                  color: "#fff",
+                  fontSize: 16,
+                  lineHeight: 1,
+                }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onRemove(props.card);
+                }}
+              >
+                ✕
+              </button>
+            )}
             {id && !props.hideSave ? (
               <SaveButton
                 type="button"

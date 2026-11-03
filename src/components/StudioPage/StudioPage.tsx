@@ -6,12 +6,7 @@ import { ActiveChip, ActiveChips } from "@/app/styles/Filters.styles";
 import { FilterBadge } from "@/app/styles/AllFilmsPage.styles";
 import { useEffect, useRef, useState } from "react";
 import { setIsVisible } from "@/redux/FilmsMainPageSlice";
-import {
-  getAllFilmsFiltersThunk,
-  getAllFilmsThunk,
-  nextPage,
-  setPage,
-} from "@/redux/allFilmsStudio";
+import { getAllFilmsFiltersThunk, getAllFilmsThunk, nextPage, setPage, clearFilms } from "@/redux/allFilmsStudio";
 import {
   Button,
   CrossIcon,
@@ -31,6 +26,8 @@ import FilterIcon7 from "/public/Filtericon.svg";
 import { initialStateFiltersStudioType, setFilters, setNameStudio } from "@/redux/filtersStudios";
 import { allStudios } from "@/data/AllStudios";
 import FiltersStudios from "../FiltersStudios";
+import StudioTypeSwitcher from "@/components/StudioTypeSwitcher/StudioTypeSwitcher";
+import { genresForSection } from "@/data/genresBySection";
 import NetflixLogo from '../../../public/assets/img/studios-logo/Netflix_Logo.png';
 import AppleTvLogo from '../../../public/assets/img/studios-logo/Apple-Tv-Logo.png';
 import Hbo from '../../../public/assets/img/studios-logo/HBO.png';
@@ -87,12 +84,21 @@ const initialFilters: initialStateFiltersStudioType ={
         {name: 'Сериалы', included: true, typeNumber: '2'},
         {name: 'Мультфильмы', included: true, typeNumber: '3'},
     ],
-    selectedTypeOfMovies: ['1','2','3'],
+    selectedTypeOfMovies: ['1'],
     country: [  { value: '', label: 'Все', id: 1 }],   
 }
 
-export default function StudioPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug
+export default function StudioPage({
+  params,
+  type = "1",
+}: {
+  params: { slug: string };
+  /* Тип контента задаётся страницей: /studio/x — фильмы, /studio/x/series — сериалы */
+  type?: string;
+}) {
+  const slug = params.slug;
+  /* Тип раздела: страница сама его задаёт, переключатель только ведёт по ссылкам */
+  const sectionType = type;
   const logo = logoMap[slug]?.src || '';
   const films = useAppSelector((state) => state.allFilmsStudio.films);
   const filtres = useAppSelector((state) => state.filtersStudios);
@@ -153,18 +159,24 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
   }, []);
 
 
+  /* Зависимость от типа обязательна: /studio/x и /studio/x/series — разные
+     страницы с одинаковым slug, и без неё карточки оставались прежними. */
   useEffect(() => {
     const nameStudio = getValueBySlug(slug)
-    const newNameStudio = nameStudio != filtres.nameStudio
-    if (films.length === 0 || newNameStudio) {
-      dispatch(setFilters(initialFilters))
-      dispatch(setPage(1));
-      dispatch(getAllFilmsFiltersThunk(initialFilters, 1, nameStudio));
-
-    } else {
-      return;
-    }
-  }, [slug]);
+    const fresh = { ...initialFilters, selectedTypeOfMovies: [sectionType] };
+    /* Карточки прошлого типа убираем: иначе фильмы, сериалы и мультики
+       смешиваются в одну кучу при переходе между страницами */
+    /* Счётчик страниц и признак «всё загружено» тоже сбрасываем: иначе
+       бесконечная прокрутка сразу догружает страницу прошлого типа */
+    loadedPageRef.current = 1;
+    stuckCount.current = 0;
+    setAllLoaded(false);
+    dispatch(clearFilms())
+    dispatch(setFilters(fresh as any))
+    dispatch(setPage(1));
+    dispatch(getAllFilmsFiltersThunk(fresh as any, 1, nameStudio));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, sectionType]);
 
   useEffect(() => {
     if (films.length > prevCount.current) {
@@ -183,10 +195,30 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
     if (page === 1) loadedPageRef.current = 1;
   }, [page]);
 
+  /* Переключение типа должно перезагружать карточки: без этого пилюля
+     меняла подсветку, а список оставался прежним */
+  const typeKey = (filtres.selectedTypeOfMovies || []).map(String).join(",");
+  useEffect(() => {
+    dispatch(setPage(1));
+    dispatch(getAllFilmsThunk(filtres, 1, filtres.nameStudio));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeKey]);
+
+  /* Жанры зависят от выбранного типа: у фильмов, сериалов и мультиков они разные */
+  const studioKind =
+    (filtres.selectedTypeOfMovies || []).map(String)[0] === "2"
+      ? "series"
+      : (filtres.selectedTypeOfMovies || []).map(String)[0] === "3"
+      ? "cartoons"
+      : "movies";
+  const studioGenres = genresForSection(studioKind);
+
   // чипы изменённых фильтров — как в каталоге
   const activeChips = getActiveFilterChips(filtres);
 
   const showMore = () => {
+    /* во время смены типа список ещё не готов — догрузка подмешает старое */
+    if (loadingFilters) return;
     // максимум из ref и redux: защищает и от повторного запроса в одном тике,
     // и от обнуления счётчика
     const pageToLoad = Math.max(loadedPageRef.current, page) + 1;
@@ -216,11 +248,20 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
                 {getLabelBySlug(slug)}
               </NameStudio>
             </div>
-            <FilterIcon onClick={toggleSidebar}>
-              <FilterIcon7 />
-              {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
-            </FilterIcon>
+            {/* Пока шторка открыта, кнопка не нужна: иначе получалось два крестика */}
+            {!isOpenSidebar && (
+              <FilterIcon onClick={toggleSidebar}>
+                <FilterIcon7 />
+                {activeChips.length > 0 && <FilterBadge>{activeChips.length}</FilterBadge>}
+              </FilterIcon>
+            )}
           </WrapperName>
+          {/* Тип контента — как в каталоге: один тап вместо галочек в шторке */}
+          {/* Жанры зависят от типа: у фильмов, сериалов и мультиков они разные */}
+          <StudioTypeSwitcher
+            slug={slug}
+            active={sectionType === "2" ? "/series" : sectionType === "3" ? "/cartoons" : ""}
+          />
           {activeChips.length > 0 && (
             <ActiveChips>
               {activeChips.map((chip) => (
@@ -228,16 +269,12 @@ export default function StudioPage({ params }: { params: { slug: string } }) {
               ))}
             </ActiveChips>
           )}
-          {resolution.width > 1150 ? <FiltersStudios mobile={false} /> : ""}
+          {resolution.width > 1150 ? <FiltersStudios mobile={false} hideTypes genres={studioGenres} /> : ""}
           {/* <Filters /> */}
           <Sidebar toggleSidebar={toggleSidebar} isOpenSidebar={+isOpenSidebar}>
-            <CrossIcon sidebar={+true} onClick={toggleSidebar}>
-              <Line1 />
-              <Line2 />
-            </CrossIcon>
-            <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} />
+            <FiltersStudios mobile={true} setIsOpenSidebar={setIsOpenSidebar} hideTypes genres={studioGenres} />
           </Sidebar>
-          <Cards cards={films} />
+          <Cards key={sectionType} cards={films} />
           <InfiniteScroll
             count={films.length}
             onLoad={showMore}
