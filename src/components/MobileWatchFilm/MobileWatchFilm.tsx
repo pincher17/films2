@@ -15,6 +15,12 @@ import { PopupHint } from "@/app/styles/MobileWatchFilm.styles";
 import { getFilmStreams } from "@/data/streams";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
+  /* Отрицательный id — фильм без кинопоиска, играем по imdb.
+     Ведущие нули восстанавливаем: tt0121955, а не tt121955. */
+  const playerId =
+    Number(id) < 0 ? `tt${String(Math.abs(Number(id))).padStart(7, "0")}` : String(id);
+  const playerKind = Number(id) < 0 ? "imdb" : "kp";
+
   const dispatch = useAppDispatch()
   const streams = getFilmStreams(id);
   const refDataFilm = useRef<HTMLInputElement | null>(null);
@@ -58,7 +64,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
              ) : (
                <>
                  <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                     src={`https://api.ortified.ws/embed/kp/${id}`}
+                     src={`https://api.ortified.ws/embed/${playerKind}/${playerId}`}
                      frameBorder="0"
                      scrolling="no"
                      allowFullScreen
