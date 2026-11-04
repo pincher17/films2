@@ -48,18 +48,28 @@ async function main() {
     )
   );
 
+  /* Раньше здесь стоял take: LIMIT * 2 — только самые популярные задачи. Когда
+     они оказались размечены, скрипт перестал видеть остальные: 7 947 задач
+     лежали ниже по популярности и были недостижимы при любом числе прогонов.
+     Теперь смотрим всю таблицу, а порядок по популярности оставляем: сперва
+     закрываем то, что чаще открывают на сайте. */
   const tasks = await prisma.trailerTask.findMany({
+    where: { tmdbId: { not: null } },
     orderBy: { popularity: "desc" },
-    take: LIMIT * 2,
     select: { tmdbId: true, media: true },
   });
 
-  const queue = tasks
-    .filter((task) => task.tmdbId)
-    .filter((task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`))
-    .slice(0, LIMIT);
+  const unmapped = tasks.filter(
+    (task) => !mapped.has(`${task.media || "movie"}:${task.tmdbId}`)
+  );
+  const queue = unmapped.slice(0, LIMIT);
 
-  console.log(`[imdbmap] обработка: ${queue.length}`);
+  if (!queue.length) {
+    console.log(`[imdbmap] размечено всё: задач ${tasks.length}, неразмеченных нет`);
+    return;
+  }
+
+  console.log(`[imdbmap] обработка: ${queue.length} из ${unmapped.length} неразмеченных`);
 
   let done = 0;
   let found = 0;
