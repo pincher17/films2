@@ -7,14 +7,17 @@
  * остаётся без id, и каталог выбрасывает её из выдачи — на странице
  * популярных сериалов так терялось 24 карточки из 60.
  *
- * Здесь кандидаты берутся напрямую из TMDB двумя проходами:
+ * Здесь кандидаты берутся напрямую из TMDB тремя проходами:
  *   1. по популярности без ограничения по годам — то, что видно на главной;
- *   2. по годам от текущего к 1950 — то, что открывают через фильтры.
- * Порядок важен: сначала закрываем популярное, потом идём вглубь.
+ *   2. по дате выхода — первая страница каталога сортируется по дате, поэтому
+ *      именно там сидят свежие релизы, у которых соответствий меньше всего;
+ *   3. по годам от текущего к 1950 — то, что открывают через фильтры.
+ * Порядок важен: сначала закрываем видимое, потом идём вглубь.
  *
  * Запуск:
- *   node scripts/imdb-coverage.mjs [--popular 250] [--years 10] [--minutes 45]
+ *   node scripts/imdb-coverage.mjs [--popular 250] [--fresh 50] [--years 10] [--minutes 45]
  *     --popular — сколько страниц discover пройти по популярности (по 20 позиций)
+ *     --fresh   — сколько страниц пройти по дате выхода
  *     --years   — сколько страниц на каждый год и тип
  *     --minutes — бюджет времени на запросы external_ids
  *
@@ -47,6 +50,7 @@ const arg = (name, fallback) => {
 };
 const POPULAR_PAGES = arg("popular", 250);
 const YEAR_PAGES = arg("years", 10);
+const FRESH_PAGES = arg("fresh", 50);
 const MINUTES = arg("minutes", 45);
 
 if (!TMDB) {
@@ -95,9 +99,30 @@ async function collectPopular(catalog) {
   }
 }
 
+/* Каталог на сайте по умолчанию сортируется по дате выхода, поэтому первая
+   страница сериалов — это свежие релизы. Именно у них чаще всего и нет
+   соответствия: показал замер — из 40 новейших сериалов двое без id, причём
+   у одного imdb в TMDB есть. Отдельный проход по дате закрывает эту дыру. */
+async function collectFresh(catalog) {
+  for (const media of ["movie", "tv"]) {
+    const sortBy = media === "movie" ? "primary_release_date.desc" : "first_air_date.desc";
+    for (let page = 1; page <= FRESH_PAGES; page += 1) {
+      const data = await tmdb(`/discover/${media}`, {
+        sort_by: sortBy,
+        page: String(page),
+        "vote_count.gte": media === "tv" ? "20" : "50",
+      });
+      const results = data?.results || [];
+      if (!results.length) break;
+      for (const item of results) if (item.id) catalog.add(media, item.id);
+      await sleep(30);
+    }
+    console.log(`[coverage] новинки ${media}: взято ${FRESH_PAGES} страниц`);
+  }
+}
+
 /** Проход по годам: старые фильмы и сериалы, которых нет в популярном срезе. */
-async function collectByYear(catalog) {
-  const currentYear = new Date().getFullYear();
+async function collectByYear(catalog) {  const currentYear = new Date().getFullYear();
   for (let year = currentYear; year >= 1950; year -= 1) {
     for (const media of ["movie", "tv"]) {
       const dateParam = media === "movie" ? "primary_release_year" : "first_air_date_year";
@@ -122,14 +147,18 @@ async function main() {
   const deadline = started + MINUTES * 60 * 1000;
 
   console.log(
-    `[coverage] собираю каталог: популярное ${POPULAR_PAGES} страниц, годы по ${YEAR_PAGES} страниц`
+    `[coverage] собираю каталог: популярное ${POPULAR_PAGES}, новинки ${FRESH_PAGES}, ` +
+      `годы по ${YEAR_PAGES} страниц`
   );
   const catalog = createCatalog();
   await collectPopular(catalog);
   const afterPopular = catalog.list.length;
+  await collectFresh(catalog);
+  const afterFresh = catalog.list.length;
   await collectByYear(catalog);
   console.log(
-    `[coverage] каталог собран: ${catalog.list.length} (популярное дало ${afterPopular})`
+    `[coverage] каталог собран: ${catalog.list.length} ` +
+      `(популярное ${afterPopular}, +новинки ${afterFresh - afterPopular})`
   );
 
   const mapped = new Set(

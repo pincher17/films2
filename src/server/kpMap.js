@@ -256,7 +256,10 @@ export async function resolveRecords(media, tmdbItems, { preFilter } = {}) {
 
   tmdbItems.forEach((item) => {
     const cached = getRecord(item.id);
-    if (!cached) {
+    /* Кэш записей лежит по одному tmdbId без типа, а у TMDB разные нумерации
+       фильмов и сериалов: запись сериала 1399 могла попасть в карточку фильма
+       1399. Кинопоиск для такого случая уже разделён по типу, запись — нет. */
+    if (!cached || cached.media !== media) {
       missing.push(item);
       return;
     }
@@ -302,6 +305,11 @@ export async function resolveRecords(media, tmdbItems, { preFilter } = {}) {
       tmdbId: item.id,
       media,
       wikidata,
+      /* imdb_id приходит в том же ответе details (append_to_response=
+         external_ids), что и wikidata_id, и раньше просто выбрасывался.
+         Теперь он попадает в кэш записи: карточка получает id сразу при
+         первом же показе и не ждёт ночного скрипта. */
+      imdbId: data.external_ids?.imdb_id || null,
       kinopoiskId,
       tmdbTitle: data.title || data.name || item.title || item.name || "",
       originalTitle: data.original_title || data.original_name || "",
