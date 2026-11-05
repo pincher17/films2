@@ -108,6 +108,26 @@ async function seed() {
   console.info(`[seed] обработано позиций: ${added}`);
 }
 
+/**
+ * Название встречается только как дата проката — значит это чужой трейлер.
+ *
+ * Пример: фильм «5 сентября», а ролик называется «Ускорение 2024 | в кино
+ * с 5 сентября». Название совпало целиком, но это дата выхода другого фильма.
+ * Отдельно ловим случай, когда перед нашей датой стоит цифра: «15 сентября»
+ * не должно совпадать с названием «5 сентября».
+ */
+function releaseDateArtifact(videoTitle, wanted) {
+  const at = videoTitle.indexOf(wanted);
+  if (at < 0) return false;
+
+  // «15 сентября» — не «5 сентября»
+  if (/\d/.test(videoTitle[at - 1] || "")) return true;
+
+  // «в кино с 5 сентября», «премьера с 5 сентября», «с 5 сентября»
+  const before = videoTitle.slice(Math.max(0, at - 20), at).trim();
+  return /(^|\s)с$|в кино$|премьера$|на экранах$|выходит$/.test(before);
+}
+
 /** Оценка найденного видео на YouTube: 0 — не брать. */
 function scoreVideo(video, title, year) {
   const videoTitle = norm(video.title);
@@ -126,6 +146,9 @@ function scoreVideo(video, title, year) {
 
   // название фильма должно встречаться в ролике
   if (!videoTitle.includes(wanted)) return 0;
+
+  /* Дата проката в чужом ролике — не наше название */
+  if (releaseDateArtifact(videoTitle, wanted)) return 0;
 
   /* Спин-офф: «Мыслить как преступник: Эволюция» — другой сериал. Если после
      названия идёт двоеточие или тире и дальше посторонние слова — отклоняем. */
@@ -347,6 +370,45 @@ async function seedDeep() {
   }
 }
 
+/**
+ * Проверка уже сохранённых трейлеров: не подставили ли дату проката чужого
+ * фильма вместо нашего названия. Без --fix только показывает, с --fix удаляет
+ * ошибочный трейлер и возвращает задачу в очередь.
+ */
+async function audit(apply = false) {
+  const trailers = await prisma.trailer.findMany({
+    select: { id: true, filmId: true, media: true, youtubeId: true, title: true },
+  });
+
+  const bad = [];
+  for (const trailer of trailers) {
+    const task = await prisma.trailerTask.findFirst({
+      where: { filmId: trailer.filmId, media: trailer.media || "movie" },
+      select: { id: true, title: true },
+    });
+    if (!task?.title) continue;
+    if (!releaseDateArtifact(norm(trailer.title || ""), norm(task.title))) continue;
+    bad.push({ trailer, task });
+  }
+
+  console.log(`[audit] проверено ${trailers.length}, подозрительных ${bad.length}`);
+  for (const { trailer, task } of bad) {
+    console.log(
+      `  ${trailer.filmId} «${task.title}» <- ${trailer.youtubeId} | ${String(trailer.title).slice(0, 70)}`
+    );
+  }
+
+  if (!apply || !bad.length) return;
+  for (const { trailer, task } of bad) {
+    await prisma.trailer.delete({ where: { id: trailer.id } });
+    await prisma.trailerTask.update({
+      where: { id: task.id },
+      data: { status: "pending", note: "дата проката в чужом ролике", attempts: { increment: 1 } },
+    });
+  }
+  console.log(`[audit] удалено ${bad.length}, задачи вернулись в очередь`);
+}
+
 async function stats() {
   const byStatus = await prisma.trailerTask.groupBy({ by: ["status"], _count: true });
   const trailers = await prisma.trailer.count();
@@ -395,6 +457,7 @@ if (command === "seed") await seed();
 else if (command === "seed-deep") await seedDeep();
 else if (command === "work") await work(Number(arg) || 100);
 else if (command === "stats") await stats();
-else console.info("использование: seed | work <n> | stats");
+else if (command === "audit") await audit(process.argv[3] === "--fix");
+else console.info("использование: seed | work <n> | stats | audit [--fix]");
 
 await prisma.$disconnect();
