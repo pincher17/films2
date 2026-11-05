@@ -640,6 +640,21 @@ export async function getFilmPageData(kinopoiskId) {
 
   if (!data || data.__error__ || (!data.title && !data.name)) return null;
 
+  /* imdb_id лежит не в корне ответа, а в external_ids: раньше из-за этого
+     externalId.imdb всегда был null, а рейтинг IMDb было нечем подтянуть. */
+  const imdbId = data.external_ids?.imdb_id || null;
+  let imdbRating = null;
+  if (imdbId) {
+    try {
+      imdbRating = await prisma.imdbRating.findUnique({
+        where: { imdbId },
+        select: { rating: true, votes: true },
+      });
+    } catch {
+      undefined;
+    }
+  }
+
   const countries = await getCountries();
   const genres = (data.genres || []).map((genre) => genre.name);
   const cartoon = isCartoon(genres);
@@ -764,7 +779,18 @@ export async function getFilmPageData(kinopoiskId) {
       russia: { value: null, currency: "$" },
       usa: { value: null, currency: "$" },
     },
-    externalId: { imdb: data.imdb_id || null },
+    externalId: { imdb: imdbId },
+    /* Рейтинги по источникам: на странице показываем только те, что реально
+       есть. Кинопоиска здесь нет — своего рейтинга КП у нас пока нет, а
+       подставлять вместо него TMDB (как это делал rating.kp) нельзя:
+       читатель видит чужую оценку под чужим именем. */
+    ratings: {
+      tmdb: data.vote_average
+        ? { value: Math.round(data.vote_average * 10) / 10, votes: data.vote_count || 0 }
+        : null,
+      imdb: imdbRating ? { value: imdbRating.rating, votes: imdbRating.votes } : null,
+      kinopoisk: null,
+    },
     tmdbId: resolved.tmdbId,
     source: "tmdb",
   };

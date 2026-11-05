@@ -287,6 +287,8 @@ export const MobileDetailsValue = styled.span`
 /** SEO-строка: мелкая и приглушённая, чтобы не спорила с содержанием */
 export const MobileSeo = styled.p`
   margin-top: 26px;
+  /* весь блок на телефоне по центру — строка SEO тоже, иначе она одна стоит слева */
+  text-align: center;
   font-size: 13px;
   line-height: 1.5;
   color: rgba(248, 248, 248, 0.38);
@@ -297,6 +299,9 @@ export const MobileMetaRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  /* заголовок и описание на телефоне по центру — метаданные тоже, иначе
+     строка «год · страна» уезжает влево и блок выглядит перекошенным */
+  justify-content: center;
   gap: 8px;
   margin-top: 14px;
   font-size: 15px;
@@ -332,6 +337,7 @@ export const MobileMetaDot = styled.span`
 export const MobileGenres = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   margin-top: 12px;
 `;

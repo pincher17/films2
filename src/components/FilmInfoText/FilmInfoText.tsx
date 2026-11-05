@@ -17,10 +17,10 @@ import {
   MobileGenres,
   MobileMetaDot,
   MobileMetaRow,
-  MobileRating,
   TitleYear,
 } from "../../app/styles/FilmPageMobile.styles";
 import { FilmInfoTextProps } from "./FilmInfoText.types";
+import RatingBadges from "../RatingBadges/RatingBadges";
 import roundNumber from "../helpers/rounding";
 
 /**
@@ -34,19 +34,6 @@ const FilmInfoText: React.FC<FilmInfoTextProps> = (props) => {
   const { filmInfoId, countries, genres, ratingKinopoisk, resolution } = props;
 
   const ratingKp = roundNumber(ratingKinopoisk, 1);
-
-  // ступень рейтинга для цвета бейджа — та же логика, что на карточках
-  const ratingTier = !ratingKp
-    ? "none"
-    : ratingKp >= 8
-    ? "top"
-    : ratingKp >= 7
-    ? "good"
-    : ratingKp >= 6
-    ? "mid"
-    : ratingKp >= 5
-    ? "weak"
-    : "low";
 
   // строка на телефоне: год · длительность · страна
   const metaTexts = [
@@ -115,10 +102,9 @@ const FilmInfoText: React.FC<FilmInfoTextProps> = (props) => {
 
       {/* Телефон: рейтинг бейджем, год и длительность строкой, жанры чипами */}
       <MetaMobileOnly>
+        {/* Рейтинги с источниками: тот же блок, что на компьютере */}
+        <RatingBadges ratings={filmInfoId?.ratings} />
         <MobileMetaRow>
-          {ratingKp ? (
-            <MobileRating $tier={ratingTier}>{ratingKp}</MobileRating>
-          ) : null}
           {metaTexts.map((text, index) => (
             <React.Fragment key={text}>
               {index > 0 ? <MobileMetaDot>·</MobileMetaDot> : null}

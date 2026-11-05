@@ -58,6 +58,7 @@ import { getFilmById } from "@/redux/filmInfoSlice";
 import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
 import Seasons from "../Seasons/Seasons";
 import stripQuotes from "../helpers/stripQuotes";
+import RatingBadges from "../RatingBadges/RatingBadges";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
 import Tabs from "@mui/material/Tabs";
@@ -275,14 +276,11 @@ export default function FilmPage({ params }: { params: { id: number | string } }
             <HeroText>
             <HeroTitle itemProp="name">{filmInfoId.name}</HeroTitle>
             {heroSlogan ? <HeroSlogan>«{heroSlogan}»</HeroSlogan> : null}
+            {/* Рейтинги с указанием источника: одна цифра без подписи ничего
+                не говорила о том, чья это оценка */}
+            <RatingBadges ratings={filmInfoId?.ratings} />
             <HeroMeta>
               {filmInfoId.year ? <span>{filmInfoId.year}</span> : null}
-              {ratingKinopoisk ? (
-                <>
-                  <HeroDot />
-                  <HeroScore>{roundNumber(ratingKinopoisk, 1)}</HeroScore>
-                </>
-              ) : null}
               {filmInfoId.movieLength ? (
                 <>
                   <HeroDot />

@@ -75,9 +75,21 @@ type seasonType = {
     poster?: string | null
 }
 
+/** Оценка источника: значение и число голосов */
+type ratingValueType = {
+    value?: number | null
+    votes?: number | null
+}
+
 export type FilmInfoType = {
     /** Пусто у фильмов; у сериалов — по одному элементу на сезон */
     seasons?: seasonType[]
+    /** Рейтинги по источникам: показываем только те, что есть */
+    ratings?: {
+        imdb?: ratingValueType | null
+        kinopoisk?: ratingValueType | null
+        tmdb?: ratingValueType | null
+    }
     externalId: {
     _id : string
     imdb: null | string
