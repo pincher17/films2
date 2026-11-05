@@ -1,0 +1,88 @@
+'use client';
+
+import React from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import styled from 'styled-components';
+import FilmSkeleton from '../FilmSkeleton/FilmSkeleton';
+
+/**
+ * Скелетон следующей страницы сразу по клику.
+ *
+ * Проблема: при медленной сети между кликом по подсказке поиска и началом
+ * перехода проходит несколько секунд. Список подсказок к этому моменту уже
+ * закрыт, на экране ничего не меняется — кажется, что клик не сработал.
+ *
+ * Решение: по событию «собираемся перейти» показываем тот же скелетон, что и
+ * сама страница фильма (FilmSkeleton). Дальше маршрут меняется, Next рисует
+ * свой loading.tsx — а там ровно этот же компонент, поэтому картинка не
+ * прыгает. Показываем с задержкой: если переход успел за 130 мс, скелетон не
+ * мелькнёт вовсе.
+ */
+
+export const NAV_START_EVENT = 'fh:nav-start';
+
+/** Задержка перед показом: быстрый переход не должен мигать скелетоном */
+const SHOW_AFTER_MS = 130;
+/** Страховка: если переход не состоялся, не держим скелетон вечно */
+const GIVE_UP_MS = 15000;
+
+const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+  /*
+   * Слой 4, а не «поверх всего»: шапка на сайте fixed с z-index 5 и должна
+   * оставаться видимой. Скелетон при этом отсчитывается от верха окна ровно
+   * так же, как в настоящей странице, поэтому в момент перехода ничего не
+   * прыгает — об этом и была речь.
+   */
+  z-index: 4;
+  background: #0b0b0b;
+  overflow: hidden;
+`;
+
+const NavigationSkeleton: React.FC = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  /* Именно строка, а не объект: useSearchParams может возвращать новую ссылку
+     на каждом рендере, и эффект сброса гасил только что показанный скелетон. */
+  const searchKey = searchParams?.toString() ?? '';
+  const [visible, setVisible] = React.useState(false);
+  const showTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const giveUpTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTimers = React.useCallback(() => {
+    if (showTimer.current) clearTimeout(showTimer.current);
+    if (giveUpTimer.current) clearTimeout(giveUpTimer.current);
+    showTimer.current = null;
+    giveUpTimer.current = null;
+  }, []);
+
+  React.useEffect(() => {
+    const onStart = () => {
+      clearTimers();
+      showTimer.current = setTimeout(() => setVisible(true), SHOW_AFTER_MS);
+      giveUpTimer.current = setTimeout(() => setVisible(false), GIVE_UP_MS);
+    };
+
+    window.addEventListener(NAV_START_EVENT, onStart);
+    return () => {
+      window.removeEventListener(NAV_START_EVENT, onStart);
+      clearTimers();
+    };
+  }, [clearTimers]);
+
+  /* Маршрут сменился — переход состоялся, скелетон больше не нужен */
+  React.useEffect(() => {
+    clearTimers();
+    setVisible(false);
+  }, [pathname, searchKey, clearTimers]);
+
+  if (!visible) return null;
+  return (
+    <Overlay aria-hidden="true" data-fh-nav-skeleton="1">
+      <FilmSkeleton />
+    </Overlay>
+  );
+};
+
+export default NavigationSkeleton;

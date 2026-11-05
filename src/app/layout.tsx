@@ -4,6 +4,7 @@ import './globals.css'
 import StyledComponentsRegistry from './registry'
 import { Providers } from "@/redux/provider";
 import NextTopLoader from 'nextjs-toploader';
+import NavigationSkeleton from '@/components/NavigationSkeleton/NavigationSkeleton';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -96,6 +97,11 @@ export default function RootLayout({
         <StyledComponentsRegistry>
         <NextTopLoader color='red' />
           {children}
+        {/* Скелетон следующей страницы: показывается между кликом и переходом.
+            Лежит в корневом макете, потому что главная рендерит шапку сама
+            и не попадает под (wrap)-layout. Стоит после контента — при равном
+            z-index так он оказывается сверху. */}
+        <NavigationSkeleton />
         </StyledComponentsRegistry>
         </Providers>
         </body>

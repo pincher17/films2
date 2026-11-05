@@ -8,6 +8,7 @@ import { Year } from "../Card";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmSearch, setMobileSearch } from "@/redux/searchSlice";
 import { useRouter } from "next/navigation";
+import { NAV_START_EVENT } from "../NavigationSkeleton/NavigationSkeleton";
 import textTransform from "../helpers/textTransform";
 
 
@@ -72,7 +73,20 @@ const Search: React.FC = () => {
     if (text.length >= 2 && resultSearch.length > 0) setSearchList(true);
   };
 
+  /* Сообщаем макету, что начинается переход: он покажет скелетон страницы,
+     если сеть не успеет за доли секунды. */
+  const startNavigation = () => {
+    window.dispatchEvent(new Event(NAV_START_EVENT));
+  };
+
+  const goToFilm = (href: string) => {
+    startNavigation();
+    router.push(href);
+  };
+
   const submitForm = () => {
+    /* Скелетон фильма здесь не нужен: ведём не на страницу фильма, а на
+       выдачу поиска — чужая картинка только запутает. */
     router.push(`/search/${text}`)
   };
 
@@ -98,7 +112,7 @@ const Search: React.FC = () => {
   };
 
   const onMouseDownNavigate = (id: number, name: string, year: number) => {
-    router.push(`/film/${id}-${textTransform(name)}-${year}`)
+    goToFilm(`/film/${id}-${textTransform(name)}-${year}`)
     inputRef.current?.blur();
     closeSearch()
   };
@@ -126,6 +140,9 @@ const Search: React.FC = () => {
           {resultSearch.map((i) => (
             <div key={i.id}>
               <div
+                onMouseEnter={() =>
+                  router.prefetch(`/film/${i.id}-${textTransform(i.name)}-${i.year}`)
+                }
                 onMouseDown={() =>
                   onMouseDownNavigate(i.id, i.name, i.year)
                 }
