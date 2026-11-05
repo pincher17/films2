@@ -26,6 +26,10 @@ const MultipleSelectStudio: React.FC<MultipleSelectProps> = ({options, onChange}
       }, [genre])
 
   const colourStyles: StylesConfig = {
+    /* Меню рисуем в портале, как в обычных фильтрах: иначе оно остаётся
+       внутри колонки фильтров, и закладка карточки (z-index 4) рисуется
+       поверх списка жанров — на студийных страницах это и было видно. */
+    menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 1500 }) as never,
     control: (baseStyles: any, state: { isFocused: any; }) => ({
       ...baseStyles,
       color: 'white',
@@ -103,6 +107,9 @@ const MultipleSelectStudio: React.FC<MultipleSelectProps> = ({options, onChange}
   } 
   return (
     <Select
+      classNamePrefix="fh-select"
+      menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
+      menuPlacement="auto"
       closeMenuOnSelect={false}
       isMulti
       options={options}

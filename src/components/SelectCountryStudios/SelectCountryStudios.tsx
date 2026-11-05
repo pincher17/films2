@@ -19,6 +19,8 @@ const SelectCountryStudios: React.FC<MultipleSelectProps> = ({onChange}) => {
     }, [selectedCountry])
 
   const colourStyles: StylesConfig = {
+    /* См. MultipleSelectStudio: без портала меню уходит под закладки карточек */
+    menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 1500 }) as never,
     control: (baseStyles: any, state: { isFocused: any; }) => ({
       ...baseStyles,
       color: 'white',
@@ -78,6 +80,9 @@ const SelectCountryStudios: React.FC<MultipleSelectProps> = ({onChange}) => {
   } 
   return (
     <Select
+      classNamePrefix="fh-select"
+      menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
+      menuPlacement="auto"
       closeMenuOnSelect={true}
       options={allCountry}
       name="colors"
