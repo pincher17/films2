@@ -20,6 +20,8 @@ import FilmSkeleton from '../FilmSkeleton/FilmSkeleton';
  */
 
 export const NAV_START_EVENT = 'fh:nav-start';
+/** Страница фильма сообщает, что данные пришли и можно показывать содержимое */
+export const PAGE_READY_EVENT = 'fh:page-ready';
 
 /** Задержка перед показом: быстрый переход не должен мигать скелетоном */
 const SHOW_AFTER_MS = 130;
@@ -63,19 +65,50 @@ const NavigationSkeleton: React.FC = () => {
       showTimer.current = setTimeout(() => setVisible(true), SHOW_AFTER_MS);
       giveUpTimer.current = setTimeout(() => setVisible(false), GIVE_UP_MS);
     };
+    const onReady = () => {
+      clearTimers();
+      setVisible(false);
+    };
 
     window.addEventListener(NAV_START_EVENT, onStart);
+    window.addEventListener(PAGE_READY_EVENT, onReady);
     return () => {
       window.removeEventListener(NAV_START_EVENT, onStart);
+      window.removeEventListener(PAGE_READY_EVENT, onReady);
       clearTimers();
     };
   }, [clearTimers]);
 
-  /* Маршрут сменился — переход состоялся, скелетон больше не нужен */
+  /*
+   * Маршрут сменился. Для страницы фильма скелетон НЕ снимаем: иначе он
+   * исчезнет, а на его месте появится второй такой же из loading.tsx — блик
+   * начнёт бежать заново, и это видно как мигание. Ждём PAGE_READY_EVENT.
+   * Для любых других маршрутов убираем сразу.
+   */
   React.useEffect(() => {
+    if (pathname.startsWith('/film/')) return;
     clearTimers();
     setVisible(false);
   }, [pathname, searchKey, clearTimers]);
+
+  /*
+   * Пока скелетон на экране, страницу под ним прокручивать нельзя.
+   * Блокируем и html, и body: на телефоне прокрутка живёт на корневом
+   * элементе, и одного body недостаточно — страница продолжала ехать.
+   */
+  React.useEffect(() => {
+    if (!visible) return undefined;
+    const root = document.documentElement;
+    const body = document.body;
+    const prevRoot = root.style.overflow;
+    const prevBody = body.style.overflow;
+    root.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      root.style.overflow = prevRoot;
+      body.style.overflow = prevBody;
+    };
+  }, [visible]);
 
   if (!visible) return null;
   return (

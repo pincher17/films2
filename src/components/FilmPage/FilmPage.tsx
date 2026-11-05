@@ -59,6 +59,7 @@ import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
 import Seasons from "../Seasons/Seasons";
 import stripQuotes from "../helpers/stripQuotes";
 import RatingBadges from "../RatingBadges/RatingBadges";
+import { PAGE_READY_EVENT } from "../NavigationSkeleton/NavigationSkeleton";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
 import Tabs from "@mui/material/Tabs";
@@ -114,6 +115,14 @@ export default function FilmPage({ params }: { params: { id: number | string } }
   );
   const refDataFilm = useRef<HTMLInputElement | null>(null);
   // большой фон: бэкдроп TMDB, при его отсутствии — постер в размытии
+  /* Сообщаем общему скелетону, что страницу можно показывать: он держится
+     поверх ровно до этого момента, поэтому второго скелетона не видно. */
+  React.useEffect(() => {
+    if (!loading && filmInfoId?.name) {
+      window.dispatchEvent(new Event(PAGE_READY_EVENT));
+    }
+  }, [loading, filmInfoId?.name]);
+
   const heroImage = filmInfoId?.backdrop?.url || filmInfoId?.poster?.url;
   /* TMDB иногда отдаёт слоган уже в кавычках, а ниже мы оборачиваем его в «»
      сами — получалось ««Не стоит встречаться со своими героями»» */
