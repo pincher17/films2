@@ -3,24 +3,44 @@ import styled from 'styled-components'
 /**
  * Блок «Сезоны» на странице сериала: дата выхода каждого сезона.
  *
- * Карточки повторяют язык остальной страницы: тёмная подложка, скругление
- * 15px как у постеров, красный акцент при наведении. Сетка сама раскладывается
- * по ширине экрана, на телефоне — в две колонки.
+ * Длинные сериалы (у «Симпсонов» 38 сезонов) сеткой растягивали страницу на
+ * восемь рядов, поэтому сезоны лежат в горизонтальной ленте — как «Похожие» и
+ * «Актёры» на этой же странице. Стрелки появляются только тогда, когда листать
+ * действительно есть куда, и прячутся на телефоне: там лента листается пальцем.
  */
-export const SeasonsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
+export const SeasonsRow = styled.div`
+  position: relative;
   margin-top: 18px;
 
   @media (max-width: 850px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
     margin-top: 14px;
   }
 `
 
+export const SeasonsTrack = styled.div`
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  /* прокрутка с мягкой фиксацией карточек по краю */
+  scroll-snap-type: x proximity;
+  padding: 2px;
+  /* полосу прокрутки не показываем: листают стрелками или пальцем */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 850px) {
+    gap: 10px;
+  }
+`
+
 export const SeasonCard = styled.div`
+  flex: 0 0 240px;
+  scroll-snap-align: start;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -36,6 +56,7 @@ export const SeasonCard = styled.div`
   }
 
   @media (max-width: 850px) {
+    flex: 0 0 200px;
     padding: 10px 11px;
     border-radius: 12px;
     gap: 9px;
@@ -82,7 +103,7 @@ export const SeasonName = styled.span`
   font-weight: 700;
   color: #fff;
   line-height: 1.25;
-  /* «Сезон 16» не должен переноситься: иначе карточки в ряду разной высоты */
+  /* «Сезон 16» не должен переноситься: иначе карточки в ленте разной высоты */
   white-space: nowrap;
 
   @media (max-width: 850px) {
@@ -117,5 +138,44 @@ export const SeasonEpisodes = styled.span`
 
   @media (max-width: 850px) {
     font-size: 12px;
+  }
+`
+
+/**
+ * Стрелка ленты. Кружок той же геометрии и тех же цветов, что у стрелок
+ * «Похожих»: серый в покое, красный при наведении.
+ */
+export const SeasonsArrow = styled.button<{ $side: 'left' | 'right' }>`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  /* тот же отступ, что у стрелок «Похожих»: они стоят в поле страницы,
+     а не поверх карточек */
+  ${({ $side }) => ($side === 'left' ? 'left: -50px;' : 'right: -50px;')}
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #747474;
+  background-image: ${({ $side }) =>
+    $side === 'left' ? "url('/arrowPrev.svg')" : "url('/arrowNext.svg')"};
+  background-repeat: no-repeat;
+  background-size: 50% auto;
+  background-position: center;
+  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.18s ease;
+
+  &:hover {
+    background-color: #b81716;
+    background-image: ${({ $side }) =>
+      $side === 'left' ? "url('/arrowPrevHover.svg')" : "url('/arrowNextHover.svg')"};
+  }
+
+  /* на телефоне лента листается пальцем, стрелки только мешают */
+  @media (max-width: 850px) {
+    display: none;
   }
 `
