@@ -38,6 +38,7 @@ import {
   WrapperWatchFilm,
 } from "../../app/styles/FilmPageMobile.styles";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
+import Seasons from "../Seasons/Seasons";
 import MobileWatchFilm from "../MobileWatchFilm/MobileWatchFilm";
 import SoundtrackSection from "../SoundtrackSection/SoundtrackSection";
 import ResumeHint from "../ResumeHint/ResumeHint";
@@ -243,6 +244,13 @@ export default function FilmPageMobile({ params }: { params: { id: number | stri
               />
             </svg>
           </MobileMore>
+        ) : null}
+
+        {filmInfoId?.seasons && filmInfoId.seasons.length ? (
+          <>
+            <MobileSectionTitle>Сезоны</MobileSectionTitle>
+            <Seasons seasons={filmInfoId.seasons} />
+          </>
         ) : null}
 
         {filmInfoId?.similarMovies && filmInfoId?.similarMovies.length ? (

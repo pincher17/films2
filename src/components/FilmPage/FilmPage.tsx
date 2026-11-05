@@ -56,6 +56,7 @@ import { useSaved } from '@/components/SavedProvider/SavedProvider';
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
 import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
+import Seasons from "../Seasons/Seasons";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
 import Tabs from "@mui/material/Tabs";
@@ -414,6 +415,14 @@ export default function FilmPage({ params }: { params: { id: number | string } }
             </WrapperIframe>
           </WrapperWatchFilm>
         </WrapperInfo>
+
+        {/* Даты выхода сезонов: только у сериалов, у фильмов массив пустой */}
+        {filmInfoId?.seasons && filmInfoId.seasons.length ? (
+          <>
+            <TitleDescription>Сезоны</TitleDescription>
+            <Seasons seasons={filmInfoId.seasons} />
+          </>
+        ) : null}
 
 
     <SwiperWrapperSimilar>

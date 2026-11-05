@@ -65,7 +65,19 @@ export type SequelsAndPrequelsType ={
     }
     
 
+/** Сезон сериала: номер, дата первого эфира и число серий */
+type seasonType = {
+    number: number
+    name?: string
+    airDate?: string | null
+    episodes?: number
+    rating?: number | null
+    poster?: string | null
+}
+
 export type FilmInfoType = {
+    /** Пусто у фильмов; у сериалов — по одному элементу на сезон */
+    seasons?: seasonType[]
     externalId: {
     _id : string
     imdb: null | string

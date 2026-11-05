@@ -542,6 +542,27 @@ async function buildRelated(items, media) {
  * Трейлер для страницы фильма: сначала TMDB, если там пусто — наша база.
  * Наполнением базы занимается скрипт scripts/trailers.mjs.
  */
+/**
+ * Сезоны сериала с датами выхода.
+ *
+ * TMDB отдаёт seasons прямо в ответе /tv/{id}: номер, дату первого эфира,
+ * число серий и среднюю оценку сезона. Сезон 0 — служебный (спецвыпуски и
+ * бонусы), на сайте он только мешает: у него нет нормальной даты и он висит
+ * первым в списке.
+ */
+function buildSeasons(data) {
+  return (data?.seasons || [])
+    .filter((season) => Number(season.season_number) > 0)
+    .map((season) => ({
+      number: Number(season.season_number),
+      name: season.name || `Сезон ${season.season_number}`,
+      airDate: season.air_date || null,
+      episodes: Number(season.episode_count) || 0,
+      rating: season.vote_average ? Math.round(season.vote_average * 10) / 10 : null,
+      poster: season.poster_path ? posterUrl(season.poster_path, "w185") : null,
+    }));
+}
+
 async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
   if (trailer?.key) {
     return {
@@ -705,6 +726,8 @@ export async function getFilmPageData(kinopoiskId) {
       .slice(0, 12),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
     videos: await buildVideosBlock(trailer, kinopoiskId, data.id, data.__media),
+    /* Пусто у фильмов — блок «Сезоны» на странице тогда не рисуется */
+    seasons: media === "tv" ? buildSeasons(data) : [],
     persons: [
       ...(data.credits?.cast || []).slice(0, 30).map((person) => ({
         id: person.id,
