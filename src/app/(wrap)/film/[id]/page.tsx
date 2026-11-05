@@ -5,6 +5,7 @@ import { getFilmPageData } from '@/server/filmPage';
 import translateCategory from '@/components/helpers/translateCategory';
 import roundNumber from '@/components/helpers/rounding';
 import extractDigits from '@/components/helpers/extractId';
+import filmJsonLd from '@/components/helpers/filmJsonLd';
 import textTransform from '@/components/helpers/textTransform';
  
 type Props = {
@@ -57,14 +58,28 @@ export async function generateMetadata(
   }
 }
 
-export default function Film({ params }: { params: { id: string } }) {
+export default async function Film({ params }: { params: { id: string } }) {
 
   /* imdb-адрес передаём как есть: кинопоисковый — числом */
   const rawId = String(params.id ?? "");
   const id = /^tt\d+/i.test(rawId) ? rawId : extractDigits(rawId);
-  
+
+  /* Разметка schema.org: с ней Google показывает карточку с рейтингом.
+     Данные те же, что уходят в метатеги, — запрос берётся из кеша Next. */
+  const filmInfo = await getFilmPageData(id);
+  const canonical = filmInfo?.name
+    ? `https://filmhub.one/film/${id}-${textTransform(filmInfo.name)}${filmInfo.year ? `-${filmInfo.year}` : ''}`
+    : `https://filmhub.one/film/${id}`;
+  const jsonLd = filmJsonLd(filmInfo, canonical);
+
   return (
    <>
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ) : null}
       <FilmPage params={{
         id
       }} />
