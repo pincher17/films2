@@ -15,6 +15,16 @@ module.exports = withPWA({
     apiKey: process.env.API_KEY,
     apigetKey: process.env.APIGET_KEY,
   },
+  /* robots.txt и карты сайта меняются, а Next отдавал их как статику с
+     cache-control: immutable на год. Google легко закэшировал бы старый
+     robots.txt с полным запретом обхода. Ставим час. */
+  async headers() {
+    const files = ['/robots.txt', '/sitemap.xml', '/sitemap1.xml', '/sitemap2.xml', '/sitemap3.xml'];
+    return files.map((source) => ({
+      source,
+      headers: [{ key: 'Cache-Control', value: 'public, max-age=3600' }],
+    }));
+  },
   async rewrites() {
     return [
       // картинки TMDB через наш домен: у части провайдеров их CDN заблокирован
