@@ -38,7 +38,8 @@ const Overlay = styled.div`
    * прыгает — об этом и была речь.
    */
   z-index: 4;
-  background: #0b0b0b;
+  /* ровно как фон страницы: у body в globals.css #000 */
+  background: #000;
   overflow: hidden;
 `;
 
