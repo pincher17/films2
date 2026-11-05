@@ -38,6 +38,11 @@ export const SeasonsTrack = styled.div`
   }
 `
 
+/*
+ * Карточка не кликабельна, поэтому и не должна выглядеть кликабельной:
+ * никакого подъёма и красной рамки при наведении. Раньше карточка
+ * подскакивала, хотя нажать её нельзя было — это читалось как обман.
+ */
 export const SeasonCard = styled.div`
   flex: 0 0 240px;
   scroll-snap-align: start;
@@ -48,22 +53,12 @@ export const SeasonCard = styled.div`
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(160deg, #191919 0%, #0e0e0e 100%);
-  transition: border-color 0.18s ease, transform 0.18s ease;
-
-  &:hover {
-    border-color: rgba(211, 41, 41, 0.55);
-    transform: translateY(-2px);
-  }
 
   @media (max-width: 850px) {
     flex: 0 0 200px;
     padding: 10px 11px;
     border-radius: 12px;
     gap: 9px;
-    /* на телефоне подъём при наведении не нужен: там нет наведения */
-    &:hover {
-      transform: none;
-    }
   }
 `
 
