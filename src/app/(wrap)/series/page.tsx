@@ -3,6 +3,7 @@ import CatalogPage from "@/components/CatalogPage/CatalogPage";
 
 export const metadata: Metadata = {
   title: "Все сериалы смотреть онлайн на Filmhub",
+  alternates: { canonical: '/series' },
   description: "Все сериалы — смотрите онлайн в хорошем качестве на Filmhub",
 };
 

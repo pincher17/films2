@@ -9,6 +9,9 @@ import NavigationSkeleton from '@/components/NavigationSkeleton/NavigationSkelet
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  /* Без этого Next подставлял в og:image адрес http://localhost:3000 —
+     превью ссылок в Telegram и соцсетях оставалось без картинки. */
+  metadataBase: new URL('https://filmhub.one'),
   title: 'Filmhub - смотреть фильмы бесплатно онлайн в хорошем качестве',
   description: `Смотрите новинки кино и сериалов в онлайн кинотеатре Filmhub. 
   Большой выбор фильмов, высокое качество видео и звука`,
