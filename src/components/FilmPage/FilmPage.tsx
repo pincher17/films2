@@ -57,6 +57,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getFilmById } from "@/redux/filmInfoSlice";
 import FilmPageMobile from "../FilmPageMobile/FilmPageMobile";
 import Seasons from "../Seasons/Seasons";
+import stripQuotes from "../helpers/stripQuotes";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
 import Tabs from "@mui/material/Tabs";
@@ -113,6 +114,9 @@ export default function FilmPage({ params }: { params: { id: number | string } }
   const refDataFilm = useRef<HTMLInputElement | null>(null);
   // большой фон: бэкдроп TMDB, при его отсутствии — постер в размытии
   const heroImage = filmInfoId?.backdrop?.url || filmInfoId?.poster?.url;
+  /* TMDB иногда отдаёт слоган уже в кавычках, а ниже мы оборачиваем его в «»
+     сами — получалось ««Не стоит встречаться со своими героями»» */
+  const heroSlogan = stripQuotes(filmInfoId?.slogan);
   const heroBlurred = !filmInfoId?.backdrop?.url;
 
   // детали под описанием — всё это уже приходит из TMDB
@@ -270,9 +274,7 @@ export default function FilmPage({ params }: { params: { id: number | string } }
           <Hero>
             <HeroText>
             <HeroTitle itemProp="name">{filmInfoId.name}</HeroTitle>
-            {filmInfoId?.slogan ? (
-              <HeroSlogan>«{filmInfoId.slogan}»</HeroSlogan>
-            ) : null}
+            {heroSlogan ? <HeroSlogan>«{heroSlogan}»</HeroSlogan> : null}
             <HeroMeta>
               {filmInfoId.year ? <span>{filmInfoId.year}</span> : null}
               {ratingKinopoisk ? (
