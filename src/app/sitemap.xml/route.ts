@@ -15,6 +15,9 @@ const BODY = `<?xml version="1.0" encoding="UTF-8"?>
   <sitemap>
     <loc>https://filmhub.one/sitemap3.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://filmhub.one/sitemap4.xml</loc>
+  </sitemap>
 </sitemapindex>
 `;
 

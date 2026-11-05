@@ -244,7 +244,7 @@ export default function StudioPage({
              </WrapperImageStudio>
           <WrapperName>
             <div>
-              <NameStudio>
+              <NameStudio as="h1">
                 {getLabelBySlug(slug)}
               </NameStudio>
             </div>

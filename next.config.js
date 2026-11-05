@@ -21,7 +21,7 @@ module.exports = withPWA({
   async headers() {
     /* robots.txt и индекс отдаются роутами — им заголовок не нужен.
        Остаются статические части карты из public/. */
-    const files = ['/sitemap1.xml', '/sitemap2.xml', '/sitemap3.xml'];
+    const files = ['/sitemap1.xml', '/sitemap2.xml', '/sitemap3.xml', '/sitemap4.xml'];
     return files.map((source) => ({
       source,
       headers: [{ key: 'Cache-Control', value: 'public, max-age=3600' }],

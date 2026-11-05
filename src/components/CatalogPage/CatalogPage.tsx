@@ -222,7 +222,8 @@ export default function CatalogPage({ section = "movies" }: { section?: CatalogS
         <Wrapper>
           <WrapperNameBlock>
             <div>
-              <NameBlock>{SECTION_TITLES[section]}</NameBlock>
+              {/* h1 без изменения вида: стили те же, меняется только семантика */}
+              <NameBlock as="h1">{SECTION_TITLES[section]}</NameBlock>
             </div>
 
                         <FilterIcon onClick={toggleSidebar}>

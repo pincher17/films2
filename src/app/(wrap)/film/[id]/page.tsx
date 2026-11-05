@@ -27,9 +27,18 @@ export async function generateMetadata(
     (await getFilmPageData(id)) ?? (await filmsApi.getFilmById(id)).data;
  
  
+  /* Рейтинг в описании подписываем тем источником, откуда он взят: раньше
+     оценка TMDB называлась «рейтингом кинопоиска». */
+  const ratings = (filmInfoId as any).ratings || {};
+  const ratingText = ratings.imdb?.value
+    ? `рейтинг IMDb: ${ratings.imdb.value}`
+    : ratings.tmdb?.value
+    ? `рейтинг TMDB: ${ratings.tmdb.value}`
+    : `рейтинг кинопоиска: ${roundNumber(filmInfoId.rating.kp, 1)}`;
+
   return {
     title: `${filmInfoId.name} ${filmInfoId.year} г. - смотреть онлайн на Filmhub`,
-    description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, рейтинг кинопоиска: ${roundNumber(filmInfoId.rating.kp, 1)}`,
+    description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, ${ratingText}`,
     keywords: [`${filmInfoId.name}`, `${filmInfoId.year}`, `${filmInfoId.alternativeName || filmInfoId.enName}`, `${translateCategory(filmInfoId.type)}`, 'смотреть', 'онлайн', 'бесплатно', 'hd'],
     openGraph: {
       title: `${filmInfoId.name} ${filmInfoId.year} г. - смотреть онлайн на Filmhub`,
@@ -49,7 +58,7 @@ export async function generateMetadata(
     },
     twitter: {
       title: `${filmInfoId.name} ${filmInfoId.year} г. - смотреть онлайн на Filmhub`,
-      description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, рейтинг кинопоиска: ${roundNumber(filmInfoId.rating.kp, 1)}`,
+      description: `Смотрите онлайн ${translateCategory(filmInfoId.type)} ${filmInfoId.name} (${filmInfoId.year}) года в хорошем качестве HD, ${ratingText}`,
       images: [`${filmInfoId.poster.url}`],
     },
     alternates: {
