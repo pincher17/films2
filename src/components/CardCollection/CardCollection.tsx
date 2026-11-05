@@ -3,6 +3,7 @@ import { Img, ImgWrap, ImgWrapper, NameFilm, Wrapper } from '../../app/styles/Ca
 import Link from 'next/link';
 import { CardCollectionProps } from './CardCollection.types';
 import { ImageCollection, NameCollection } from '@/app/styles/CardCollection.styles';
+import collectionCardCover from '../helpers/collectionCardCover';
 
 
 const CardCollection: React.FC<CardCollectionProps> = (props) =>{
@@ -21,8 +22,9 @@ const {
             <ImgWrapper>
             <ImgWrap>
             <ImageCollection
-             src={cover.url} 
-             alt={name} 
+             src={collectionCardCover(cover.url)}
+             alt={name}
+             loading="lazy"
              />
             </ImgWrap>
             <NameCollection title={name}>{name}</NameCollection>
