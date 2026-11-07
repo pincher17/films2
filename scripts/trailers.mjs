@@ -328,14 +328,15 @@ async function work(limit = 100) {
  * Глубокий сбор: проходим по годам и набираем популярное в каждом.
  * Так очередь покрывает весь каталог, а не только свежее.
  */
-async function seedDeep() {
+async function seedDeep(fromYear = 2005, pages = 20) {
   const currentYear = new Date().getFullYear();
   let added = 0;
 
-  for (let year = currentYear; year >= 2005; year -= 1) {
+  console.info(`[seed-deep] годы ${currentYear}…${fromYear}, по ${pages} страниц`);
+  for (let year = currentYear; year >= fromYear; year -= 1) {
     for (const media of ["movie", "tv"]) {
       const dateParam = media === "movie" ? "primary_release_year" : "first_air_date_year";
-      for (let page = 1; page <= 20; page += 1) {
+      for (let page = 1; page <= pages; page += 1) {
         const data = await tmdb(`/discover/${media}`, {
           page: String(page),
           sort_by: "popularity.desc",
@@ -454,10 +455,10 @@ async function sendReport({ searches, counts, trailers }) {
 
 const [command, arg] = process.argv.slice(2);
 if (command === "seed") await seed();
-else if (command === "seed-deep") await seedDeep();
+else if (command === "seed-deep") await seedDeep(Number(arg) || 2005, Number(process.argv[4]) || 20);
 else if (command === "work") await work(Number(arg) || 100);
 else if (command === "stats") await stats();
 else if (command === "audit") await audit(process.argv[3] === "--fix");
-else console.info("использование: seed | work <n> | stats | audit [--fix]");
+else console.info("использование: seed | seed-deep [отГода] [страниц] | work <n> | stats | audit [--fix]");
 
 await prisma.$disconnect();
