@@ -18,9 +18,6 @@ export const metadata: Metadata = {
   keywords: `filmhub, фильмхаб, фильм хаб, сериалы, kinogo, киного, фильмы онлайн, смотреть фильмы онлайн, смотреть фильмы бесплатно, кино онлайн`,
   viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
   applicationName: 'Filmhub',
-  verification: {
-    yandex: '14eacbc578f7574d',
-  },
   alternates: {
     canonical: 'https://filmhub.one',
   },
