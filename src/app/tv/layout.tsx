@@ -50,10 +50,15 @@ const Global = createGlobalStyle`
     cursor: default !important;
   }
 
-  /* При прокрутке к элементу оставляем место под закреплённую шапку,
-     иначе подсветка уезжает под неё */
+  /* При прокрутке к элементу оставляем место под закреплённую шапку и под
+     заголовок ряда: иначе «Продолжить просмотр» уезжал под шапку, и казалось,
+     что ряд пропал */
+  html {
+    scroll-padding-top: 150px;
+  }
+
   [data-tv-focus] {
-    scroll-margin-top: 130px;
+    scroll-margin-top: 170px;
     scroll-margin-bottom: 40px;
   }
 
