@@ -9,13 +9,19 @@
 
 import React from "react";
 import styled from "styled-components";
-import { TvPosterCard, TvRow, TvRowScroll } from "@/components/tv/TvParts";
+import { TvPosterCard, TvProgressCard, TvRow, TvRowScroll } from "@/components/tv/TvParts";
 
 type Card = {
   id: number | string;
   name: string;
   poster?: { url?: string; previewUrl?: string } | null;
   year?: number | null;
+  progress?: {
+    percent?: number | null;
+    seconds?: number;
+    season?: number;
+    episode?: number;
+  } | null;
 };
 
 type Row = { title: string; items: Card[] };
@@ -74,14 +80,29 @@ export default function TvHomePage() {
         <TvRow key={row.title}>
           <h2>{row.title}</h2>
           <TvRowScroll data-tv-row>
-            {row.items.map((item) => (
-              <TvPosterCard
-                key={`${row.title}-${item.id}`}
-                href={`/tv/film/${item.id}`}
-                poster={item.poster?.previewUrl || item.poster?.url}
-                name={item.name}
-              />
-            ))}
+            {row.items.map((item) =>
+              item.progress ? (
+                <TvProgressCard
+                  key={`${row.title}-${item.id}`}
+                  href={`/tv/film/${item.id}`}
+                  poster={item.poster?.previewUrl || item.poster?.url}
+                  name={item.name}
+                  percent={item.progress.percent ?? null}
+                  subtitle={
+                    item.progress.season && item.progress.episode
+                      ? `Сезон ${item.progress.season}, серия ${item.progress.episode}`
+                      : null
+                  }
+                />
+              ) : (
+                <TvPosterCard
+                  key={`${row.title}-${item.id}`}
+                  href={`/tv/film/${item.id}`}
+                  poster={item.poster?.previewUrl || item.poster?.url}
+                  name={item.name}
+                />
+              )
+            )}
           </TvRowScroll>
         </TvRow>
       ))}

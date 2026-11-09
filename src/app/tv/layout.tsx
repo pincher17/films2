@@ -2,7 +2,9 @@
 
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
+import Link from "next/link";
 import TvNav from "@/components/tv/TvNav";
+import Logo from "../../../public/assets/img/logo1.svg";
 
 /**
  * Оболочка телевизионной версии.
@@ -42,17 +44,31 @@ const TopBar = styled.header`
   justify-content: space-between;
   margin-bottom: 26px;
 
-  .logo {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+  .logo svg {
+    height: 38px;
+    width: auto;
+    display: block;
   }
 
-  .logo b {
+  .search {
+    display: inline-flex;
+    align-items: center;
+    height: 52px;
+    padding: 0 26px;
+    border-radius: 10px;
+    border: 2px solid #2f2f2f;
+    background: #141414;
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    outline: none;
+  }
+
+  .search:focus,
+  .search:focus-visible {
     background: #d41515;
-    border-radius: 6px;
-    padding: 2px 8px;
-    margin-left: 2px;
+    border-color: #d41515;
+    outline: none;
   }
 `;
 
@@ -63,9 +79,12 @@ export default function TvLayout({ children }: { children: React.ReactNode }) {
       <TvNav />
       <Shell>
         <TopBar>
-          <div className="logo">
-            Film<b>hub</b>
-          </div>
+          <Link href="/tv" className="logo" data-tv-focus aria-label="Filmhub">
+            <Logo />
+          </Link>
+          <Link href="/tv/search" className="search" data-tv-focus>
+            Поиск
+          </Link>
         </TopBar>
         {children}
       </Shell>

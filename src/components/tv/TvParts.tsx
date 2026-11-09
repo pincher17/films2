@@ -148,3 +148,112 @@ export function TvPosterCard({
     </TvCard>
   );
 }
+
+/** Карточка «продолжить просмотр»: полоска прогресса и подпись серии */
+export const TvProgressCardWrap = styled(Link)`
+  display: block;
+  width: clamp(150px, 10.5vw, 208px);
+  flex: 0 0 auto;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  transition: transform 0.15s ease;
+
+  .poster {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    background: #1a1a1a;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+  }
+
+  .bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .bar span {
+    display: block;
+    height: 100%;
+    background: #d41515;
+  }
+
+  .name {
+    display: block;
+    margin-top: 8px;
+    font-size: 15px;
+    color: #d5d5d5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #8a8a8a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:focus,
+  &:focus-visible {
+    transform: scale(1.07);
+    outline: none;
+    z-index: 2;
+  }
+
+  &:focus .poster,
+  &:focus-visible .poster {
+    border-color: #d41515;
+  }
+
+  &:focus .name,
+  &:focus-visible .name {
+    color: #fff;
+  }
+`;
+
+export function TvProgressCard({
+  href,
+  poster,
+  name,
+  percent,
+  subtitle,
+}: {
+  href: string;
+  poster?: string | null;
+  name: string;
+  percent?: number | null;
+  subtitle?: string | null;
+}) {
+  return (
+    <TvProgressCardWrap href={href} data-tv-focus>
+      <div className="poster">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={poster || ""} alt={name} loading="lazy" />
+        {typeof percent === "number" && percent > 0 ? (
+          <div className="bar">
+            <span style={{ width: `${Math.min(100, percent)}%` }} />
+          </div>
+        ) : null}
+      </div>
+      <span className="name">{name}</span>
+      {subtitle ? <span className="sub">{subtitle}</span> : null}
+    </TvProgressCardWrap>
+  );
+}
