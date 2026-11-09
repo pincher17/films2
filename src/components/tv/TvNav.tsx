@@ -47,23 +47,30 @@ function pickNext(current: HTMLElement, direction: Direction) {
   const currentRow = rowOf(current);
   const horizontal = direction === "left" || direction === "right";
 
-  if (horizontal && currentRow) {
-    /* Внутри ряда — просто ближайший сосед по горизонтали */
-    const { x, y } = centerOf(current);
+  if (horizontal) {
+    const { x, y, box } = centerOf(current);
+    const lineTolerance = Math.max(24, box.height * 0.6);
+
+    /* Сначала ищем соседа на той же линии — в том числе в соседней колонке.
+       Это даёт переход с конца ряда букв в цифровой блок и обратно, вместо
+       прыжка в ряд выше, который просто оказался ближе по диагонали. */
     let best: { element: HTMLElement; score: number } | null = null;
 
-    for (const element of rowItems(currentRow)) {
+    for (const element of visibleFocusables()) {
       if (element === current) continue;
       const point = centerOf(element);
       const dx = point.x - x;
       const dy = Math.abs(point.y - y);
-      if (dy > 60) continue;
+      if (dy > lineTolerance) continue;
       if (direction === "left" ? dx > -4 : dx < 4) continue;
-      const score = Math.abs(dx) + dy * 2;
+      const score = Math.abs(dx);
       if (!best || score < best.score) best = { element, score };
     }
 
     if (best) return best.element;
+    /* Внутри ряда дальше идти некуда — стоим на месте. Иначе с последней
+       клавиши улетало в шапку по диагонали. */
+    if (currentRow) return null;
   }
 
   if (!horizontal) {

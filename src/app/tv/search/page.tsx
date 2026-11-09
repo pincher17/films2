@@ -134,6 +134,7 @@ const Hint = styled.p`
 const BackButton = styled(Link)`
   display: inline-flex;
   align-items: center;
+  gap: 10px;
   height: 54px;
   padding: 0 24px;
   border-radius: 10px;
@@ -144,6 +145,11 @@ const BackButton = styled(Link)`
   text-decoration: none;
   outline: none;
   margin-top: 8px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 
   &:focus,
   &:focus-visible,
@@ -292,6 +298,9 @@ export default function TvSearchPage() {
       ) : null}
 
       <BackButton href="/tv" data-tv-focus>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
         Назад на главную
       </BackButton>
     </main>
