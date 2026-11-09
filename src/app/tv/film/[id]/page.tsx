@@ -46,14 +46,14 @@ const Hero = styled.section<{ $image?: string }>`
 
   .meta {
     color: #bdbdbd;
-    font-size: 17px;
-    margin-bottom: 18px;
+    font-size: 19px;
+    margin-bottom: 20px;
   }
 
   p {
-    max-width: 760px;
+    max-width: 820px;
     color: #d0d0d0;
-    font-size: 17px;
+    font-size: 19px;
     line-height: 1.5;
     margin: 0 0 26px;
     display: -webkit-box;

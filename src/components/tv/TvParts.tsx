@@ -34,8 +34,8 @@ export const TvCard = styled(Link)`
 
   span {
     display: block;
-    margin-top: 8px;
-    font-size: 15px;
+    margin-top: 10px;
+    font-size: 16px;
     line-height: 1.25;
     color: #d5d5d5;
     overflow: hidden;
@@ -65,11 +65,11 @@ export const TvCard = styled(Link)`
 `;
 
 export const TvRow = styled.section`
-  margin-bottom: 34px;
+  margin-bottom: 38px;
 
   h2 {
-    margin: 0 0 14px;
-    font-size: 24px;
+    margin: 0 0 16px;
+    font-size: 26px;
     font-weight: 700;
     color: #fff;
   }
@@ -207,8 +207,8 @@ export const TvProgressCardWrap = styled(Link)`
 
   .name {
     display: block;
-    margin-top: 8px;
-    font-size: 15px;
+    margin-top: 10px;
+    font-size: 16px;
     color: #d5d5d5;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -217,8 +217,8 @@ export const TvProgressCardWrap = styled(Link)`
 
   .sub {
     display: block;
-    margin-top: 2px;
-    font-size: 13px;
+    margin-top: 3px;
+    font-size: 14px;
     color: #8a8a8a;
     overflow: hidden;
     text-overflow: ellipsis;

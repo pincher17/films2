@@ -45,8 +45,14 @@ const Global = createGlobalStyle`
 
 const Shell = styled.div`
   min-height: 100vh;
-  padding: 32px 56px 60px;
+  /* 80 px при ширине 1920 — это 4,2%. Телевизоры часто обрезают 3–5% по
+     краям (оверскан), и при 56 px интерфейс мог уехать за кадр. */
+  padding: 40px 80px 64px;
   box-sizing: border-box;
+
+  @media (max-width: 1366px) {
+    padding: 32px 56px 48px;
+  }
 `;
 
 const TopBar = styled.header`
