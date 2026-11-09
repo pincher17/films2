@@ -33,22 +33,36 @@ type Info = {
   }> | null;
 };
 
-const Hero = styled.section<{ $image?: string }>`
+const Page = styled.div`
   position: relative;
-  /* Высота в долях экрана: на 1920×1080 это ~600 px. При прежних 300 px
-     кадр 16:9 приходилось обрезать почти в полоску. */
+`;
+
+/* Обложка отдельным слоем: она уходит вниз, под сезоны и серии, и плавно
+   гаснет затемнением — так делают Netflix и Apple TV */
+const Backdrop = styled.div<{ $image?: string }>`
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--tv-pad));
+  right: calc(-1 * var(--tv-pad));
+  height: min(1150px, 118vh);
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(11, 11, 11, 0.25) 0%, rgba(11, 11, 11, 0.55) 45%, rgba(11, 11, 11, 0.92) 82%, #0b0b0b 100%),
+    linear-gradient(90deg, rgba(11, 11, 11, 0.95) 0%, rgba(11, 11, 11, 0.6) 45%, rgba(11, 11, 11, 0.1) 100%),
+    ${(props) =>
+      props.$image ? `url(${props.$image}) center 30% / cover no-repeat` : "#141414"};
+`;
+
+const Hero = styled.section`
+  position: relative;
+  z-index: 1;
+  /* Высота в долях экрана: на 1920×1080 это ~600 px */
   min-height: min(640px, 60vh);
-  /* Сквозная обложка: выходим за поля страницы, а текст ставим ровно по тому
-     же краю, что и разделы ниже — тогда ничего не «уезжает» */
+  /* Выходим за поля страницы текстом ровно по тому же краю, что и разделы */
   margin: 0 calc(-1 * var(--tv-pad));
   padding: 56px var(--tv-pad);
   box-sizing: border-box;
-  background:
-    /* мягкий переход вниз, чтобы обложка не обрывалась резкой полосой */
-    linear-gradient(180deg, rgba(11, 11, 11, 0) 55%, rgba(11, 11, 11, 0.9) 100%),
-    linear-gradient(90deg, rgba(11, 11, 11, 0.97) 0%, rgba(11, 11, 11, 0.72) 48%, rgba(11, 11, 11, 0.15) 100%),
-    ${(props) =>
-      props.$image ? `url(${props.$image}) center 35% / cover no-repeat` : "#141414"};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -80,6 +94,8 @@ const Hero = styled.section<{ $image?: string }>`
 `;
 
 const Section = styled.section`
+  position: relative;
+  z-index: 1;
   margin-top: 32px;
 
   h2 {
@@ -239,7 +255,9 @@ export default function TvFilmPage() {
 
   return (
     <main>
-      <Hero $image={info.backdrop?.url || info.poster?.url || undefined}>
+      <Page>
+        <Backdrop $image={info.backdrop?.url || info.poster?.url || undefined} />
+        <Hero>
         <h1>{info.name}</h1>
         <div className="meta">
           {[info.year, genres, rating ? `★ ${rating}` : null].filter(Boolean).join(" · ")}
@@ -319,7 +337,7 @@ export default function TvFilmPage() {
         </PlayerBox>
       ) : null}
 
-      {info.similarMovies?.length ? (
+        {info.similarMovies?.length ? (
         <TvRow style={{ marginTop: 40 }}>
           <h2>{isSeries ? "Похожие" : "Похожие фильмы"}</h2>
           <TvRowScroll data-tv-row>
@@ -337,6 +355,8 @@ export default function TvFilmPage() {
           </TvRowScroll>
         </TvRow>
       ) : null}
+
+      </Page>
 
       {player ? (
         <PlayerBox data-tv-scope>
