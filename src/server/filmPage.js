@@ -563,7 +563,7 @@ function buildSeasons(data) {
     }));
 }
 
-async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
+async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media, imdbId) {
   if (trailer?.key) {
     return {
       trailers: [
@@ -584,11 +584,21 @@ async function buildVideosBlock(trailer, kinopoiskId, tmdbId, media) {
     /* В базе трейлеры сохранены по TMDB id (так их нашёл скрипт), а страница
        знает ещё и кинопоисковый — поэтому ищем по обоим. */
     const keys = [Number(kinopoiskId), Number(tmdbId)].filter((id) => Number.isFinite(id) && id > 0);
-    /* Тип обязателен: у TMDB разные нумерации, и без него фильм мог получить
+    /* Ищем по любому из трёх id: в строке трейлера лежат tmdb, imdb и
+       кинопоиск, поэтому трейлер найдётся, каким бы адресом ни пришли.
+       Тип обязателен: у TMDB разные нумерации, и без него фильм мог получить
        трейлер сериала с тем же номером. */
-    const saved = keys.length
+    const idFilters = [];
+    if (keys.length) idFilters.push({ filmId: { in: keys } });
+    if (imdbId) idFilters.push({ imdbId });
+    const saved = idFilters.length
       ? await prisma.trailer.findFirst({
-          where: { filmId: { in: keys }, OR: [{ media: media || "movie" }, { media: null }] },
+          where: {
+            AND: [
+              { OR: idFilters },
+              { OR: [{ media: media || "movie" }, { media: null }] },
+            ],
+          },
           orderBy: { createdAt: "desc" },
         })
       : null;
@@ -740,7 +750,7 @@ export async function getFilmPageData(kinopoiskId) {
       .filter(Boolean)
       .slice(0, 12),
     // apiget отдаёт факты и ляпы, у TMDB их нет — оставляем пустыми
-    videos: await buildVideosBlock(trailer, kinopoiskId, data.id, data.__media),
+    videos: await buildVideosBlock(trailer, kinopoiskId, data.id, data.__media, imdbId),
     /* Пусто у фильмов — блок «Сезоны» на странице тогда не рисуется */
     seasons: media === "tv" ? buildSeasons(data) : [],
     persons: [

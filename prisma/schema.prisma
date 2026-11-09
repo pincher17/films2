@@ -88,6 +88,7 @@ model SavedItem {
 /// что TMDB передумает отдавать видео, и можем хранить свои находки с YouTube.
 model Trailer {
   id        String   @id @default(cuid())
+  /// Основной ключ: tmdb id (так ищет скрипт наполнения)
   filmId    Int
   /// movie или tv: у TMDB разные нумерации, без типа возможны коллизии
   media     String?
@@ -98,8 +99,18 @@ model Trailer {
   source    String   @default("tmdb")
   createdAt DateTime @default(now())
 
+  /* Все три идентификатора в одной строке. Страница фильма приходит по любому
+     из них (кинопоиск, imdb, tmdb), и такая строка находится при любом адресе.
+     Заполняется при вставке и догоняется командой link-ids. */
+  tmdbId    Int?
+  imdbId    String?
+  kpId      Int?
+
   @@unique([filmId, media, youtubeId])
   @@index([filmId])
+  @@index([tmdbId])
+  @@index([imdbId])
+  @@index([kpId])
 }
 
 /// Очередь заполнения трейлеров. Это тот самый «единый список»: по нему идём

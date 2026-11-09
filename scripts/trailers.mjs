@@ -66,6 +66,25 @@ async function tmdb(pathName, params = {}) {
  * Название и год нужны для поиска на YouTube, поэтому тянем их из TMDB: одно
  * обращение на фильм, пачками по 50.
  */
+
+/** Все три идентификатора трейлера: tmdb, imdb и кинопоиск. */
+async function trailerIds(task) {
+  const tmdbId = Number(task.tmdbId || task.filmId) || null;
+  const media = task.media || "movie";
+  if (!tmdbId) return { tmdbId: null, imdbId: null, kpId: null };
+
+  const [imdb, kp] = await Promise.all([
+    prisma.imdbMap
+      .findUnique({ where: { tmdbId_media: { tmdbId, media } }, select: { imdbId: true } })
+      .catch(() => null),
+    prisma.kpMap
+      .findUnique({ where: { tmdbId_media: { tmdbId, media } }, select: { kpId: true } })
+      .catch(() => null),
+  ]);
+
+  return { tmdbId, imdbId: imdb?.imdbId || null, kpId: kp?.kpId || null };
+}
+
 async function seedMap(limit = 0) {
   const rows = await prisma.$queryRaw`
     SELECT m."tmdbId"::int AS "tmdbId", m.media::text AS media
@@ -358,6 +377,7 @@ async function work(limit = 100) {
           youtubeId: best.videoId,
           title: best.title,
           lang: "ru",
+          ...(await trailerIds(task)),
           source: "youtube",
         },
       });
@@ -521,9 +541,10 @@ const [command, arg] = process.argv.slice(2);
 if (command === "seed") await seed();
 else if (command === "seed-deep") await seedDeep(Number(arg) || 2005, Number(process.argv[4]) || 20);
 else if (command === "seed-map") await seedMap(Number(arg) || 0);
+else if (command === "link-ids") await linkIds();
 else if (command === "work") await work(Number(arg) || 100);
 else if (command === "stats") await stats();
 else if (command === "audit") await audit(process.argv[3] === "--fix");
-else console.info("использование: seed | seed-deep [отГода] [страниц] | seed-map [сколько] | work <n> | stats | audit [--fix]");
+else console.info("использование: seed | seed-deep [отГода] [страниц] | seed-map [сколько] | link-ids | work <n> | stats | audit [--fix]");
 
 await prisma.$disconnect();
