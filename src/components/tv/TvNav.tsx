@@ -260,17 +260,24 @@ export default function TvNav() {
     const onKeyDown = (event: KeyboardEvent) => {
       const { key } = event;
       userMoved = true;
-      const arrows = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", " ", "Backspace"];
-      if (!arrows.includes(key)) return;
+      /* Кнопка «Назад» на пульте приходит разными кодами: у Samsung (Tizen)
+         это 10009, у LG (webOS) — 461, у Android TV — 4/8, ещё бывает 27
+         (Escape). Без этого с пульта нельзя было выйти со страницы. */
+      const backCodes = [10009, 461, 8, 4, 27, 166];
 
-      const active = document.activeElement as HTMLElement | null;
-      const hasFocus = active?.hasAttribute(ATTR);
-
-      if (key === "Backspace") {
+      /* Сначала «Назад»: у пультов key приходит как Unidentified, и проверка
+         по списку стрелок отсекла бы его раньше */
+      if (key === "Backspace" || backCodes.includes(event.keyCode)) {
         event.preventDefault();
         window.history.back();
         return;
       }
+
+      const arrows = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", " "];
+      if (!arrows.includes(key)) return;
+
+      const active = document.activeElement as HTMLElement | null;
+      const hasFocus = active?.hasAttribute(ATTR);
 
       if (!hasFocus) {
         event.preventDefault();
