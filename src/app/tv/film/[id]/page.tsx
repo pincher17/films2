@@ -41,10 +41,11 @@ const Page = styled.div`
    гаснет затемнением — так делают Netflix и Apple TV */
 const Backdrop = styled.div<{ $image?: string }>`
   position: absolute;
-  top: 0;
+  /* Заходит под шапку: она полупрозрачная, и кадр видно через её нижний край */
+  top: calc(-1 * var(--tv-header));
   left: calc(-1 * var(--tv-pad));
   right: calc(-1 * var(--tv-pad));
-  height: min(1150px, 118vh);
+  height: min(calc(1150px + var(--tv-header)), 122vh);
   pointer-events: none;
   z-index: 0;
   background:

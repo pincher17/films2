@@ -17,6 +17,9 @@ const Global = createGlobalStyle`
     /* единый боковой отступ страницы: по нему выравниваются и обложка,
        и ряды, иначе текст в обложке уезжает вправо относительно разделов */
     --tv-pad: 80px;
+    /* высота закреплённой шапки: под неё оставлено место и под неё же
+       заходит обложка */
+    --tv-header: 124px;
   }
 
   @media (max-width: 1366px) {
@@ -76,11 +79,11 @@ const Shell = styled.div`
   /* Отступ даёт запас под оверскан (4,2% при 1920) и общий край для
      обложки и рядов */
   /* Сверху оставляем место под закреплённую шапку */
-  padding: 124px var(--tv-pad) 64px;
+  padding: var(--tv-header) var(--tv-pad) 64px;
   box-sizing: border-box;
 `;
 
-const TopBar = styled.header`
+const TopBar = styled.header<{ $solid?: boolean }>`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -94,7 +97,20 @@ const TopBar = styled.header`
   left: 0;
   right: 0;
   z-index: 30;
-  background: #0b0b0b;
+  /* Не сплошная заливка, а мягкий градиент: обложка видна через нижний край
+     шапки, а сверху остаётся достаточно тёмного для логотипа и кнопок.
+     Без backdrop-filter: на Tizen и старых webOS он либо не поддерживается,
+     либо роняет слой в софтверный рендер и всё начинает тормозить. */
+  background: ${(props) =>
+    props.$solid
+      ? "#0b0b0b"
+      : `linear-gradient(
+    180deg,
+    rgba(11, 11, 11, 0.97) 0%,
+    rgba(11, 11, 11, 0.88) 55%,
+    rgba(11, 11, 11, 0.62) 100%
+  )`};
+  transition: background 0.18s ease;
   padding: 32px var(--tv-pad) 16px;
 
   .logo {
@@ -210,12 +226,24 @@ const TopBar = styled.header`
 `;
 
 export default function TvLayout({ children }: { children: React.ReactNode }) {
+  /* Пока смотрим на обложку — шапка полупрозрачная, и кадр видно через её
+     нижний край. Но при прокрутке под шапку попадает текст, и он просвечивает
+     сквозь неё: тогда шапку делаем плотной. */
+  const [solid, setSolid] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <Global />
       <TvNav />
       <Shell>
-        <TopBar>
+        <TopBar $solid={solid}>
           {/* Логотип не в фокусе: с пульта он никуда не ведёт, а первым
               делом человек должен попадать в поиск */}
           <div className="logo" aria-hidden>
