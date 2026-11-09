@@ -1,11 +1,12 @@
 import FilmPage from '@/components/FilmPage/FilmPage';
-import type { Metadata, ResolvingMetadata } from 'next'
+import type { Metadata, ResolvingMetadata } from 'next';
 import { filmsApi } from '@/api/api';
 import { getFilmPageData } from '@/server/filmPage';
 import translateCategory from '@/components/helpers/translateCategory';
 import roundNumber from '@/components/helpers/rounding';
 import extractDigits from '@/components/helpers/extractId';
 import filmJsonLd from '@/components/helpers/filmJsonLd';
+import filmPath from '@/components/helpers/filmPath';
 import textTransform from '@/components/helpers/textTransform';
  
 type Props = {
@@ -20,11 +21,17 @@ export async function generateMetadata(
   /* Адрес может быть кинопоисковым (79848-сопрано) или imdb (tt0121955):
      у imdb цифры в начале нет, и вырезание превращало его в 0 */
   const rawId = String(params.id ?? "");
-  const id = /^tt\d+/i.test(rawId) ? rawId : extractDigits(rawId);
+  /* В адресе может быть слаг: «tt0119794-nirvana-1997». Берём только tt-номер,
+     иначе он уходит в API вместе с названием и фильм не находится. */
+  const imdb = rawId.match(/^(tt\d+)/i);
+  const id = imdb ? imdb[1] : extractDigits(rawId);
  
   // данные берём из TMDB напрямую на сервере; если фильма там нет — apiget
   const filmInfoId =
     (await getFilmPageData(id)) ?? (await filmsApi.getFilmById(id)).data;
+
+  /* Канонический адрес короткий; адреса со слагом отдаёт 301 в middleware */
+  const canonicalPath = filmPath(id);
  
  
   /* Рейтинг в описании подписываем тем источником, откуда он взят: раньше
@@ -62,7 +69,7 @@ export async function generateMetadata(
       images: [`${filmInfoId.poster.url}`],
     },
     alternates: {
-      canonical: `${filmInfoId.name ? `https://filmhub.one/film/${id}-${textTransform(filmInfoId.name)}${filmInfoId.year ? '-'+filmInfoId.year : ''}` : `https://filmhub.one/film/${id}`}`,
+      canonical: `https://filmhub.one${canonicalPath}`,
     }
   }
 }
@@ -71,14 +78,16 @@ export default async function Film({ params }: { params: { id: string } }) {
 
   /* imdb-адрес передаём как есть: кинопоисковый — числом */
   const rawId = String(params.id ?? "");
-  const id = /^tt\d+/i.test(rawId) ? rawId : extractDigits(rawId);
+  /* В адресе может быть слаг: «tt0119794-nirvana-1997». Берём только tt-номер,
+     иначе он уходит в API вместе с названием и фильм не находится. */
+  const imdb = rawId.match(/^(tt\d+)/i);
+  const id = imdb ? imdb[1] : extractDigits(rawId);
 
   /* Разметка schema.org: с ней Google показывает карточку с рейтингом.
      Данные те же, что уходят в метатеги, — запрос берётся из кеша Next. */
   const filmInfo = await getFilmPageData(id);
-  const canonical = filmInfo?.name
-    ? `https://filmhub.one/film/${id}-${textTransform(filmInfo.name)}${filmInfo.year ? `-${filmInfo.year}` : ''}`
-    : `https://filmhub.one/film/${id}`;
+
+  const canonical = `https://filmhub.one${filmPath(id)}`;
   const jsonLd = filmJsonLd(filmInfo, canonical);
 
   return (
