@@ -13,6 +13,18 @@ import Logo from "../../../public/assets/img/logo1.svg";
  * простые: на телевизорах старые движки, и всё тяжёлое там тормозит.
  */
 const Global = createGlobalStyle`
+  :root {
+    /* единый боковой отступ страницы: по нему выравниваются и обложка,
+       и ряды, иначе текст в обложке уезжает вправо относительно разделов */
+    --tv-pad: 80px;
+  }
+
+  @media (max-width: 1366px) {
+    :root {
+      --tv-pad: 56px;
+    }
+  }
+
   html, body {
     background: #0b0b0b;
     color: #fff;
@@ -45,14 +57,10 @@ const Global = createGlobalStyle`
 
 const Shell = styled.div`
   min-height: 100vh;
-  /* 80 px при ширине 1920 — это 4,2%. Телевизоры часто обрезают 3–5% по
-     краям (оверскан), и при 56 px интерфейс мог уехать за кадр. */
-  padding: 40px 80px 64px;
+  /* Отступ даёт запас под оверскан (4,2% при 1920) и общий край для
+     обложки и рядов */
+  padding: 40px var(--tv-pad) 64px;
   box-sizing: border-box;
-
-  @media (max-width: 1366px) {
-    padding: 32px 56px 48px;
-  }
 `;
 
 const TopBar = styled.header`

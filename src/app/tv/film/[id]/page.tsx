@@ -38,8 +38,10 @@ const Hero = styled.section<{ $image?: string }>`
   /* Высота в долях экрана: на 1920×1080 это ~600 px. При прежних 300 px
      кадр 16:9 приходилось обрезать почти в полоску. */
   min-height: min(640px, 60vh);
-  border-radius: 16px;
-  padding: 56px;
+  /* Сквозная обложка: выходим за поля страницы, а текст ставим ровно по тому
+     же краю, что и разделы ниже — тогда ничего не «уезжает» */
+  margin: 0 calc(-1 * var(--tv-pad));
+  padding: 56px var(--tv-pad);
   box-sizing: border-box;
   background:
     /* мягкий переход вниз, чтобы обложка не обрывалась резкой полосой */
@@ -78,7 +80,7 @@ const Hero = styled.section<{ $image?: string }>`
 `;
 
 const Section = styled.section`
-  margin-top: 28px;
+  margin-top: 32px;
 
   h2 {
     font-size: 22px;
@@ -318,7 +320,7 @@ export default function TvFilmPage() {
       ) : null}
 
       {info.similarMovies?.length ? (
-        <TvRow>
+        <TvRow style={{ marginTop: 40 }}>
           <h2>{isSeries ? "Похожие" : "Похожие фильмы"}</h2>
           <TvRowScroll data-tv-row>
             {info.similarMovies
