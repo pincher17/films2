@@ -179,3 +179,18 @@ model ImdbRating {
 
   @@index([rating])
 }
+
+/// Вход на телевизоре: код показывается на экране ТВ, телефон его подтверждает.
+/// Так на телевизоре не нужно ничего набирать — только нажать «Подтвердить»
+/// на телефоне, где человек уже вошёл через Telegram.
+model TvLoginCode {
+  code      String   @id
+  /// pending — ждём телефон, approved — подтверждено, ждём телевизор
+  status    String   @default("pending")
+  userId    String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  /// старые коды убираем по сроку
+  @@index([expiresAt])
+}

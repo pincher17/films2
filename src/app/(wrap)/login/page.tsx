@@ -85,6 +85,15 @@ const Back = styled(Link)`
 `;
 
 export default function LoginPage() {
+  /* Сюда возвращаются с телевизионной страницы подтверждения: после входа
+     человека нужно вернуть ровно туда, где он подтверждал код */
+  const [next, setNext] = React.useState("/");
+
+  React.useEffect(() => {
+    const value = new URLSearchParams(window.location.search).get("next");
+    if (value && value.startsWith("/")) setNext(value);
+  }, []);
+
   return (
     <Page>
       <Card>
@@ -104,7 +113,7 @@ export default function LoginPage() {
           Продолжить с Google
         </GoogleButton> */}
 
-        <TelegramLogin />
+        <TelegramLogin next={next} />
 
         <Note>
           Мы получаем только имя, фото профиля и адрес почты. Ничего не публикуем и не

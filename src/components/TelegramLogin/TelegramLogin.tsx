@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-const TelegramLogin: React.FC = () => {
+const TelegramLogin: React.FC<{ next?: string }> = ({ next = "/" }) => {
   const bot = process.env.NEXT_PUBLIC_TELEGRAM_BOT;
 
   React.useEffect(() => {
@@ -32,7 +32,7 @@ const TelegramLogin: React.FC = () => {
         if (response.ok) {
           // сессия выдана — уходим на главную, чтобы человек сразу видел
           // подборки и «Продолжить просмотр», а не оставался на странице входа
-          window.location.href = "/";
+          window.location.href = next || "/";
         } else {
           const data = await response.json().catch(() => null);
           alert(data?.error || "Не удалось войти через Telegram");

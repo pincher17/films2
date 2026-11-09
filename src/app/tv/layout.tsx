@@ -226,6 +226,25 @@ const TopBar = styled.header<{ $solid?: boolean }>`
 `;
 
 export default function TvLayout({ children }: { children: React.ReactNode }) {
+  /* Кто вошёл: показываем имя и «Выйти», иначе — «Войти» */
+  const [me, setMe] = React.useState<{ id: string; name: string | null } | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch("/api/me", { cache: "no-store" });
+        const data = await response.json();
+        if (!cancelled) setMe(data?.user || null);
+      } catch {
+        if (!cancelled) setMe(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   /* Пока смотрим на обложку — шапка полупрозрачная, и кадр видно через её
      нижний край. Но при прокрутке под шапку попадает текст, и он просвечивает
      сквозь неё: тогда шапку делаем плотной. */
@@ -266,13 +285,44 @@ export default function TvLayout({ children }: { children: React.ReactNode }) {
               </svg>
               Сохранённое
             </Link>
-            <Link href="/login" className="action login" data-tv-focus>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-              </svg>
-              Войти
-            </Link>
+            {me ? (
+              <>
+                <button
+                  type="button"
+                  className="action"
+                  data-tv-focus
+                  onClick={async () => {
+                    await fetch("/api/logout", { method: "POST" });
+                    window.location.reload();
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+                  </svg>
+                  {me.name || "Профиль"}
+                </button>
+                <button
+                  type="button"
+                  className="action login"
+                  data-tv-focus
+                  onClick={async () => {
+                    await fetch("/api/logout", { method: "POST" });
+                    window.location.reload();
+                  }}
+                >
+                  Выйти
+                </button>
+              </>
+            ) : (
+              <Link href="/tv/login" className="action login" data-tv-focus>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+                </svg>
+                Войти
+              </Link>
+            )}
           </div>
         </TopBar>
         {children}
