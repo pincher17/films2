@@ -105,11 +105,14 @@ export const TvPill = styled.button<{ $active?: boolean }>`
   cursor: pointer;
   outline: none;
 
+  /* В фокусе кнопка становится белой: красный цвет остаётся за выбранной
+     серией, и их больше не перепутать */
   &:focus,
   &:focus-visible,
   &.tv-focused {
-    border-color: #d41515;
-    background: #d41515;
+    border-color: #fff;
+    background: #fff;
+    color: #0b0b0b;
     outline: none;
   }
 `;
@@ -129,11 +132,16 @@ export const TvAction = styled.button<{ $primary?: boolean }>`
   cursor: pointer;
   outline: none;
 
+  /* В фокусе — белая кнопка с тёмным текстом, как в Netflix: на телевизоре
+     это видно лучше, чем тонкая рамка */
   &:focus,
   &:focus-visible,
   &.tv-focused {
     outline: none;
-    box-shadow: 0 0 0 3px #fff inset;
+    background: #fff;
+    border-color: #fff;
+    color: #0b0b0b;
+    box-shadow: none;
   }
 `;
 
