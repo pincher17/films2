@@ -54,6 +54,14 @@ const Backdrop = styled.div<{ $image?: string }>`
       props.$image ? `url(${props.$image}) center 30% / cover no-repeat` : "#141414"};
 `;
 
+/* Контент отдельным слоем: обложка позиционирована (z-index: 0), а ряды без
+   позиционирования рисовались бы ПОД ней — из-за этого карточки «Похожих»
+   выглядели обрезанными */
+const Content = styled.div`
+  position: relative;
+  z-index: 1;
+`;
+
 const Hero = styled.section`
   position: relative;
   z-index: 1;
@@ -257,6 +265,7 @@ export default function TvFilmPage() {
     <main>
       <Page>
         <Backdrop $image={info.backdrop?.url || info.poster?.url || undefined} />
+        <Content>
         <Hero>
         <h1>{info.name}</h1>
         <div className="meta">
@@ -356,6 +365,7 @@ export default function TvFilmPage() {
         </TvRow>
       ) : null}
 
+        </Content>
       </Page>
 
       {player ? (
