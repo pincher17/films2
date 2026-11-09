@@ -6,7 +6,7 @@
 
 import React from "react";
 import styled from "styled-components";
-import { TvPosterCard, TvRowScroll } from "@/components/tv/TvParts";
+import { TvBack, TvPosterCard, TvRowScroll } from "@/components/tv/TvParts";
 
 type Card = {
   id: number | string;
@@ -16,7 +16,7 @@ type Card = {
 
 const Title = styled.h1`
   font-size: 28px;
-  margin: 0 0 18px;
+  margin: 18px 0 18px;
 `;
 
 const Empty = styled.p`
@@ -45,6 +45,7 @@ export default function TvSavedPage() {
 
   return (
     <main>
+      <TvBack />
       <Title>Сохранённое</Title>
 
       {items === null ? <Empty>Загружаю…</Empty> : null}
@@ -69,6 +70,7 @@ export default function TvSavedPage() {
             </TvRowScroll>
           ))
         : null}
+
     </main>
   );
 }

@@ -267,3 +267,45 @@ export function TvProgressCard({
     </TvProgressCardWrap>
   );
 }
+
+/** Кнопка «назад» — одинаково на всех страницах телевизионной версии */
+export const TvBackLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 24px;
+  border-radius: 10px;
+  border: 2px solid #2f2f2f;
+  background: #141414;
+  color: #d0d0d0;
+  font-size: 17px;
+  text-decoration: none;
+  outline: none;
+  margin-top: 10px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:focus,
+  &:focus-visible,
+  &.tv-focused {
+    background: #d41515;
+    border-color: #d41515;
+    color: #fff;
+    outline: none;
+  }
+`;
+
+export function TvBack({ href = "/tv", label = "Назад на главную" }: { href?: string; label?: string }) {
+  return (
+    <TvBackLink href={href} data-tv-focus>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M15 6l-6 6 6 6" />
+      </svg>
+      {label}
+    </TvBackLink>
+  );
+}
