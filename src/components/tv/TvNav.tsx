@@ -106,14 +106,26 @@ function pickNext(current: HTMLElement, direction: Direction) {
       if (forward) return lastInRow;
     }
 
+    /* Сравниваем границы, а не центры: карточки в ряду разной высоты
+       (одно- и двухстрочные названия), из-за чего центр соседа оказывался
+       «ниже» и фокус крутился внутри одного ряда. */
+    const currentBox = current.getBoundingClientRect();
     const candidates = visibleFocusables().filter((element) => {
-      const point = centerOf(element);
-      return direction === "down" ? point.y > cy + 4 : point.y < cy - 4;
+      const box = element.getBoundingClientRect();
+      return direction === "down"
+        ? box.top >= currentBox.bottom - 4
+        : box.bottom <= currentBox.top + 4;
     });
 
-    if (candidates.length) {
+    /* Шапка закреплена и всегда на y≈30, поэтому при подъёме она оказывается
+       «ближе» верхнего ряда карточек. Сначала идём по контенту и только
+       когда выше него ничего нет — переходим в шапку. */
+    const content = candidates.filter((element) => element.closest("[data-tv-row]"));
+    const usable = content.length ? content : candidates;
+
+    if (usable.length) {
       const lines: Array<{ y: number; items: HTMLElement[] }> = [];
-      for (const element of candidates) {
+      for (const element of usable) {
         const point = centerOf(element);
         const line = lines.find((item) => Math.abs(item.y - point.y) < 28);
         if (line) line.items.push(element);
@@ -172,7 +184,11 @@ function focusElement(element: HTMLElement) {
   element.classList.add(FOCUS_CLASS);
   if (element.closest("[data-tv-row]")) lastInRow = element;
   element.focus({ preventScroll: true });
-  element.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+
+  /* block: nearest — не дёргать страницу, если элемент и так на экране.
+     Раньше каждый переход центрировал цель, и при движении вверх казалось,
+     что фокус уходит в шапку. */
+  element.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
 }
 
 export default function TvNav() {

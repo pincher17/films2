@@ -50,6 +50,13 @@ const Global = createGlobalStyle`
     cursor: default !important;
   }
 
+  /* При прокрутке к элементу оставляем место под закреплённую шапку,
+     иначе подсветка уезжает под неё */
+  [data-tv-focus] {
+    scroll-margin-top: 130px;
+    scroll-margin-bottom: 40px;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
