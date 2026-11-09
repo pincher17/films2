@@ -98,6 +98,14 @@ function pickNext(current: HTMLElement, direction: Direction) {
        фактическим координатам. */
     const { x: cx, y: cy } = centerOf(current);
 
+    /* Возврат из шапки: если до ухода вверх фокус стоял на карточке,
+       возвращаемся именно на неё, а не на ближайшую по горизонтали */
+    if (!currentRow && lastInRow && document.contains(lastInRow)) {
+      const point = centerOf(lastInRow);
+      const forward = direction === "down" ? point.y > cy + 4 : point.y < cy - 4;
+      if (forward) return lastInRow;
+    }
+
     const candidates = visibleFocusables().filter((element) => {
       const point = centerOf(element);
       return direction === "down" ? point.y > cy + 4 : point.y < cy - 4;
@@ -153,11 +161,16 @@ function pickNext(current: HTMLElement, direction: Direction) {
 
 const FOCUS_CLASS = "tv-focused";
 
+/* Последний элемент внутри ряда: нужен, чтобы вернуться ровно на него,
+   когда уходишь в шапку и возвращаешься вниз */
+let lastInRow: HTMLElement | null = null;
+
 function focusElement(element: HTMLElement) {
   /* Класс дублирует :focus намеренно. На части телевизоров документ не получает
      фокус окна, и :focus тогда не срабатывает — подсветка пропадает. */
   document.querySelectorAll(`.${FOCUS_CLASS}`).forEach((node) => node.classList.remove(FOCUS_CLASS));
   element.classList.add(FOCUS_CLASS);
+  if (element.closest("[data-tv-row]")) lastInRow = element;
   element.focus({ preventScroll: true });
   element.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
 }
