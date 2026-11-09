@@ -11,7 +11,7 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import styled from "styled-components";
-import { TvAction, TvPill } from "@/components/tv/TvParts";
+import { TvAction, TvPill, TvPosterCard, TvRow, TvRowScroll } from "@/components/tv/TvParts";
 
 type Season = { number: number; episodes: number };
 
@@ -26,22 +26,36 @@ type Info = {
   seasons?: Season[];
   ratings?: { imdb?: { value?: number } | null; tmdb?: { value?: number } | null };
   videos?: { trailers?: Array<{ url?: string; name?: string }> } | null;
+  similarMovies?: Array<{
+    id?: number | string;
+    name?: string;
+    poster?: { url?: string; previewUrl?: string } | null;
+  }> | null;
 };
 
 const Hero = styled.section<{ $image?: string }>`
   position: relative;
-  min-height: 300px;
+  /* Высота в долях экрана: на 1920×1080 это ~600 px. При прежних 300 px
+     кадр 16:9 приходилось обрезать почти в полоску. */
+  min-height: min(640px, 60vh);
   border-radius: 16px;
-  padding: 40px;
+  padding: 56px;
   box-sizing: border-box;
   background:
-    linear-gradient(90deg, rgba(11, 11, 11, 0.96) 0%, rgba(11, 11, 11, 0.6) 55%, rgba(11, 11, 11, 0.2) 100%),
-    ${(props) => (props.$image ? `url(${props.$image}) center/cover no-repeat` : "#141414")};
+    /* мягкий переход вниз, чтобы обложка не обрывалась резкой полосой */
+    linear-gradient(180deg, rgba(11, 11, 11, 0) 55%, rgba(11, 11, 11, 0.9) 100%),
+    linear-gradient(90deg, rgba(11, 11, 11, 0.97) 0%, rgba(11, 11, 11, 0.72) 48%, rgba(11, 11, 11, 0.15) 100%),
+    ${(props) =>
+      props.$image ? `url(${props.$image}) center 35% / cover no-repeat` : "#141414"};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   h1 {
-    margin: 0 0 10px;
-    font-size: 46px;
-    line-height: 1.1;
+    margin: 0 0 12px;
+    font-size: 56px;
+    line-height: 1.08;
+    max-width: 1100px;
   }
 
   .meta {
@@ -301,6 +315,25 @@ export default function TvFilmPage() {
             sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
           />
         </PlayerBox>
+      ) : null}
+
+      {info.similarMovies?.length ? (
+        <TvRow>
+          <h2>{isSeries ? "Похожие" : "Похожие фильмы"}</h2>
+          <TvRowScroll data-tv-row>
+            {info.similarMovies
+              .filter((item) => item?.id && item?.name)
+              .slice(0, 20)
+              .map((item) => (
+                <TvPosterCard
+                  key={String(item.id)}
+                  href={`/tv/film/${item.id}`}
+                  poster={item.poster?.previewUrl || item.poster?.url}
+                  name={String(item.name)}
+                />
+              ))}
+          </TvRowScroll>
+        </TvRow>
       ) : null}
 
       {player ? (
