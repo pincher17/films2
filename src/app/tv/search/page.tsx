@@ -8,8 +8,8 @@
  * Вместо него — строка запроса (обычный div) и своя клавиатура, по которой
  * ходим стрелками.
  *
- * Раскладка — привычная ЙЦУКЕН, как на настоящей клавиатуре: так человек
- * находит букву там, где ждёт. Цифры — отдельным блоком ниже.
+ * Раскладка — привычная ЙЦУКЕН, ряды со ступенькой, как на настоящей
+ * клавиатуре. Цифры — отдельным блоком справа, как numpad.
  */
 
 import React from "react";
@@ -24,7 +24,12 @@ type Card = {
 };
 
 const ROWS = ["йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю"];
-const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+const NUM_ROWS = [
+  ["7", "8", "9"],
+  ["4", "5", "6"],
+  ["1", "2", "3"],
+  ["0"],
+];
 
 const Query = styled.div`
   min-height: 66px;
@@ -37,6 +42,8 @@ const Query = styled.div`
   margin-bottom: 22px;
   display: flex;
   align-items: center;
+  /* Пробелы видны: иначе кажется, что клавиша не сработала */
+  white-space: pre;
 
   .placeholder {
     color: #5f5f5f;
@@ -47,26 +54,35 @@ const Query = styled.div`
     display: inline-block;
     width: 3px;
     height: 30px;
-    margin-left: 5px;
+    flex: 0 0 auto;
+    margin-left: 3px;
     background: #d41515;
   }
 `;
 
-const Keys = styled.div`
+const Keyboard = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 56px;
   margin-bottom: 18px;
 `;
 
-const KeysRow = styled.div`
+const Column = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 12px;
 `;
 
-const Key = styled.button<{ $muted?: boolean }>`
+const KeysRow = styled.div<{ $indent?: number }>`
+  display: flex;
+  gap: 12px;
+  margin-left: ${(props) => props.$indent || 0}px;
+`;
+
+const Key = styled.button<{ $muted?: boolean; $wide?: boolean }>`
   min-width: 62px;
   height: 60px;
+  ${(props) => (props.$wide ? "flex: 1;" : "")}
   padding: 0 14px;
   border-radius: 10px;
   border: 2px solid #2a2a2a;
@@ -101,6 +117,15 @@ const Key = styled.button<{ $muted?: boolean }>`
 const WideKey = styled(Key)`
   min-width: 168px;
   font-size: 17px;
+`;
+
+/* Пробел нарочно длинный: так его видно и понятно, что это пробел */
+const SpaceKey = styled(Key)`
+  flex: 1;
+  min-width: 420px;
+  font-size: 17px;
+  justify-content: flex-start;
+  padding-left: 22px;
 `;
 
 const Hint = styled.p`
@@ -204,40 +229,48 @@ export default function TvSearchPage() {
           )}
         </Query>
 
-        <Keys>
-          {ROWS.map((row, rowIndex) => (
-            <KeysRow key={rowIndex} data-tv-row>
-              {row.split("").map((letter) => (
-                <Key key={letter} $muted data-tv-focus onClick={() => press(letter)}>
-                  {letter}
-                </Key>
-              ))}
-            </KeysRow>
-          ))}
-
-          <KeysRow data-tv-row>
-            {DIGITS.map((digit) => (
-              <Key key={digit} data-tv-focus onClick={() => press(digit)}>
-                {digit}
-              </Key>
+        <Keyboard>
+          <Column>
+            {ROWS.map((row, rowIndex) => (
+              <KeysRow key={rowIndex} data-tv-row $indent={rowIndex * 34}>
+                {row.split("").map((letter) => (
+                  <Key key={letter} $muted data-tv-focus onClick={() => press(letter)}>
+                    {letter}
+                  </Key>
+                ))}
+              </KeysRow>
             ))}
-          </KeysRow>
 
-          <KeysRow data-tv-row>
-            <WideKey data-tv-focus onClick={() => press(" ")}>
-              <SpaceIcon />
-              Пробел
-            </WideKey>
-            <WideKey data-tv-focus onClick={erase}>
-              <BackspaceIcon />
-              Стереть
-            </WideKey>
-            <WideKey data-tv-focus onClick={() => setQuery("")}>
-              <ClearIcon />
-              Очистить
-            </WideKey>
-          </KeysRow>
-        </Keys>
+            <KeysRow data-tv-row>
+              <SpaceKey data-tv-focus onClick={() => press(" ")}>
+                <SpaceIcon />
+                Пробел
+              </SpaceKey>
+              <WideKey data-tv-focus onClick={erase}>
+                <BackspaceIcon />
+                Стереть
+              </WideKey>
+              <WideKey data-tv-focus onClick={() => setQuery("")}>
+                <ClearIcon />
+                Очистить
+              </WideKey>
+            </KeysRow>
+          </Column>
+
+          <Column>
+            {NUM_ROWS.map((row, rowIndex) => (
+              <KeysRow key={`num-${rowIndex}`} data-tv-row>
+                {row.map((digit) => (
+                  /* 0 стоит один в ряду — растягиваем его на всю ширину блока,
+                     как на настоящем цифровом блоке */
+                  <Key key={digit} $wide={row.length === 1} data-tv-focus onClick={() => press(digit)}>
+                    {digit}
+                  </Key>
+                ))}
+              </KeysRow>
+            ))}
+          </Column>
+        </Keyboard>
       </TvRow>
 
       {loading ? <Hint>Ищу…</Hint> : null}

@@ -75,8 +75,29 @@ function pickNext(current: HTMLElement, direction: Direction) {
     );
     const index = currentRow ? allRows.indexOf(currentRow) : -1;
     if (index >= 0) {
-      const targetRows = direction === "down" ? allRows.slice(index + 1) : allRows.slice(0, index).reverse();
-      const targetRow = targetRows.find((row) =>
+      const targetRows = (
+        direction === "down" ? allRows.slice(index + 1) : allRows.slice(0, index).reverse()
+      ).filter((row) =>
+        rowItems(row).some((element) => {
+          const point = centerOf(element);
+          return direction === "down"
+            ? point.y > centerOf(current).y + 4
+            : point.y < centerOf(current).y - 4;
+        })
+      );
+
+      /* Ряды могут стоять колонками (например, буквы и цифры на клавиатуре).
+         Тогда «вниз» должно вести в ряд, который перекрывает нас по
+         горизонтали, а не в соседний по разметке. */
+      const currentBox = current.getBoundingClientRect();
+      const overlaps = targetRows.filter((row) =>
+        rowItems(row).some((element) => {
+          const box = element.getBoundingClientRect();
+          return box.left < currentBox.right && box.right > currentBox.left;
+        })
+      );
+      const ordered = overlaps.length ? overlaps : targetRows;
+      const targetRow = ordered.find((row) =>
         rowItems(row).some((element) => {
           const point = centerOf(element);
           return direction === "down"
