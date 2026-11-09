@@ -42,37 +42,34 @@ const ROWS: Array<{ title: string; url: string }> = [
 ];
 
 export default function TvHomePage() {
-  const [rows, setRows] = React.useState<Row[] | null>(null);
+  const [rows, setRows] = React.useState<Row[]>([]);
 
   React.useEffect(() => {
     let cancelled = false;
 
-    (async () => {
-      const loaded = await Promise.all(
-        ROWS.map(async ({ title, url }) => {
-          try {
-            const response = await fetch(url, { cache: "no-store" });
-            if (!response.ok) return { title, items: [] };
-            const data = await response.json();
-            const items: Card[] = (data.docs || data.items || []).filter(
-              (item: Card) => item?.id && item?.name
-            );
-            return { title, items };
-          } catch {
-            return { title, items: [] };
-          }
-        })
-      );
-
-      if (!cancelled) setRows(loaded.filter((row) => row.items.length));
-    })();
+    /* Ряды рисуем по мере готовности, а не ждём все сразу: иначе на телевизоре
+       экран остаётся пустым, пока не ответят все запросы. */
+    ROWS.forEach(async ({ title, url }) => {
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) return;
+        const data = await response.json();
+        const items: Card[] = (data.docs || data.items || []).filter(
+          (item: Card) => item?.id && item?.name
+        );
+        if (cancelled || !items.length) return;
+        setRows((current) => [...current, { title, items }]);
+      } catch {
+        undefined;
+      }
+    });
 
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (!rows) return <Loading>Загружаю подборки…</Loading>;
+  if (!rows.length) return <Loading>Загружаю подборки…</Loading>;
 
   return (
     <main>

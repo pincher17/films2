@@ -44,19 +44,22 @@ export const TvCard = styled(Link)`
   }
 
   &:focus,
-  &:focus-visible {
-    transform: scale(1.07);
+  &:focus-visible,
+  &.tv-focused {
+    transform: scale(1.05);
     outline: none;
     z-index: 2;
   }
 
   &:focus img,
-  &:focus-visible img {
+  &:focus-visible img,
+  &.tv-focused img {
     border-color: #d41515;
   }
 
   &:focus span,
-  &:focus-visible span {
+  &:focus-visible span,
+  &.tv-focused span {
     color: #fff;
   }
 `;
@@ -77,7 +80,9 @@ export const TvRowScroll = styled.div`
   gap: 18px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 6px 4px 14px;
+  /* Запас сверху и снизу: карточка при фокусе увеличивается, и без отступа
+     её срезало бы краем прокручиваемой области */
+  padding: 18px 6px 16px;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -101,7 +106,8 @@ export const TvPill = styled.button<{ $active?: boolean }>`
   outline: none;
 
   &:focus,
-  &:focus-visible {
+  &:focus-visible,
+  &.tv-focused {
     border-color: #d41515;
     background: #d41515;
     outline: none;
@@ -124,7 +130,8 @@ export const TvAction = styled.button<{ $primary?: boolean }>`
   outline: none;
 
   &:focus,
-  &:focus-visible {
+  &:focus-visible,
+  &.tv-focused {
     outline: none;
     box-shadow: 0 0 0 3px #fff inset;
   }
@@ -211,19 +218,22 @@ export const TvProgressCardWrap = styled(Link)`
   }
 
   &:focus,
-  &:focus-visible {
-    transform: scale(1.07);
+  &:focus-visible,
+  &.tv-focused {
+    transform: scale(1.05);
     outline: none;
     z-index: 2;
   }
 
   &:focus .poster,
-  &:focus-visible .poster {
+  &:focus-visible .poster,
+  &.tv-focused .poster {
     border-color: #d41515;
   }
 
   &:focus .name,
-  &:focus-visible .name {
+  &:focus-visible .name,
+  &.tv-focused .name {
     color: #fff;
   }
 `;

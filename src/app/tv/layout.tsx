@@ -44,31 +44,73 @@ const TopBar = styled.header`
   justify-content: space-between;
   margin-bottom: 26px;
 
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    outline: none;
+  }
+
   .logo svg {
     height: 38px;
     width: auto;
     display: block;
   }
 
-  .search {
-    display: inline-flex;
-    align-items: center;
-    height: 52px;
-    padding: 0 26px;
-    border-radius: 10px;
-    border: 2px solid #2f2f2f;
-    background: #141414;
-    color: #fff;
-    font-size: 18px;
-    text-decoration: none;
+  .logo:focus,
+  .logo:focus-visible,
+  .logo.tv-focused {
+    border-color: #d41515;
+    background: #1a1a1a;
     outline: none;
   }
 
+  /* Поиск выглядит как строка, а не как кнопка: так его видно сразу,
+     как в YouTube и Netflix, и понятно, что туда можно перейти */
+  .search {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    min-width: 320px;
+    padding: 0 22px;
+    border-radius: 28px;
+    border: 2px solid #3a3a3a;
+    background: #171717;
+    color: #b8b8b8;
+    font-size: 18px;
+    text-decoration: none;
+    outline: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .search svg {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+  }
+
+  .search .hint {
+    color: #6f6f6f;
+    font-size: 15px;
+    margin-left: auto;
+  }
+
   .search:focus,
-  .search:focus-visible {
+  .search:focus-visible,
+  .search.tv-focused {
     background: #d41515;
     border-color: #d41515;
+    color: #fff;
     outline: none;
+  }
+
+  .search:focus .hint,
+  .search:focus-visible .hint,
+  .search.tv-focused .hint {
+    color: rgba(255, 255, 255, 0.75);
   }
 `;
 
@@ -83,7 +125,12 @@ export default function TvLayout({ children }: { children: React.ReactNode }) {
             <Logo />
           </Link>
           <Link href="/tv/search" className="search" data-tv-focus>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5" />
+            </svg>
             Поиск
+            <span className="hint">название фильма</span>
           </Link>
         </TopBar>
         {children}

@@ -25,6 +25,7 @@ type Info = {
   genres?: Array<{ name?: string }>;
   seasons?: Season[];
   ratings?: { imdb?: { value?: number } | null; tmdb?: { value?: number } | null };
+  videos?: { trailers?: Array<{ url?: string; name?: string }> } | null;
 };
 
 const Hero = styled.section<{ $image?: string }>`
@@ -120,6 +121,7 @@ export default function TvFilmPage() {
   const [season, setSeason] = React.useState<number>(1);
   const [episode, setEpisode] = React.useState<number>(1);
   const [player, setPlayer] = React.useState<string | null>(null);
+  const [trailer, setTrailer] = React.useState<string | null>(null);
 
   const seasons = info?.seasons || [];
   const isSeries = seasons.length > 0;
@@ -205,6 +207,11 @@ export default function TvFilmPage() {
           <TvAction $primary data-tv-focus onClick={startWatching}>
             ▶ Смотреть{isSeries ? ` — сезон ${season}, серия ${episode}` : ""}
           </TvAction>
+          {info.videos?.trailers?.[0]?.url ? (
+            <TvAction data-tv-focus onClick={() => setTrailer(String(info.videos!.trailers![0].url))}>
+              ▶ Трейлер
+            </TvAction>
+          ) : null}
           <TvAction data-tv-focus onClick={() => router.push("/tv")}>
             Назад
           </TvAction>
@@ -251,6 +258,23 @@ export default function TvFilmPage() {
             </Row>
           </Section>
         </>
+      ) : null}
+
+      {trailer ? (
+        <PlayerBox>
+          <PlayerBar>
+            <span>Трейлер · {info.name}</span>
+            <TvAction data-tv-focus onClick={() => setTrailer(null)}>
+              Закрыть
+            </TvAction>
+          </PlayerBar>
+          <iframe
+            src={trailer}
+            allowFullScreen
+            referrerPolicy="origin"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+          />
+        </PlayerBox>
       ) : null}
 
       {player ? (

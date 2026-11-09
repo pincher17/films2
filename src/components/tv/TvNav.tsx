@@ -129,7 +129,13 @@ function pickNext(current: HTMLElement, direction: Direction) {
   return best?.element || null;
 }
 
+const FOCUS_CLASS = "tv-focused";
+
 function focusElement(element: HTMLElement) {
+  /* Класс дублирует :focus намеренно. На части телевизоров документ не получает
+     фокус окна, и :focus тогда не срабатывает — подсветка пропадает. */
+  document.querySelectorAll(`.${FOCUS_CLASS}`).forEach((node) => node.classList.remove(FOCUS_CLASS));
+  element.classList.add(FOCUS_CLASS);
   element.focus({ preventScroll: true });
   element.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
 }
@@ -138,27 +144,46 @@ export default function TvNav() {
   React.useEffect(() => {
     document.body.classList.add("tv-body");
 
-    const focusFirst = () => {
-      const [first] = visibleFocusables();
-      if (first && !document.activeElement?.hasAttribute(ATTR)) focusElement(first);
+    /* Пока человек не нажал ни одной клавиши, фокус «переезжает» на контент,
+       как только он появился: иначе на главной он остаётся на логотипе. */
+    let userMoved = false;
+
+    const focusFirst = (force = false) => {
+      const active = document.activeElement as HTMLElement | null;
+      const activeInRow = Boolean(active?.closest?.("[data-tv-row]"));
+      if (active?.hasAttribute(ATTR) && activeInRow) return;
+      if (active?.hasAttribute(ATTR) && !force) return;
+      const all = visibleFocusables();
+      /* Приоритет — контенту: на телевизоре курсор должен стоять на первой
+         карточке, а не на логотипе в шапке */
+      const inRows = all.filter((element) => element.closest("[data-tv-row]"));
+      const target = inRows[0] || all[0];
+      if (target) focusElement(target);
     };
 
-    /* Данные приезжают позже первого рендера: несколько секунд подряд
-       пробуем поставить фокус на первую карточку, иначе пульт «не работает» */
-    let tries = 0;
-    const retry = window.setInterval(() => {
-      tries += 1;
+    /* Данные приезжают позже первого рендера. Ждём появления элементов и
+       ставим фокус на первый — иначе пульт «не работает», пока не нажмёшь
+       стрелку. Наблюдаем за DOM, а не по таймеру: ряд может появиться и через
+       десять секунд на медленном телевизоре. */
+    const observer = new MutationObserver(() => {
       const active = document.activeElement as HTMLElement | null;
-      if (active?.hasAttribute(ATTR)) {
+      if (!active?.hasAttribute(ATTR)) focusFirst();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    /* И на всякий случай один таймер: если разметка есть сразу */
+    const retry = window.setInterval(() => {
+      const active = document.activeElement as HTMLElement | null;
+      if (active?.hasAttribute(ATTR) && active.closest?.("[data-tv-row]")) {
         window.clearInterval(retry);
         return;
       }
-      focusFirst();
-      if (tries > 20) window.clearInterval(retry);
-    }, 300);
+      focusFirst(true);
+    }, 500);
 
     const onKeyDown = (event: KeyboardEvent) => {
       const { key } = event;
+      userMoved = true;
       const arrows = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", " ", "Backspace"];
       if (!arrows.includes(key)) return;
 
@@ -190,6 +215,17 @@ export default function TvNav() {
     };
 
     /* Перехватываем до страницы: иначе стрелки прокручивают список */
+    const onBlur = () => {
+      /* Ушли из элемента — снимаем подсветку, чтобы не висела */
+      window.setTimeout(() => {
+        const active = document.activeElement as HTMLElement | null;
+        if (!active?.hasAttribute(ATTR)) {
+          document.querySelectorAll(`.${FOCUS_CLASS}`).forEach((node) => node.classList.remove(FOCUS_CLASS));
+        }
+      }, 0);
+    };
+    window.addEventListener("blur", onBlur, true);
+
     window.addEventListener("keydown", onKeyDown, true);
 
     /* Мышь на телевизоре не нужна, но если она есть — пусть фокус следует за ней */
@@ -201,6 +237,8 @@ export default function TvNav() {
 
     return () => {
       window.clearInterval(retry);
+      observer.disconnect();
+      window.removeEventListener("blur", onBlur, true);
       window.removeEventListener("keydown", onKeyDown, true);
       window.removeEventListener("pointermove", onPointer);
       document.body.classList.remove("tv-body");
