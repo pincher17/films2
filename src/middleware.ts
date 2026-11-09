@@ -29,6 +29,16 @@ export function middleware(request: NextRequest) {
   }
 
   /* --- телевизор → отдельная версия --- */
+  /* ?tv=0 — выключить режим и вернуться на обычный сайт (нужно для проверки) */
+  if (searchParams.get("tv") === "0") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    const response = NextResponse.redirect(url);
+    response.cookies.delete("fh_tv");
+    return response;
+  }
+
   const forced = searchParams.get("tv") === "1";
   const tv =
     forced ||
