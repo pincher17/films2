@@ -97,12 +97,31 @@ const PlayerBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
+  gap: 24px;
+  /* Кнопка не в самом углу: на телевизоре курсор крупный, в угол попасть
+     сложно, поэтому оставляем заметный отступ */
+  padding: 18px 48px;
   background: #0b0b0b;
 
   span {
     color: #9a9a9a;
-    font-size: 15px;
+    font-size: 16px;
+  }
+`;
+
+const EpisodeBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 12px 48px 18px;
+  background: #0b0b0b;
+
+  .label {
+    color: #d0d0d0;
+    font-size: 17px;
+    min-width: 190px;
+    text-align: center;
   }
 `;
 
@@ -158,9 +177,16 @@ export default function TvFilmPage() {
     };
   }, [filmId]);
 
-  const startWatching = React.useCallback(async () => {
+  const episodesInSeason = seasons.find((item) => item.number === season)?.episodes || 0;
+  const maxEpisode = episodesInSeason || 1;
+
+  const startWatching = React.useCallback(async (episodeOverride?: number) => {
     const activeSeason = isSeries ? season : 0;
-    const activeEpisode = isSeries ? episode : 0;
+    const activeEpisode = isSeries
+      ? typeof episodeOverride === "number"
+        ? episodeOverride
+        : episode
+      : 0;
 
     let time = 0;
     try {
@@ -204,7 +230,7 @@ export default function TvFilmPage() {
         </div>
         {info.description ? <p>{info.description}</p> : null}
         <Row data-tv-row>
-          <TvAction $primary data-tv-focus onClick={startWatching}>
+          <TvAction $primary data-tv-focus onClick={() => startWatching()}>
             ▶ Смотреть{isSeries ? ` — сезон ${season}, серия ${episode}` : ""}
           </TvAction>
           {info.videos?.trailers?.[0]?.url ? (
@@ -262,7 +288,7 @@ export default function TvFilmPage() {
 
       {trailer ? (
         <PlayerBox>
-          <PlayerBar>
+          <PlayerBar data-tv-row>
             <span>Трейлер · {info.name}</span>
             <TvAction data-tv-focus onClick={() => setTrailer(null)}>
               Закрыть
@@ -278,8 +304,8 @@ export default function TvFilmPage() {
       ) : null}
 
       {player ? (
-        <PlayerBox>
-          <PlayerBar>
+        <PlayerBox data-tv-scope>
+          <PlayerBar data-tv-row>
             <span>
               {info.name}
               {isSeries ? ` · сезон ${season}, серия ${episode}` : ""}
@@ -294,6 +320,36 @@ export default function TvFilmPage() {
             referrerPolicy="origin"
             sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
           />
+
+          {isSeries ? (
+            <EpisodeBar data-tv-row>
+              <TvAction
+                data-tv-focus
+                onClick={() => {
+                  const previous = Math.max(1, episode - 1);
+                  setEpisode(previous);
+                  setPlayer(null);
+                  window.setTimeout(() => startWatching(previous), 60);
+                }}
+              >
+                ‹ Серия {Math.max(1, episode - 1)}
+              </TvAction>
+              <span className="label">
+                Сезон {season} · серия {episode}
+              </span>
+              <TvAction
+                data-tv-focus
+                onClick={() => {
+                  const next = Math.min(maxEpisode, episode + 1);
+                  setEpisode(next);
+                  setPlayer(null);
+                  window.setTimeout(() => startWatching(next), 60);
+                }}
+              >
+                Серия {Math.min(maxEpisode, episode + 1)} ›
+              </TvAction>
+            </EpisodeBar>
+          ) : null}
         </PlayerBox>
       ) : null}
     </main>

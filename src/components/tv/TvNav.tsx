@@ -18,8 +18,17 @@ const ATTR = "data-tv-focus";
 
 type Direction = "up" | "down" | "left" | "right";
 
+/* Когда открыт плеер, он помечает себя data-tv-scope: фокус не должен
+   уезжать на элементы страницы под ним — иначе подсветка «пропадает» */
+function activeScope(): Element | null {
+  const scopes = Array.from(document.querySelectorAll("[data-tv-scope]"));
+  return scopes.length ? scopes[scopes.length - 1] : null;
+}
+
 function visibleFocusables() {
-  return Array.from(document.querySelectorAll<HTMLElement>(`[${ATTR}]`)).filter((element) => {
+  const scope = activeScope();
+  const root: ParentNode = scope || document;
+  return Array.from(root.querySelectorAll<HTMLElement>(`[${ATTR}]`)).filter((element) => {
     const rect = element.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) return false;
     const style = window.getComputedStyle(element);
@@ -193,7 +202,31 @@ export default function TvNav() {
        ставим фокус на первый — иначе пульт «не работает», пока не нажмёшь
        стрелку. Наблюдаем за DOM, а не по таймеру: ряд может появиться и через
        десять секунд на медленном телевизоре. */
+    /* Появился плеер (или закрылся) — переводим фокус в его область, иначе
+       подсветка остаётся на странице под ним и «пропадает» */
+    let lastScope: Element | null = null;
+    let returnFocus: HTMLElement | null = null;
+
+    const syncScope = () => {
+      const scope = activeScope();
+      if (scope === lastScope) return;
+
+      if (scope) {
+        /* Запоминаем, откуда пришли — вернёмся туда после закрытия */
+        const active = document.activeElement as HTMLElement | null;
+        if (active?.hasAttribute(ATTR)) returnFocus = active;
+        const [first] = visibleFocusables();
+        if (first) focusElement(first);
+      } else if (returnFocus && document.contains(returnFocus)) {
+        focusElement(returnFocus);
+        returnFocus = null;
+      }
+
+      lastScope = scope;
+    };
+
     const observer = new MutationObserver(() => {
+      syncScope();
       const active = document.activeElement as HTMLElement | null;
       if (!active?.hasAttribute(ATTR)) focusFirst();
     });
@@ -201,6 +234,7 @@ export default function TvNav() {
 
     /* И на всякий случай один таймер: если разметка есть сразу */
     const retry = window.setInterval(() => {
+      syncScope();
       const active = document.activeElement as HTMLElement | null;
       if (active?.hasAttribute(ATTR) && active.closest?.("[data-tv-row]")) {
         window.clearInterval(retry);
