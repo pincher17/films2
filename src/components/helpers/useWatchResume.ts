@@ -89,6 +89,9 @@ export function withResume(src: string, resume: WatchResume | null) {
   const params = new URLSearchParams();
   if (resume.season > 0) params.set("season", String(resume.season));
   if (resume.episode > 0) params.set("episode", String(resume.episode));
-  params.set("t", String(Math.max(0, Math.floor(resume.seconds))));
+  /* Внутри iframe плеер читает именно `time`; короткий `t` работает только
+     когда страницу плеера открывают напрямую. Проверено: с `t` в iframe
+     воспроизведение начинается с нуля, с `time` — с нужной секунды. */
+  params.set("time", String(Math.max(0, Math.floor(resume.seconds))));
   return `${src}?${params.toString()}`;
 }
