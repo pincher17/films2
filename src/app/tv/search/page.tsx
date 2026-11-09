@@ -124,8 +124,6 @@ const SpaceKey = styled(Key)`
   flex: 1;
   min-width: 420px;
   font-size: 17px;
-  justify-content: flex-start;
-  padding-left: 22px;
 `;
 
 const Hint = styled.p`
@@ -232,7 +230,7 @@ export default function TvSearchPage() {
         <Keyboard>
           <Column>
             {ROWS.map((row, rowIndex) => (
-              <KeysRow key={rowIndex} data-tv-row $indent={rowIndex * 34}>
+              <KeysRow key={rowIndex} data-tv-row $indent={rowIndex * 12}>
                 {row.split("").map((letter) => (
                   <Key key={letter} $muted data-tv-focus onClick={() => press(letter)}>
                     {letter}
