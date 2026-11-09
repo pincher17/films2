@@ -54,6 +54,70 @@ async function tmdb(pathName, params = {}) {
   return response.json();
 }
 
+
+/**
+ * Наполнение очереди из каталога.
+ *
+ * seed/seed-deep идут по выдаче TMDB (топ по популярности по годам) и упираются
+ * в её глубину: за 20 страниц на год новые фильмы уже не достаются. Здесь
+ * берём сам каталог — пары из ImdbMap, которые заполнялись по страницам сайта,
+ * и добавляем всё, чего в очереди ещё нет.
+ *
+ * Название и год нужны для поиска на YouTube, поэтому тянем их из TMDB: одно
+ * обращение на фильм, пачками по 50.
+ */
+async function seedMap(limit = 0) {
+  const rows = await prisma.$queryRaw`
+    SELECT m."tmdbId"::int AS "tmdbId", m.media::text AS media
+    FROM "ImdbMap" m
+    LEFT JOIN "TrailerTask" t
+      ON t."filmId" = m."tmdbId" AND t.media = m.media
+    WHERE t.id IS NULL
+    LIMIT ${limit > 0 ? limit : 1000000}
+  `;
+
+  console.info(`[seed-map] кандидатов: ${rows.length}`);
+  if (!rows.length) return;
+
+  const CHUNK = 50;
+  let added = 0;
+  let gone = 0;
+
+  for (let start = 0; start < rows.length; start += CHUNK) {
+    const chunk = rows.slice(start, start + CHUNK);
+    const details = await Promise.all(
+      chunk.map(async (row) => {
+        const data = await tmdb(row.media === "tv" ? `/tv/${row.tmdbId}` : `/movie/${row.tmdbId}`);
+        if (!data || !data.id) return null;
+        const title = data.title || data.name || data.original_title || data.original_name;
+        if (!title) return null;
+        return {
+          filmId: row.tmdbId,
+          tmdbId: row.tmdbId,
+          media: row.media,
+          title,
+          year: Number(String(data.release_date || data.first_air_date || "").slice(0, 4)) || null,
+          popularity: data.popularity || 0,
+        };
+      })
+    );
+
+    const found = details.filter(Boolean);
+    gone += details.length - found.length;
+    if (found.length) {
+      const result = await prisma.trailerTask.createMany({ data: found, skipDuplicates: true });
+      added += result.count;
+    }
+
+    const done = Math.min(start + CHUNK, rows.length);
+    if (done % 500 === 0 || done === rows.length) {
+      console.info(`[seed-map] ${done}/${rows.length}, добавлено ${added}`);
+    }
+  }
+
+  console.info(`[seed-map] итог: добавлено ${added}, без данных в TMDB ${gone}`);
+}
+
 /** Собираем очередь из популярного, трендов и новинок. */
 async function seed() {
   /* В очередь берём фильмы и сериалы с 2005 года и без
@@ -456,9 +520,10 @@ async function sendReport({ searches, counts, trailers }) {
 const [command, arg] = process.argv.slice(2);
 if (command === "seed") await seed();
 else if (command === "seed-deep") await seedDeep(Number(arg) || 2005, Number(process.argv[4]) || 20);
+else if (command === "seed-map") await seedMap(Number(arg) || 0);
 else if (command === "work") await work(Number(arg) || 100);
 else if (command === "stats") await stats();
 else if (command === "audit") await audit(process.argv[3] === "--fix");
-else console.info("использование: seed | seed-deep [отГода] [страниц] | work <n> | stats | audit [--fix]");
+else console.info("использование: seed | seed-deep [отГода] [страниц] | seed-map [сколько] | work <n> | stats | audit [--fix]");
 
 await prisma.$disconnect();
