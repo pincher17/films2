@@ -59,7 +59,8 @@ const Shell = styled.div`
   min-height: 100vh;
   /* Отступ даёт запас под оверскан (4,2% при 1920) и общий край для
      обложки и рядов */
-  padding: 40px var(--tv-pad) 64px;
+  /* Сверху оставляем место под закреплённую шапку */
+  padding: 124px var(--tv-pad) 64px;
   box-sizing: border-box;
 `;
 
@@ -68,7 +69,17 @@ const TopBar = styled.header`
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
-  margin-bottom: 26px;
+  /* Шапка закреплена сверху: при переходе фокуса вниз страница уезжает, и
+     без этого логотип с поиском пропадали из вида. Именно fixed, а не
+     sticky: в globals.css у html и body стоит overflow-x: hidden, и это
+     ломает прилипание. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #0b0b0b;
+  padding: 32px var(--tv-pad) 16px;
 
   .logo {
     display: inline-flex;

@@ -77,9 +77,17 @@ function pickNext(current: HTMLElement, direction: Direction) {
     }
 
     if (best) return best.element;
-    /* Внутри ряда дальше идти некуда — стоим на месте. Иначе с последней
-       клавиши улетало в шапку по диагонали. */
-    if (currentRow) return null;
+
+    /* Ряд может переноситься на вторую строку (29 сезонов «Южного парка»).
+       Тогда переходим по порядку в разметке, а не по геометрии: следующая
+       строка начинается слева, и «вправо» по координатам туда не попасть. */
+    if (currentRow) {
+      const items = visibleFocusables().filter((element) => rowOf(element) === currentRow);
+      const index = items.indexOf(current);
+      const neighbour = direction === "right" ? items[index + 1] : items[index - 1];
+      if (neighbour) return neighbour;
+      return null;
+    }
   }
 
   if (!horizontal) {
