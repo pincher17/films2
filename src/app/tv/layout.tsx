@@ -30,6 +30,14 @@ const Global = createGlobalStyle`
     cursor: none !important;
   }
 
+  /* Но на открытом плеере курсор нужен: только им можно попасть в его
+     собственные кнопки — перемотка, озвучка, качество, пропуск рекламы.
+     Область плеера помечает себя data-tv-scope. */
+  body.tv-body [data-tv-scope],
+  body.tv-body [data-tv-scope] * {
+    cursor: default !important;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }

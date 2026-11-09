@@ -287,7 +287,7 @@ export default function TvFilmPage() {
       ) : null}
 
       {trailer ? (
-        <PlayerBox>
+        <PlayerBox data-tv-scope>
           <PlayerBar data-tv-row>
             <span>Трейлер · {info.name}</span>
             <TvAction data-tv-focus onClick={() => setTrailer(null)}>
