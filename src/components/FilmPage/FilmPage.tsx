@@ -60,6 +60,7 @@ import Seasons from "../Seasons/Seasons";
 import stripQuotes from "../helpers/stripQuotes";
 import RatingBadges from "../RatingBadges/RatingBadges";
 import { PAGE_READY_EVENT } from "../NavigationSkeleton/NavigationSkeleton";
+import useWatchResume, { withResume } from "../helpers/useWatchResume";
 import FilmInfoText from "../FilmInfoText/FilmInfoText";
 import { Bottom } from "@/app/styles/FilmPageMobile.styles";
 import Tabs from "@mui/material/Tabs";
@@ -105,6 +106,16 @@ export default function FilmPage({ params }: { params: { id: number | string } }
     String(params.id).match(/^tt\d+/i)?.[0] || String(params.id).replace(/\D/g, "");
 
   const numericId = imdbNumber || Number(String(params.id).replace(/\D/g, "")) || 0;
+
+  /* Продолжаем с места, где человек остановился. Позиция лежит у профиля в
+     базе (после входа — у аккаунта), поэтому работает и на другом устройстве. */
+  const { resume, checked: resumeChecked } = useWatchResume(numericId);
+  const playerSrc = withResume(
+    `https://api.ortified.ws/embed/${
+      cleanPlayerId.startsWith("tt") ? "imdb" : "kp"
+    }/${cleanPlayerId}`,
+    resume
+  );
   // если для фильма заданы свои ссылки — играем их в своём плеере
   const streams = getFilmStreams(id);
   const dispatch = useAppDispatch();
@@ -410,15 +421,20 @@ export default function FilmPage({ params }: { params: { id: number | string } }
                 />
               ) : (
                 <>
-                  <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                  src={`https://api.ortified.ws/embed/${cleanPlayerId.startsWith("tt") ? "imdb" : "kp"}/${cleanPlayerId}`}
-                  frameBorder="0"
-                  scrolling="no"
-                  allowFullScreen
-                  referrerPolicy="origin"
-                  width="500"
-                  height="352"
-                ></Iframe>
+                  {/* Плеер рисуем, когда узнали позицию: иначе он грузился бы
+                      дважды и мигал у тех, кто продолжает просмотр. */}
+                  {resumeChecked ? (
+                    <Iframe
+                      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+                      src={playerSrc}
+                      frameBorder="0"
+                      scrolling="no"
+                      allowFullScreen
+                      referrerPolicy="origin"
+                      width="500"
+                      height="352"
+                    ></Iframe>
+                  ) : null}
                 </>
               )}
             </WrapperIframe>

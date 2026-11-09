@@ -13,6 +13,7 @@ import WatchTracker from "../WatchTracker/WatchTracker";
 import ResumeHint from "../ResumeHint/ResumeHint";
 import { PopupHint } from "@/app/styles/MobileWatchFilm.styles";
 import { getFilmStreams } from "@/data/streams";
+import useWatchResume, { withResume } from "../helpers/useWatchResume";
 
 const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => {
   /* Отрицательный id — фильм без кинопоиска, играем по imdb.
@@ -23,6 +24,9 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
 
   const dispatch = useAppDispatch()
   const streams = getFilmStreams(id);
+  /* Продолжаем с сохранённой позиции: она у профиля в базе, а не в браузере */
+  const { resume, checked: resumeChecked } = useWatchResume(Number(id));
+  const playerSrc = withResume(`https://api.ortified.ws/embed/${playerKind}/${playerId}`, resume);
   const refDataFilm = useRef<HTMLInputElement | null>(null);
 
   const toggleWatchFilm = () => setWatchFilm(false)
@@ -63,8 +67,9 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                <StreamPlayer filmId={id} streams={streams} />
              ) : (
                <>
-                 <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-                     src={`https://api.ortified.ws/embed/${playerKind}/${playerId}`}
+                 {resumeChecked ? (
+                   <Iframe sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+                     src={playerSrc}
                      frameBorder="0"
                      scrolling="no"
                      allowFullScreen
@@ -72,6 +77,7 @@ const MobileWatchFilm: React.FC<MobileWatchFilmProps> = ({id, setWatchFilm}) => 
                      width="500"
                      height="352"
                    ></Iframe>
+                 ) : null}
                </>
              )}
                     </div>
