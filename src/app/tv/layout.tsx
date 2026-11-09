@@ -62,6 +62,10 @@ const Global = createGlobalStyle`
     scroll-margin-bottom: 40px;
   }
 
+  section {
+    scroll-margin-top: 120px;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }

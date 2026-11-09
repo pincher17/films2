@@ -189,6 +189,17 @@ function focusElement(element: HTMLElement) {
      Раньше каждый переход центрировал цель, и при движении вверх казалось,
      что фокус уходит в шапку. */
   element.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+
+  /* Если раздел начинается выше шапки (например, вернулись наверх, а обложка
+     фильма с заголовком уже уехала), прокручиваем раздел целиком — иначе
+     заголовок остаётся обрезанным под шапкой. */
+  const section = element.closest("section");
+  if (section) {
+    const sectionTop = section.getBoundingClientRect().top;
+    if (sectionTop < 120) {
+      section.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }
 }
 
 export default function TvNav() {
