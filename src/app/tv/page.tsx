@@ -42,7 +42,9 @@ const ROWS: Array<{ title: string; url: string }> = [
 ];
 
 export default function TvHomePage() {
-  const [rows, setRows] = React.useState<Row[]>([]);
+  /* Храним по названию, а не списком: иначе ряды встают в порядке ответа
+     сервера, и «Продолжить просмотр» уезжает вниз */
+  const [rows, setRows] = React.useState<Record<string, Card[]>>({});
 
   React.useEffect(() => {
     let cancelled = false;
@@ -58,7 +60,7 @@ export default function TvHomePage() {
           (item: Card) => item?.id && item?.name
         );
         if (cancelled || !items.length) return;
-        setRows((current) => [...current, { title, items }]);
+        setRows((current) => ({ ...current, [title]: items }));
       } catch {
         undefined;
       }
@@ -69,18 +71,19 @@ export default function TvHomePage() {
     };
   }, []);
 
-  if (!rows.length) return <Loading>Загружаю подборки…</Loading>;
+  const visible = ROWS.filter((row) => (rows[row.title] || []).length);
+  if (!visible.length) return <Loading>Загружаю подборки…</Loading>;
 
   return (
     <main>
-      {rows.map((row) => (
-        <TvRow key={row.title}>
-          <h2>{row.title}</h2>
+      {visible.map(({ title }) => (
+        <TvRow key={title}>
+          <h2>{title}</h2>
           <TvRowScroll data-tv-row>
-            {row.items.map((item) =>
+            {(rows[title] || []).map((item) =>
               item.progress ? (
                 <TvProgressCard
-                  key={`${row.title}-${item.id}`}
+                  key={`${title}-${item.id}`}
                   href={`/tv/film/${item.id}`}
                   poster={item.poster?.previewUrl || item.poster?.url}
                   name={item.name}
@@ -93,7 +96,7 @@ export default function TvHomePage() {
                 />
               ) : (
                 <TvPosterCard
-                  key={`${row.title}-${item.id}`}
+                  key={`${title}-${item.id}`}
                   href={`/tv/film/${item.id}`}
                   poster={item.poster?.previewUrl || item.poster?.url}
                   name={item.name}
