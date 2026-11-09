@@ -91,59 +91,36 @@ function pickNext(current: HTMLElement, direction: Direction) {
   }
 
   if (!horizontal) {
-    /* Вверх-вниз — переход между рядами: берём соседний ряд и в нём ближайший
-       по горизонтали элемент. Так с любой кнопки вниз попадаешь в следующий
-       ряд, а не в тот, что случайно оказался ближе по диагонали. */
-    const allRows = Array.from(document.querySelectorAll(`[${ROW_ATTR}]`)).filter(
-      (row) => rowItems(row).length > 0
-    );
-    const index = currentRow ? allRows.indexOf(currentRow) : -1;
-    if (index >= 0) {
-      const targetRows = (
-        direction === "down" ? allRows.slice(index + 1) : allRows.slice(0, index).reverse()
-      ).filter((row) =>
-        rowItems(row).some((element) => {
-          const point = centerOf(element);
-          return direction === "down"
-            ? point.y > centerOf(current).y + 4
-            : point.y < centerOf(current).y - 4;
-        })
-      );
+    /* Вниз-вверх идём по «линиям»: собираем элементы в группы с одинаковой
+       высотой и берём ближайшую линию в нужную сторону. Так с 4-го сезона
+       вниз попадаешь на 24-й (вторая строка того же ряда), а не сразу в
+       серии — и это работает при любом масштабе, потому что считается по
+       фактическим координатам. */
+    const { x: cx, y: cy } = centerOf(current);
 
-      /* Ряды могут стоять колонками (например, буквы и цифры на клавиатуре).
-         Тогда «вниз» должно вести в ряд, который перекрывает нас по
-         горизонтали, а не в соседний по разметке. */
-      const currentBox = current.getBoundingClientRect();
-      const overlaps = targetRows.filter((row) =>
-        rowItems(row).some((element) => {
-          const box = element.getBoundingClientRect();
-          return box.left < currentBox.right && box.right > currentBox.left;
-        })
-      );
-      const ordered = overlaps.length ? overlaps : targetRows;
-      const targetRow = ordered.find((row) =>
-        rowItems(row).some((element) => {
-          const point = centerOf(element);
-          return direction === "down"
-            ? point.y > centerOf(current).y + 4
-            : point.y < centerOf(current).y - 4;
-        })
-      );
+    const candidates = visibleFocusables().filter((element) => {
+      const point = centerOf(element);
+      return direction === "down" ? point.y > cy + 4 : point.y < cy - 4;
+    });
 
-      if (targetRow) {
-        const { x } = centerOf(current);
-        const candidates = rowItems(targetRow)
-          .filter((element) => {
-            const point = centerOf(element);
-            return direction === "down"
-              ? point.y > centerOf(current).y + 4
-              : point.y < centerOf(current).y - 4;
-          })
-          .sort((a, b) => Math.abs(centerOf(a).x - x) - Math.abs(centerOf(b).x - x));
-
-        if (candidates.length) return candidates[0];
+    if (candidates.length) {
+      const lines: Array<{ y: number; items: HTMLElement[] }> = [];
+      for (const element of candidates) {
+        const point = centerOf(element);
+        const line = lines.find((item) => Math.abs(item.y - point.y) < 28);
+        if (line) line.items.push(element);
+        else lines.push({ y: point.y, items: [element] });
       }
+
+      lines.sort((a, b) => (direction === "down" ? a.y - b.y : b.y - a.y));
+      const nearest = lines[0];
+      nearest.items.sort(
+        (a, b) => Math.abs(centerOf(a).x - cx) - Math.abs(centerOf(b).x - cx)
+      );
+      return nearest.items[0];
     }
+
+    return null;
   }
 
   /* Запасной путь — по геометрии, если ряды не размечены */
