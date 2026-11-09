@@ -199,16 +199,19 @@ export default function TvNav() {
        как только он появился: иначе на главной он остаётся на логотипе. */
     let userMoved = false;
 
-    const focusFirst = (force = false) => {
+    const focusFirst = (force = false, allowHeader = false) => {
       const active = document.activeElement as HTMLElement | null;
       const activeInRow = Boolean(active?.closest?.("[data-tv-row]"));
       if (active?.hasAttribute(ATTR) && activeInRow) return;
       if (active?.hasAttribute(ATTR) && !force) return;
+
       const all = visibleFocusables();
-      /* Приоритет — контенту: на телевизоре курсор должен стоять на первой
-         карточке, а не на логотипе в шапке */
+      /* Приоритет — контенту. Шапку берём только как запасной вариант (когда
+         человек уже нажал клавишу, а в контенте фокусировать нечего):
+         иначе при открытии карточки фокус сначала стоял на поиске, а через
+         несколько секунд прыгал на «Смотреть». */
       const inRows = all.filter((element) => element.closest("[data-tv-row]"));
-      const target = inRows[0] || all[0];
+      const target = inRows[0] || (allowHeader ? all[0] : null);
       if (target) focusElement(target);
     };
 
@@ -281,7 +284,7 @@ export default function TvNav() {
 
       if (!hasFocus) {
         event.preventDefault();
-        focusFirst();
+        focusFirst(true, true);
         return;
       }
 
