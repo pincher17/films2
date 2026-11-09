@@ -55,6 +55,21 @@ async function tmdb(pathName, params = {}) {
 }
 
 
+
+/** Догоняет id у трейлеров, сохранённых до появления колонок tmdbId/imdbId/kpId. */
+async function linkIds() {
+  const tmdb = await prisma.$executeRaw`UPDATE "Trailer" SET "tmdbId" = "filmId" WHERE "tmdbId" IS NULL`;
+  const imdb = await prisma.$executeRaw`
+    UPDATE "Trailer" t SET "imdbId" = m."imdbId"
+    FROM "ImdbMap" m
+    WHERE m."tmdbId" = t."tmdbId" AND m.media = t.media AND t."imdbId" IS NULL`;
+  const kp = await prisma.$executeRaw`
+    UPDATE "Trailer" t SET "kpId" = k."kpId"
+    FROM "KpMap" k
+    WHERE k."tmdbId" = t."tmdbId" AND k.media = t.media AND t."kpId" IS NULL`;
+  console.info(`[link-ids] tmdb ${tmdb}, imdb ${imdb}, kp ${kp}`);
+}
+
 /**
  * Наполнение очереди из каталога.
  *
